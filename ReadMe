@@ -1,0 +1,15 @@
+-Using GitHub: Download GitHub Desktop as well as add github extension to VScode, need help ask Kobe
+
+-Enable AutoFetch so current repo is accessible locally: "file>Preferences>settings" then search "Git: Auto Fetch and toggle it on"
+
+-When you've made changes stage the changes with the plus button and commit leaving a message about what you changed
+
+-Please produce well commented code for project implementation. 
+
+-Develop code however you want but be sure it is commented well when it will be used by the group
+
+-Try to have as much fun as possible
+
+-Need new eyes on your code ask on snap if anyone is willing to help but give a good college try first
+
+-Important deliverables deadlines will be filled in on TEAMS calendar -> we can explore with using gannt charts with dependencies if you guys want to as well
