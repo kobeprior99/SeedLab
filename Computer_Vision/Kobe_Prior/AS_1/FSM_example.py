@@ -38,14 +38,13 @@ print("Type coin or push to run state machine")
 print("Anything else will end the program")
 # main loop
 while state is not None: # Run until state is None
-    #do nothing
-print("Current state is "+state_dictionary[state])
-# Get current activity
-activity = input("input: ")
-if state==0:
-    state=state0(activity);
-elif state==1:
-    state=state1(activity);
-else:
-    Exception("Invalid state has been entered");
+    print("Current state is "+state_dictionary[state])
+    # Get current activity
+    activity = input("input: ")
+    if state==0:
+        state=state0(activity);
+    elif state==1:
+        state=state1(activity);
+    else:
+        Exception("Invalid state has been entered");
 print("Done with state machine")
