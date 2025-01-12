@@ -12,12 +12,12 @@ with open('datafile.txt', 'r') as file:
 #1. find the maximum value in the list
 #using built in max function to find the maximum value in the list
 max_value = max(data)
-print(f"Task1: The maximum value in the list is: {max_value}")
+print(f"Task 1: The maximum value in the list is: {max_value}")
 
 #2. find the minimum value in the list
 #using built in min function to find the minimum value in the list
 min_value = min(data)   
-print(f"Task2: The minimum value in the list is: {min_value}")
+print(f"Task 2: The minimum value in the list is: {min_value}")
 
 #3. Find the index of the number 38
 #using the index method to find the index of the number 38
@@ -48,7 +48,7 @@ sorted_numpy_array = np.sort(numpy_array) #sort the numpy array in ascending ord
 print(f"Task 5: The sorted list in ascending order is: {sorted_numpy_array}")
 
 #6. All even numbers in order (using list comprehension)
-data.sort()
+data.sort()#sort the data in ascending order
 #print(data) #debug line to see if the list is sorted
 even_acending=[x for x in data if x % 2 == 0] #list comprehension to find all even numbers in the list
 print(f"Task 6: The even numbers in the list in order are: {even_acending}")
