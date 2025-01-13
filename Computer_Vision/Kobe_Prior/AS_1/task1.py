@@ -75,3 +75,4 @@ print(f"Task 5: The sorted list in ascending order is: {sorted_numpy_array}")
 even_acending=[x for x in data if x % 2 == 0] #list comprehension to find all even numbers in the list
 even_acending.sort() #sort the list in ascending order better to do this after list comprehension to save processing time
 print(f"Task 6: The even numbers in the list in order are: {even_acending}")
+
