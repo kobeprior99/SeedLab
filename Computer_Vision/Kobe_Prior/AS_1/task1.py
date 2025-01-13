@@ -1,3 +1,25 @@
+'''
+*******************************************************************
+* File Name         : task1.py
+* Description       : Read data from a file and 
+* perform operations on the data such as finding
+* the maximum value, finding the minimum value, 
+* finding the index of a specific value, finding the
+* number repeated the most and the number of times it 
+* is repeated, converting data to a numpy array and sorting, and
+* finding all even numbers in the data.
+*                    
+* Revision History  :
+* Date		Author 			Comments
+* ------------------------------------------------------------------
+* 01/12/2025	Kobe Prior	Created File
+*
+******************************************************************
+Hardware Setup: Power on the Pi -> either connect peripherials or connect via PiConnect or other VNC service 
+Example Excecution: -> open terminal -> navigate to the directory where the task1.py file is located using cd command ->
+run the python file using 'python task1.py' command
+'''
+
 from collections import Counter #used in task 4
 import numpy as np #used in task 5
 
@@ -35,12 +57,13 @@ highest_frequency = max(counter.values())
 sameFreqCount = 0 #initialize a variable to count the number of elements with the same frequency
 for elements in counter:
     #print(elements, counter[elements])#debug line to see the elements and their frequencies 
+    #note that the indexing behavior of the counter object is like a dictionary
     if counter[elements] == highest_frequency and sameFreqCount == 0:
         print(f"The number repeated the most is {elements} is repeated {highest_frequency} times")
         sameFreqCount+=1
     elif counter[elements] == highest_frequency:
+        #if there are multiple elements with the same frequency
         print(f"{elements} is also repeated {highest_frequency} times") 
-        sameFreqCount+= 1 #increment the count of the number of elements with the same frequency
 
 #5. Convert to numpy array and sort list in ascending order
 numpy_array = np.array(data) #convert the list to a numpy array
@@ -48,7 +71,7 @@ sorted_numpy_array = np.sort(numpy_array) #sort the numpy array in ascending ord
 print(f"Task 5: The sorted list in ascending order is: {sorted_numpy_array}")
 
 #6. All even numbers in order (using list comprehension)
-data.sort()#sort the data in ascending order
 #print(data) #debug line to see if the list is sorted
 even_acending=[x for x in data if x % 2 == 0] #list comprehension to find all even numbers in the list
+even_acending.sort() #sort the list in ascending order better to do this after list comprehension to save processing time
 print(f"Task 6: The even numbers in the list in order are: {even_acending}")
