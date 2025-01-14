@@ -1,3 +1,8 @@
+Purpose: EENG 350: System, Exploration, Engineering, and Design Lab
+Project Goal: Produce an atonomous robot that moves according to arrows and ArUco markers 
+Group: 14
+Members: Kobe Prior, Blane Miller, Ron Gaines, Cooper Hammond
+Guidlines and Tips
 -Using GitHub: Download GitHub Desktop as well as add github extension to VScode, need help ask Kobe
 
 -Enable AutoFetch so current repo is accessible locally: "file>Preferences>settings" then search "Git: Auto Fetch and toggle it on"
