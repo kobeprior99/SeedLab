@@ -28,12 +28,12 @@ with open('datafile.txt', 'r') as f:
 
 #Task 1: Finding the maximum
 #Using preset max finder function
-maximum = b.max()
+maximum = max(b)
 print(f"The maximum of this data set is {maximum}")
 
 #Task 2: Finding the minimum
 #Using preset min finder function
-minimum = b.min()
+minimum = min(b)
 print(f"The minimum of this data set is {minimum}")
 
 #Task 3: Finding the index where the number 38 is located
@@ -61,7 +61,9 @@ arr = np.array(b)
 sorted_arr = np.sort(arr)
 print(f"The sorted list is as shown: {sorted_arr}")
 
-#Task 6: List of the even numbers as they appear in the list
+#Task 6: List of the even numbers, sorted
 #Using list comprehension to extract the even numbers 
-even_nums = [num for num in b if b % 2 == 0]
+even_nums = [num for num in b if num % 2 == 0]
+#Sorting list
+even_nums.sort()
 print(f"The list of even numbers in the order they appear is as shown: {even_nums}")
