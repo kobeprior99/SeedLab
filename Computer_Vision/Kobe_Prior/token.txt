@@ -1,1 +1,4 @@
 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
+
+use the following with your token for other pi: 
+git remote set-url origin https://<token>@github.com/<username>/SeedLab.git
