@@ -19,9 +19,14 @@ if not ret:
     quit()
 else:
     print("if you would like to save press the s key if you want to leave press esc")
-    grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    grayscale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    HSV = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     edges = cv2.Canny(image, 100, 200)
+<<<<<<< HEAD
     cv2.imshow('image', edges)#show the image but only the edges
+=======
+    cv2.imshow('image', HSV)#show the image captured in black and white
+>>>>>>> 7f7c037242f4513aa792f41199e4535b15fc2966
     k = cv2.waitKey(0)
     #if the use types s save
     if k == 27:
