@@ -42,9 +42,9 @@ while state is not None: # Run until state is None
     # Get current activity
     activity = input("input: ")
     if state==0:
-        state=state0(activity);
+        state=state0(activity)
     elif state==1:
-        state=state1(activity);
+        state=state1(activity)
     else:
         Exception("Invalid state has been entered");
 print("Done with state machine")
