@@ -23,7 +23,7 @@ else:
     HSV = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     edges = cv2.Canny(image, 100, 200)
     cv2.imshow('image', edges)#show the image but only the edges
-    cv2.imshow('image', HSV)#show the image captured in black and white
+    cv2.imshow('image', HSV)#show the image captured in hsv
     k = cv2.waitKey(0)
     #if the use types s save
     if k == 27:
