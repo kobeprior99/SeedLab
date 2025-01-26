@@ -13,6 +13,17 @@ camera = cv.VideoCapture(0)
 sleep(.5)
 ret, frame = camera.read()
 grey = cv.cvtColor(frame, cv.COLOR_BGR2GRAY) #make the image greyscale for aruco detection
-cv.imshow("overlay", grey)
+# cv.imshow("overlay", grey)
+corners, ids, rejected =aruco.detectMarkers(grey, myDict)
+
+overlay = cv.cvtColor(grey, cv.COLOR_GRAY2RGB)
+overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor = 4)
+if not ids is None:
+    ids = ids.flatten()
+    for (outline, id) in zip(corners, ids):
+        markerCorners = outline.reshape((4,2))
+        overlay = cv.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
+cv.imshow("overlay",overlay)
 cv.waitKey(0)
+cv.destroyAllWindows()
 camera.release()
