@@ -12,7 +12,7 @@ def findPhi(fov, object_pixel, image_width):
     center_pixel = image_width / 2;
     pixel_ratio = (object_pixel - center_pixel) / center_pixel;
     phi = half_fov * pixel_ratio;
-
+    #note returning in degrees, and - angles means to the left relative to camera
     return phi;
 
 camera = cv2.VideoCapture(0)
@@ -43,4 +43,4 @@ cv2.imshow("overlay",overlay)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 camera.release()
-print(phi)
+print(f'aruco marker is{phi} degrees from camera center'phi)
