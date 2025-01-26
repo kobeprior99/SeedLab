@@ -14,4 +14,5 @@ sleep(.5)
 ret, frame = camera.read()
 grey = cv.cvtColor(frame, cv.COLOR_BGR2GRAY) #make the image greyscale for aruco detection
 cv.imshow("overlay", grey)
+cv.waitKey(0)
 camera.release()
