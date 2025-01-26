@@ -27,12 +27,17 @@ grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) #make the image greyscale for aru
 corners, ids, rejected = aruco.detectMarkers(grey, myDict)
 overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
 overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor = 4)
+
 if not ids is None:
     ids = ids.flatten()
     for (outline, id) in zip(corners, ids):
         markerCorners = outline.reshape((4,2))
+        center_pixel_x = int(np.mean(markerCorners[:,0]))
+        print(center_pixel_x)
+        center_pixel_y = int(np.mean(markerCorners[:,1]))
         overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
-center_pixel_x = corners[0][0][0][0]
+        # testing to see where center point gets placed
+        overlay = cv2.putText(overlay, "+",(int(center_pixel_x), int(center_pixel_y)),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
 phi = findPhi(fov, center_pixel_x, 640)
 cv2.imshow("overlay",overlay)
 cv2.waitKey(0)
