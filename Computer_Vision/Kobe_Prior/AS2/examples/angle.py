@@ -32,7 +32,7 @@ if not ids is None:
     for (outline, id) in zip(corners, ids):
         markerCorners = outline.reshape((4,2))
         overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2)
-center_pixel_x = int(corners[0][0][0][0]/2)
+center_pixel_x = corners[0][0][0][0]
 phi = findPhi(fov, center_pixel_x, 640)
 cv2.imshow("overlay",overlay)
 cv2.waitKey(0)
