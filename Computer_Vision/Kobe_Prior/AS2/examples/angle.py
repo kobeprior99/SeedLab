@@ -10,7 +10,7 @@ def findPhi(fov, object_pixel, image_width):
 
     half_fov = fov / 2;
     center_pixel = image_width / 2;
-    pixel_ratio = abs(object_pixel - center_pixel) / center_pixel;
+    pixel_ratio = (object_pixel - center_pixel) / center_pixel;
     phi = half_fov * pixel_ratio;
 
     return phi;
