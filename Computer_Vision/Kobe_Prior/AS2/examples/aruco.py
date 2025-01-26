@@ -4,9 +4,9 @@ import numpy as np
 from time import sleep
 
 myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-myArucoImg = aruco.generateImageMarker(myDict, 0, 400)
+myArucoImg = aruco.generateImageMarker(myDict, 1, 400)
 # cv2.imshow("Aruco", myArucoImg)
-# cv2.imwrite("aruco.png", myArucoImg)
+cv2.imwrite("aruco_id1.png", myArucoImg)
 # cv2.waitKey(0)
 # cv2.destroyAllWindows()
 camera = cv2.VideoCapture(0)
