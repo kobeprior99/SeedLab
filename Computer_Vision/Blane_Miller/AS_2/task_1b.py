@@ -1,41 +1,49 @@
 from smbus2 import SMBus
 from time import sleep
-import RPi.GPIO as GPIO
-import LCD  # Assuming you're using an LCD library, for example, `lcd` or `Adafruit_CharLCD`
+import board
+import digitalio
+import adafruit_character_lcd.character_lcd as characterlcd
 
+# I2C Setup
 ARD_ADDR = 8
-
-# Set up I2C and LCD
 i2c = SMBus(1)
-lcd = LCD.Adafruit_CharLCD()  # Initialize LCD, adjust if you're using a different library
 
-# Set up the LCD screen
-lcd.begin(16, 2)  # 16x2 LCD, adjust as per your LCD
+# LCD Setup (adjust pins based on your setup)
+lcd_columns = 16  # Number of columns in your LCD
+lcd_rows = 2      # Number of rows in your LCD
 
-while(True):
+# Set GPIO pins (update these based on your wiring)
+lcd_rs = digitalio.DigitalInOut(board.D4)
+lcd_en = digitalio.DigitalInOut(board.D17)
+lcd_d4 = digitalio.DigitalInOut(board.D18)
+lcd_d5 = digitalio.DigitalInOut(board.D27)
+lcd_d6 = digitalio.DigitalInOut(board.D22)
+lcd_d7 = digitalio.DigitalInOut(board.D23)
+
+# Initialize the LCD
+lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
+
+while True:
     # Input an integer to send
     integer_value = int(input("Enter an integer (0 to quit): "))
     if integer_value == 0:
         break
-    
+
     try:
-        # Send the integer to Arduino (convert integer to byte format)
+        # Send the integer to Arduino
         i2c.write_i2c_block_data(ARD_ADDR, 0, [integer_value])  # Send the integer with offset 0
         
-        # Wait for a short period to give the Arduino time to process
+        # Wait for the Arduino to process
         sleep(0.1)
         
-        # Read the modified integer from the Arduino
+        # Read the modified integer from Arduino
         modified_int = i2c.read_byte_data(ARD_ADDR, 0)  # Read the modified integer
 
         print(f"Received from Arduino: {modified_int}")
 
         # Display the modified integer on the LCD
-        lcd.clear()  # Clear any previous text
-        lcd.set_cursor(0, 0)  # Set cursor to the top-left
-        lcd.message("Modified Int:")
-        lcd.set_cursor(0, 1)  # Move to the next line
-        lcd.message(str(modified_int))
+        lcd.clear()  # Clear the LCD screen
+        lcd.message = f"Modified Int:\n{modified_int}"
 
     except IOError:
         print("Could not write data to the Arduino.")
