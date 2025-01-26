@@ -8,7 +8,7 @@ import adafruit_character_lcd.character_lcd as characterlcd
 ARD_ADDR = 8
 i2c = SMBus(1)
 
-# LCD Setup (adjust pins based on your setup)
+# LCD Setup (adjust pins based on your wiring)
 lcd_columns = 16  # Number of columns in your LCD
 lcd_rows = 2      # Number of rows in your LCD
 
@@ -25,26 +25,28 @@ lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lc
 
 while True:
     # Input an integer to send
-    integer_value = int(input("Enter an integer (0 to quit): "))
-    if integer_value == 0:
-        break
-
     try:
+        integer_value = int(input("Enter an integer (0 to quit): "))
+        if integer_value == 0:
+            break
+
         # Send the integer to Arduino
-        i2c.write_i2c_block_data(ARD_ADDR, 0, [integer_value])  # Send the integer with offset 0
-        
-        # Wait for the Arduino to process
+        i2c.write_byte(ARD_ADDR, integer_value)
+
+        # Wait for the Arduino to process the integer
         sleep(0.1)
-        
-        # Read the modified integer from Arduino
-        modified_int = i2c.read_byte_data(ARD_ADDR, 0)  # Read the modified integer
+
+        # Read the modified integer from the Arduino
+        modified_int = i2c.read_byte(ARD_ADDR)
 
         print(f"Received from Arduino: {modified_int}")
 
         # Display the modified integer on the LCD
-        lcd.clear()  # Clear the LCD screen
+        lcd.clear()  # Clear any previous text
         lcd.message = f"Modified Int:\n{modified_int}"
 
     except IOError:
-        print("Could not write data to the Arduino.")
+        print("I/O error occurred. Could not communicate with Arduino.")
+    except ValueError:
+        print("Invalid input. Please enter an integer.")
     sleep(0.1)
