@@ -24,7 +24,7 @@ while True:
             break
 
         # Send the integer to Arduino
-        i2c1.write_byte_data(ARD_ADDR,integer_value)
+        i2c1.write_byte(ARD_ADDR,integer_value)
 
         # Wait for the Arduino to process the integer
         sleep(0.1)
