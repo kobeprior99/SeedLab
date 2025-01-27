@@ -8,12 +8,12 @@ def findPhi(fov, object_pixel, image_width):
     # object_pixel is the x coordinate of the object relative to the center of the image
     # image_width is the width of the image in pixels
 
-    half_fov = fov / 2;
-    center_pixel = image_width / 2;
-    pixel_ratio = (object_pixel - center_pixel) / center_pixel;
-    phi = half_fov * pixel_ratio;
+    half_fov = fov / 2
+    center_pixel = image_width / 2
+    pixel_ratio = (object_pixel - center_pixel) / center_pixel
+    phi = half_fov * pixel_ratio
     #note returning in degrees, and - angles means to the left relative to camera
-    return phi;
+    return phi
 
 camera = cv2.VideoCapture(0)
 sleep(.5)
