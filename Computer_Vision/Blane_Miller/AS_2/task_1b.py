@@ -1,8 +1,8 @@
 from smbus2 import SMBus
 from time import sleep
 import board
-import digitalio
-import adafruit_character_lcd.character_lcd as characterlcd
+import time
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 # I2C Setup
 ARD_ADDR = 8
@@ -12,16 +12,9 @@ i2c = SMBus(1)
 lcd_columns = 16  # Number of columns in your LCD
 lcd_rows = 2      # Number of rows in your LCD
 
-# Set GPIO pins (update these based on your wiring)
-lcd_rs = digitalio.DigitalInOut(board.D4)
-lcd_en = digitalio.DigitalInOut(board.D17)
-lcd_d4 = digitalio.DigitalInOut(board.D18)
-lcd_d5 = digitalio.DigitalInOut(board.D27)
-lcd_d6 = digitalio.DigitalInOut(board.D22)
-lcd_d7 = digitalio.DigitalInOut(board.D23)
 
-# Initialize the LCD
-lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
+i2c = board.I2C()
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows)
 
 while True:
     # Input an integer to send
