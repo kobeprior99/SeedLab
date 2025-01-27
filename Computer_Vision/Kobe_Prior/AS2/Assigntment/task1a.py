@@ -15,7 +15,7 @@ Hardware Setup: Power on the Pi -> either connect peripherials or connect via Pi
 -connect gnd to gnd, sda to sda, and scl to scl from pi to arduiono.
 -connect pin 3 on Pi to pin A4 on Arduino (SDA)
 -connect pin 5 on Pi to pin A5 on Arduino (SCL)
--connect pin 4 on Pi to GND on Arduino
+-connect pin 6 on Pi to GND on Arduino
 Example Excecution: open arudino ide and upload the task1a.ino file to the arduino, then open serial monitor
 ->open terminal -> navigate to the directory where the task1a.py file is located using cd command ->
 run the python file using 'python task1a.py' command
