@@ -32,11 +32,11 @@ while(True):
             markerCorners = outline.reshape((4,2))
             overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2) 
         lcd.clear()
-        sleep(1)
+        sleep(0.1)
         lcd.message = f"The id is {id}"
     else:
         lcd.clear()
-        sleep(1)
+        sleep(0.1)
         lcd.message = "No markers found"
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
