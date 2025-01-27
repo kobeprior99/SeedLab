@@ -13,7 +13,6 @@ lcd_columns = 16  # Number of columns in your LCD
 lcd_rows = 2      # Number of rows in your LCD
 
 
-i2c = board.I2C()
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows)
 
 while True:
