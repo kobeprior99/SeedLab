@@ -24,20 +24,26 @@ lcd_d7 = digitalio.DigitalInOut(board.D23)
 lcd = characterlcd.Character_LCD_Mono(lcd_rs, lcd_en, lcd_d4, lcd_d5, lcd_d6, lcd_d7, lcd_columns, lcd_rows)
 
 while True:
-    # Input an integer to send
     try:
+        # Input an integer to send
         integer_value = int(input("Enter an integer (0 to quit): "))
         if integer_value == 0:
             break
 
-        # Send the integer to Arduino
-        i2c.write_byte(ARD_ADDR, integer_value)
+        # Split the integer into two bytes (high and low)
+        high_byte = (integer_value >> 8) & 0xFF
+        low_byte = integer_value & 0xFF
+
+        # Send the two bytes to the Arduino
+        i2c.write_i2c_block_data(ARD_ADDR, 0, [high_byte, low_byte])
 
         # Wait for the Arduino to process the integer
         sleep(0.1)
 
-        # Read the modified integer from the Arduino
-        modified_int = i2c.read_byte(ARD_ADDR)
+        # Read the modified integer back from the Arduino (as two bytes)
+        high_byte = i2c.read_byte(ARD_ADDR)
+        low_byte = i2c.read_byte(ARD_ADDR)
+        modified_int = (high_byte << 8) | low_byte
 
         print(f"Received from Arduino: {modified_int}")
 

@@ -16,9 +16,11 @@ void loop() {
 }
 
 void receive() {
-  if (Wire.available() >= 1) {
-    // Read the integer sent by the Raspberry Pi
-    receivedInt = Wire.read();
+  if (Wire.available() >= 2) {  // Ensure at least 2 bytes are available
+    // Read the high and low bytes to reconstruct the integer
+    uint8_t highByte = Wire.read();
+    uint8_t lowByte = Wire.read();
+    receivedInt = (highByte << 8) | lowByte;  // Combine bytes into an integer
 
     // Add 100 to the received integer
     modifiedInt = receivedInt + 100;
@@ -32,6 +34,7 @@ void receive() {
 }
 
 void request() {
-  // Send the modified integer back to the Raspberry Pi
-  Wire.write(modifiedInt);
+  // Send the modified integer back to the Raspberry Pi as two bytes
+  Wire.write((modifiedInt >> 8) & 0xFF);  // Send the high byte
+  Wire.write(modifiedInt & 0xFF);         // Send the low byte
 }
