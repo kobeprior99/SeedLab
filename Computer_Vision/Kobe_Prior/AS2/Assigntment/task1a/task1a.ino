@@ -18,6 +18,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   if (msgLength > 0){
+    //print the message received if there is one 
     printRecieved();
     msgLength = 0;
     }
