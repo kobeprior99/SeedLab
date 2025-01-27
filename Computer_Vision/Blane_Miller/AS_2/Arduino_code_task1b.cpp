@@ -16,7 +16,9 @@ void loop() {}
 void receive() {
   if (Wire.available()) {
     receivedInt = Wire.read(); // Read 1 byte
-    modifiedInt = receivedInt + 100;
+    modifiedInt = receivedInt + 100; // Add 100 to the received byte
+
+    // Debugging: Print received and modified integer to Serial Monitor
     Serial.print("Received: ");
     Serial.println(receivedInt);
     Serial.print("Modified: ");
@@ -25,5 +27,6 @@ void receive() {
 }
 
 void request() {
+  // Send the modified integer back (1 byte)
   Wire.write(modifiedInt); // Send modified value
 }
