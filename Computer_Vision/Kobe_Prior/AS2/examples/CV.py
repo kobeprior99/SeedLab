@@ -8,7 +8,7 @@ import cv2 as cv
 #cv.waitKey(0)
 #cv.destroyAllWindows()
 
-cap = cv.VideoCapture(0);
+cap = cv.VideoCapture(0)
 cap.set(cv.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
 if not cap.isOpened():
