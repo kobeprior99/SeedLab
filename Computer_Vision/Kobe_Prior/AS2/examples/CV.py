@@ -14,6 +14,7 @@ cap.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
 if not cap.isOpened():
     print("cannot open")
     exit()
+
 while True:
     #capture frame by frame
     ret, frame = cap.read()
@@ -26,5 +27,6 @@ while True:
     cv.imshow('frame', gray)
     if cv.waitKey(1) == ord('q'):
         break
+    
 cap.release()
 cv.destroyAllWindows()
