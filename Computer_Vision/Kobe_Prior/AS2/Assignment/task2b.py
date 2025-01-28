@@ -24,13 +24,13 @@ from time import sleep
 def mask_green(img):
     #bounds for the green color use colorThresholdFinder.py to find these values [64, 140, 73] was the exact 
     #so I gave buffer on each side for live camera
-    lowergreen = np.array([36, 25, 25])
+    lowergreen = np.array([36, 100, 50])
     uppergreen = np.array([70, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     #create a mask for the green color
     mask = cv.inRange(img_hsv, lowergreen, uppergreen)
-    #apply morphological transformations to clean up the mask
+    #apply morphological transformations to refine the mask
     mask = cv.morphologyEx(mask, cv.MORPH_OPEN, np.ones((5,5),np.uint8))
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
     #modify the mask using morphological transformations
@@ -48,6 +48,7 @@ def display_contours(img, mask):
     #wait for key press then close windows
     cv.waitKey(0)
     cv.destroyAllWindows()
+
     return contours
 
 #experimentation with static image for image processing
@@ -69,8 +70,8 @@ if not ret:
     print("Could not capture image from camera!")
     quit()
 else:
-    print("if you would like to save press the s key if you want to leave press esc")
+    # compute mask and display contours
     mask = mask_green(frame)
     contours = display_contours(frame, mask)
-#turn off the camera
+    #turn off the camera
 camera.release()
