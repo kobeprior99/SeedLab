@@ -58,7 +58,7 @@ def id_green(img, mask):
     
     #set up display window
     cv.namedWindeow("Green detection", cv.WINDOW_NORMAL)
-    cv.resizeWindow("Green detection", 600, 600)
+    cv.resizeWindow("Green detection", 300, 300)
     #display the image with the contours
     cv.imshow("Green detection",img)
     cv.waitKey(0)
