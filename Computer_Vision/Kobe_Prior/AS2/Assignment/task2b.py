@@ -51,7 +51,7 @@ def display_contours(img, mask):
     return contours
 
 #experimentation with static image for image processing
-img = cv.imread("static_colors.png")
+# img = cv.imread("static_colors.png")
 # cv.imshow("colors", img) 
 # mask = mask_green(img)
 #show the mask to check if it worked
@@ -61,16 +61,18 @@ img = cv.imread("static_colors.png")
 # initialize camera
 # contours = display_contours(img, mask)
 
-# camera = cv.VideoCapture(0)
-# sleep(.5)
-# ret, frame = camera.read()
-# #take a picture of the colors
-# if not ret:
-#     print("Could not capture image from camera!")
-#     quit()
-# else:
-#     # compute mask and display contours
-#     mask = mask_green(frame)
-#     contours = display_contours(frame, mask)
-#     #turn off the camera
-# camera.release()
+camera = cv.VideoCapture(0)
+sleep(.5)
+ret, frame = camera.read()
+#take a picture of the colors
+if not ret:
+    print("Could not capture image from camera!")
+    quit()
+else:
+    # compute mask and display contours
+    try:
+        contours = display_contours(frame, mask_green(frame))
+    except:
+        print("No green shapes detected!")
+#turn off the camera
+camera.release()
