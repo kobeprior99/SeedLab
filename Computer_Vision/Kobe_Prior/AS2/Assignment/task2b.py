@@ -37,6 +37,8 @@ def mask_green(img):
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
     #modify the mask using morphological transformations
     cv.imshow("mask", mask)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
     return mask
 
 def display_contours(img, mask):
