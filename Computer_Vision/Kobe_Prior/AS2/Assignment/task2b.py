@@ -75,6 +75,7 @@ def id_green(img, mask):
 camera = cv.VideoCapture(0)
 camera.set(cv.CAP_PROP_FRAME_WIDTH, 640)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+camera.set(cv.CAP_PROP_BRIGHTNESS, 150)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
