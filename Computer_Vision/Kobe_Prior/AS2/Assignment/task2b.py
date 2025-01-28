@@ -23,11 +23,11 @@ from time import sleep
 # mask_green function that takes in an image and returns a mask for the green color
 def mask_green(img):
     # [64, 140, 73] value using colorThresholdFinder.py from tutorial
-    # green hue between 120 and 180 degrees
+    # green hue between 110 and 170 degrees
     # saturation    0-255
     # value         25-255
     lowergreen = np.array([55, 25, 25])
-    uppergreen = np.array([90, 255, 255])
+    uppergreen = np.array([85, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     #create a binary mask for the green color
@@ -80,7 +80,7 @@ camera.set(cv.CAP_PROP_BRIGHTNESS, 133)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
-sleep(1)
+sleep(5)
 
 ret, frame = camera.read()
 if not ret:
