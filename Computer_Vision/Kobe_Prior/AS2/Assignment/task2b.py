@@ -70,6 +70,7 @@ if not ret:
     quit()
 else:
     # compute mask and display contours
+    cv.imshow("frame", frame)
     try:
         contours = display_contours(frame, mask_green(frame))
     except:
