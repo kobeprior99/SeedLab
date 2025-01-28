@@ -25,7 +25,7 @@ def mask_green(img):
     #bounds for the green color use colorThresholdFinder.py to find these values [64, 140, 73] was the exact 
     #so I gave buffer on each side for live camera
     lowergreen = np.array([36, 25, 25])
-    uppergreen = np.array([70, 255, 255])
+    uppergreen = np.array([70, 200, 200])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     #create a mask for the green color
@@ -75,20 +75,34 @@ if not camera.isOpened():
     exit()
 sleep(1)
 
-while True: 
-    ret, frame = camera.read()
-    #take a picture of the colors
-    if not ret:
-        print("Could not capture frame from camera!")
-        break
-    else:
-        try:
-            # compute mask and display contours
-            contours = display_contours(frame, mask_green(frame))
-            if cv.waitKey(1) == ord('q'):
-                break
-        except:
-            print("No green shapes detected!")
+ret, frame = camera.read()
+if not ret:
+    print("cannot capture frame from camera!")
+    exit()
+else:   
+    try:
+        # compute mask and display contours
+        contours = display_contours(frame, mask_green(frame))
+        if cv.waitKey(1) == ord('q'):
+            cv.destroyAllWindows()
+    except:
+        print("No green shapes detected!")
+
+#peform detection in video instead of image
+# while True: 
+#     ret, frame = camera.read()
+#     #take a picture of the colors
+#     if not ret:
+#         print("Could not capture frame from camera!")
+#         break
+#     else:
+#         try:
+#             # compute mask and display contours
+#             contours = display_contours(frame, mask_green(frame))
+#             if cv.waitKey(1) == ord('q'):
+#                 break
+#         except:
+#             print("No green shapes detected!")
 
 
 #turn off the camera and destroy all windows
