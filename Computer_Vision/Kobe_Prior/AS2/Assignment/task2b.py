@@ -62,7 +62,7 @@ def display_contours(img, mask):
 # contours = display_contours(img, mask)
 
 camera = cv.VideoCapture(0)
-sleep(.5)
+sleep(1)
 ret, frame = camera.read()
 #take a picture of the colors
 if not ret:
