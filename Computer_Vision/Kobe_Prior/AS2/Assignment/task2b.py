@@ -36,6 +36,7 @@ def mask_green(img):
     #fill in holes
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
     #modify the mask using morphological transformations
+    cv.imshow("mask", mask)
     return mask
 
 def display_contours(img, mask):
@@ -43,7 +44,7 @@ def display_contours(img, mask):
     contours,_ = cv.findContours(mask,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
     #draw the contours on the image if the area is greater than 100
     for contour in contours:
-        if cv.contourArea(contour) > 100:
+        if cv.contourArea(contour) > 400:
             cv.drawContours(img,contours,-1,(0,0,255),5)
             x, y, _, _ = cv.boundingRect(contour)
             cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
