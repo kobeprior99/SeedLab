@@ -36,9 +36,11 @@ def mask_green(img):
     #fill in holes
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
     #modify the mask using morphological transformations
-    cv.imshow("mask", mask)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+
+    # check the mask to see if it worked
+    # cv.imshow("mask", mask)
+    # cv.waitKey(0)
+    # cv.destroyAllWindows()
     return mask
 
 def display_contours(img, mask):
@@ -51,7 +53,7 @@ def display_contours(img, mask):
             x, y, _, _ = cv.boundingRect(contour)
             cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     #display the image with the contours
-    cv.imshow("Contours",img)
+    cv.imshow("Green detection",img)
     #wait for key press then close windows
     cv.waitKey(0)
     cv.destroyAllWindows()
@@ -69,20 +71,29 @@ def display_contours(img, mask):
 
 # initialize camera
 camera = cv.VideoCapture(0)
+camera.set(cv.CAP_PROP_FRAME_WIDTH, 640)
+camera.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+if not camera.isOpened():
+    print("cannot open camera")
+    exit()
 sleep(1)
-ret, frame = camera.read()
-#take a picture of the colors
-if not ret:
-    print("Could not capture image from camera!")
-    quit()
-else:
-    cv.imshow("frame", frame)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
-    try:
-        # compute mask and display contours
-        contours = display_contours(frame, mask_green(frame))
-    except:
-        print("No green shapes detected!")
-#turn off the camera
+
+while True: 
+    ret, frame = camera.read()
+    #take a picture of the colors
+    if not ret:
+        print("Could not capture frame from camera!")
+        break
+    else:
+        try:
+            # compute mask and display contours
+            contours = display_contours(frame, mask_green(frame))
+            if cv.waitKey(1) == ord('q'):
+                break
+        except:
+            print("No green shapes detected!")
+
+
+#turn off the camera and destroy all windows
 camera.release()
+cv.destroyAllWindows()
