@@ -54,6 +54,8 @@ def display_contours(img, mask):
             cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     #display the image with the contours
     cv.imshow("Green detection",img)
+    if cv.waitKey(1) == ord('q'):
+        cv.destroyAllWindows()
     return contours
 
 #experimentation with static image for image processing
@@ -83,8 +85,6 @@ else:
     try:
         # compute mask and display contours
         contours = display_contours(frame, mask_green(frame))
-        if cv.waitKey(1) == ord('q'):
-            cv.destroyAllWindows()
     except:
         print("No green shapes detected!")
 
