@@ -24,7 +24,7 @@ from time import sleep
 def mask_green(img):
     #bounds for the green color use colorThresholdFinder.py to find these values [64, 140, 73] was the exact 
     #so I gave buffer on each side for live camera
-    lowergreen = np.array([36, 60, 50])
+    lowergreen = np.array([36, 25, 25])
     uppergreen = np.array([70, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
