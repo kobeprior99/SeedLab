@@ -67,12 +67,12 @@ ret, frame = camera.read()
 #take a picture of the colors
 if not ret:
     print("Could not capture image from camera!")
-
     quit()
 else:
     # compute mask and display contours
     cv.imshow("frame", frame)
     cv.waitKey(0)
+    cv.destroyAllWindows()
     try:
         contours = display_contours(frame, mask_green(frame))
     except:
