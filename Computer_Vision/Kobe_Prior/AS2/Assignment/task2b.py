@@ -77,7 +77,7 @@ camera.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
-sleep(1)
+sleep(2)
 
 ret, frame = camera.read()
 if not ret:
