@@ -80,7 +80,7 @@ camera.set(cv.CAP_PROP_BRIGHTNESS, 133)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
-sleep(.5)
+sleep(1)
 
 ret, frame = camera.read()
 if not ret:
