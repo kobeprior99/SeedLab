@@ -57,9 +57,8 @@ def id_green(img, mask):
             cv.putText(img, 'Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 1)
     #display the image with the contours
     cv.imshow("Green detection",img)
-    #if for video delete thse two lines
-    if cv.waitKey(0) == ord('q'):
-        cv.destroyAllWindows()
+    cv.waitKey(0)
+    cv.destroyAllWindows()
     return
 
 #experimentation with static image for image processing
