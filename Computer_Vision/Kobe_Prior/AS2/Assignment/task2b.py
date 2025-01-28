@@ -45,7 +45,7 @@ def display_contours(img, mask):
     #draw the contours on the image if the area is greater than 100
     for contour in contours:
         if cv.contourArea(contour) > 400:
-            cv.drawContours(img,contours,-1,(0,0,255),5)
+            cv.drawContours(img,contour,-1,(0,0,255),5)
             x, y, _, _ = cv.boundingRect(contour)
             cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     #display the image with the contours
