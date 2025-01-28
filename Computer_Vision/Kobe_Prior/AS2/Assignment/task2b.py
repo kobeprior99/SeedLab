@@ -77,6 +77,7 @@ camera.set(cv.CAP_PROP_FRAME_WIDTH, 640)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
 # manually set the brightness to 133
 camera.set(cv.CAP_PROP_BRIGHTNESS, 133)
+camera.set(cv.CAP_PROP_AUTO_EXPOSURE, 0)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
