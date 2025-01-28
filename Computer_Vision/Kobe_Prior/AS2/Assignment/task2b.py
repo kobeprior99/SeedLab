@@ -58,19 +58,21 @@ def display_contours(img, mask):
 # cv.imshow("mask", mask)
 # cv.waitKey(0)
 # cv.destroyAllWindows()    
-# initialize camera
-# contours = display_contours(img, mask)
 
+
+# initialize camera
 camera = cv.VideoCapture(0)
 sleep(1)
 ret, frame = camera.read()
 #take a picture of the colors
 if not ret:
     print("Could not capture image from camera!")
+
     quit()
 else:
     # compute mask and display contours
     cv.imshow("frame", frame)
+    cv.waitKey(0)
     try:
         contours = display_contours(frame, mask_green(frame))
     except:
