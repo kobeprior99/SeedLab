@@ -55,7 +55,7 @@ def display_contours(img, mask):
     #display the image with the contours
     cv.imshow("Green detection",img)
     #if for video delete thse two lines
-    if cv.waitKey(1) == ord('q'):
+    if cv.waitKey(0) == ord('q'):
         cv.destroyAllWindows()
 
     return contours
