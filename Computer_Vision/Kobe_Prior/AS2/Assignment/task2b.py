@@ -54,7 +54,7 @@ def id_green(img, mask):
         if cv.contourArea(contour) > 400:
             x, y, w, h = cv.boundingRect(contour)
             cv.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            cv.putText(img, 'Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 1)
+            cv.putText(img, 'Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     #display the image with the contours
     cv.imshow("Green detection",img)
     cv.waitKey(0)
