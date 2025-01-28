@@ -31,7 +31,9 @@ def mask_green(img):
     #create a mask for the green color
     mask = cv.inRange(img_hsv, lowergreen, uppergreen)
     #apply morphological transformations to refine the mask
+    #remove noise
     mask = cv.morphologyEx(mask, cv.MORPH_OPEN, np.ones((5,5),np.uint8))
+    #fill in holes
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
     #modify the mask using morphological transformations
     return mask
@@ -39,10 +41,12 @@ def mask_green(img):
 def display_contours(img, mask):
     #find the contours in the mask
     contours,_ = cv.findContours(mask,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
-    #draw the contours on the image
-    cv.drawContours(img,contours,-1,(0,0,255),5)
-    x, y, _, _ = cv.boundingRect(contours[0])
-    cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+    #draw the contours on the image if the area is greater than 100
+    for contour in contours:
+        if cv.contourArea(contour) > 100:
+            cv.drawContours(img,contours,-1,(0,0,255),5)
+            x, y, _, _ = cv.boundingRect(contour)
+            cv.putText(img, 'Detected Green', (x, y-10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
     #display the image with the contours
     cv.imshow("Contours",img)
     #wait for key press then close windows
@@ -69,11 +73,11 @@ if not ret:
     print("Could not capture image from camera!")
     quit()
 else:
-    # compute mask and display contours
     cv.imshow("frame", frame)
     cv.waitKey(0)
     cv.destroyAllWindows()
     try:
+        # compute mask and display contours
         contours = display_contours(frame, mask_green(frame))
     except:
         print("No green shapes detected!")
