@@ -10,9 +10,9 @@ morphological transformations to clean up the mask.
 * 01/27/2025	Kobe Prior	Created File
 *
 ******************************************************************
-Hardware Setup: Power on the Pi -> either connect peripherials or connect via PiConnect or other VNC service 
+Hardware Setup: Power on the Pi -> either connect peripherials or connect via PiConnect or other VNC service --> connect web cam
 Example Excecution: -> open terminal -> navigate to the directory where the task2b.py file is located using cd command ->
-run the python file using 'python task1.py' command and point the camera towards the green image.
+run the python file using 'python task1.py' command and point the camera towards the something that may contain green.
 '''
 
 import cv2 as cv
@@ -20,22 +20,24 @@ import numpy as np
 from time import sleep
 
 
-#make a function that takes in an image and returns a mask of the green colors
+# mask_green function that takes in an image and returns a mask for the green color
 def mask_green(img):
-    #bounds for the green color use colorThresholdFinder.py to find these values [64, 140, 73] was the exact 
-    #so I gave buffer on each side for live camera
-    lowergreen = np.array([36, 25, 25])
-    uppergreen = np.array([70, 255, 255])
+    # [64, 140, 73] value using colorThresholdFinder.py from tutorial
+    # green hue between 120 and 180 degrees
+    # saturation    25-255
+    # value         25-255
+    lowergreen = np.array([60, 50, 25])
+    uppergreen = np.array([90, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
-    #create a mask for the green color
+    #create a binary mask for the green color
     mask = cv.inRange(img_hsv, lowergreen, uppergreen)
+
     #apply morphological transformations to refine the mask
-    #remove noise
+    #remove noise, kernal: rectangular 5x5
     mask = cv.morphologyEx(mask, cv.MORPH_OPEN, np.ones((5,5),np.uint8))
-    #fill in holes
+    #fill in holes, kernal: rectangualr 5x5
     mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, np.ones((5,5),np.uint8))
-    #modify the mask using morphological transformations
 
     # check the mask to see if it worked
     cv.imshow("mask", mask)
@@ -43,7 +45,8 @@ def mask_green(img):
     cv.destroyAllWindows()
     return mask
 
-def display_contours(img, mask):
+#make a function that takes in an image and a mask and identifies green shapes
+def id_green(img, mask):
     #find the contours in the mask
     contours,_ = cv.findContours(mask,cv.RETR_TREE,cv.CHAIN_APPROX_SIMPLE)
     #draw the contours on the image if the area is greater than 100
@@ -57,8 +60,7 @@ def display_contours(img, mask):
     #if for video delete thse two lines
     if cv.waitKey(0) == ord('q'):
         cv.destroyAllWindows()
-
-    return contours
+    return
 
 #experimentation with static image for image processing
 # img = cv.imread("static_colors.png")
@@ -68,7 +70,6 @@ def display_contours(img, mask):
 # cv.imshow("mask", mask)
 # cv.waitKey(0)
 # cv.destroyAllWindows()    
-
 
 # initialize camera
 camera = cv.VideoCapture(0)
@@ -86,26 +87,9 @@ if not ret:
 else:   
     try:
         # compute mask and display contours
-        contours = display_contours(frame, mask_green(frame))
+        id_green(frame, mask_green(frame))
     except:
         print("No green shapes detected!")
-
-#peform detection in video instead of image
-# while True: 
-#     ret, frame = camera.read()
-#     #take a picture of the colors
-#     if not ret:
-#         print("Could not capture frame from camera!")
-#         break
-#     else:
-#         try:
-#             # compute mask and display contours
-#             contours = display_contours(frame, mask_green(frame))
-#             if cv.waitKey(1) == ord('q'):
-#                 break
-#         except:
-#             print("No green shapes detected!")
-
 
 #turn off the camera and destroy all windows
 camera.release()
