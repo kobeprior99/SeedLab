@@ -25,7 +25,7 @@ def mask_green(img):
     #bounds for the green color use colorThresholdFinder.py to find these values [64, 140, 73] was the exact 
     #so I gave buffer on each side for live camera
     lowergreen = np.array([36, 25, 25])
-    uppergreen = np.array([70, 200, 200])
+    uppergreen = np.array([70, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
     #create a mask for the green color
@@ -38,9 +38,9 @@ def mask_green(img):
     #modify the mask using morphological transformations
 
     # check the mask to see if it worked
-    # cv.imshow("mask", mask)
-    # cv.waitKey(0)
-    # cv.destroyAllWindows()
+    cv.imshow("mask", mask)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
     return mask
 
 def display_contours(img, mask):
