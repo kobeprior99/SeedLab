@@ -51,6 +51,7 @@ def id_green(img, mask):
 # cv.destroyAllWindows()    
 
 # initialize camera
+print("press q to quite")
 camera = cv.VideoCapture(0)
 if not camera.isOpened():
     print("cannot open camera")
