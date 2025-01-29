@@ -77,8 +77,11 @@ camera = cv.VideoCapture(0)
 if not camera.isOpened():
     print("cannot open camera")
     exit()
-sleep(2)
-camera.read() #throw away first frame
+
+for i in range(10):  # Discard the first 10 frames
+    ret, frame = camera.read()
+    sleep(0.1)  # Small delay to allow exposure to adjust
+    
 ret, frame = camera.read()
 if not ret:
     print("cannot capture frame from camera!")
