@@ -26,7 +26,7 @@ def mask_green(img):
     # green hue between 100 and 140 degrees
     # saturation    0-255
     # value         25-255
-    lowergreen = np.array([35, 50, 50])
+    lowergreen = np.array([50, 50, 50])
     uppergreen = np.array([80, 255, 255])
     # convert the image to hsv
     img_hsv = cv.cvtColor(img, cv.COLOR_BGR2HSV)
