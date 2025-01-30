@@ -40,7 +40,6 @@ while(True):
             markerCorners = outline.reshape((4,2))
             overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2) 
     else:
-        if last_marker_id is not None:
             lcd.clear()
             lcd.message = "No markers found"
             last_marker_id = None
