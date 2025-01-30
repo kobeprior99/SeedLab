@@ -1,0 +1,184 @@
+// Pin definitions
+const int enablePin = 4;    // Pin 4 to enable the motor driver
+const int pwmPin1 = 9;      // Pin 9 for PWM control (Motor 1)
+const int pwmPin2 = 10;     // Pin 10 for PWM control (Motor 2)
+const int dirPin1 = 7;      // Pin 7 for direction control (Motor 1)
+const int dirPin2 = 8;      // Pin 8 for direction control (Motor 2)
+
+// Encoder pins (one per motor)
+const int encPin1A = 2; // Encoder pin A for motor 1
+const int encPin2A = 3; // Encoder pin A for motor 2
+const int encPin1B = 5; // Encoder pin B for motor 1
+const int encPin2B = 6; // Encoder pin B for motor 2
+
+//only pins 2 and 3 have ISR functions, so update code for ISRs to make motor 1 and motor 2 use the pins and work together
+
+// Timing variables
+unsigned long desired_Ts_ms = 10;  // Desired sample time in milliseconds
+unsigned long last_time_ms;
+unsigned long start_time_ms;
+float current_time;
+float prev_pos1_rad = 0;  // Store the previous count for velocity calculation
+float prev_pos2_rad = 0;
+
+//Variables for calculating position
+long pos1_counts; 
+long pos2_counts;
+float pos1_rad;
+float pos2_rad;
+
+// Variables for testing
+float voltage;
+float error;
+const float desired_speed;
+float actual_speed;
+const float Battery_Voltage = 7.8;
+unsigned int PWM;
+  // Motor 1
+const float K_1 = 2.2;
+const float sigma_1 = 5;
+const float Kp_1 = 1;
+  // Motor 2
+const float K_2 = 2.2;
+const float sigma_2 = 5;
+const float Kp_2 = 1;
+
+void setup() {
+  // Set motor control pins as outputs
+  pinMode(enablePin, OUTPUT);
+  pinMode(pwmPin1, OUTPUT);
+  pinMode(pwmPin2, OUTPUT);
+  pinMode(dirPin1, OUTPUT);
+  pinMode(dirPin2, OUTPUT);
+
+  // Set encoder pins as inputs
+  pinMode(encPin1A, INPUT);
+  pinMode(encPin2A, INPUT);
+  
+  // Enable the motor driver by setting the enable pin HIGH
+  digitalWrite(enablePin, HIGH);
+
+  // Initialize Serial communication
+  Serial.begin(115200); // Set baud rate to 115200 for fast data output
+
+  // Initialize timing
+  last_time_ms = millis();  // Record the start time for the first sample
+  start_time_ms = last_time_ms;
+
+  // Attach interrupts to encoder pins
+  attachInterrupt(digitalPinToInterrupt(encPin1A), encoder1_ISR, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(encPin2A), encoder2_ISR, CHANGE);
+}
+
+// Interrupt service routines (ISR) for counting encoder pulses
+void encoder1_ISR() {
+  if (digitalRead(encPin1A) == digitalRead(encPin1B)) {
+    pos1_counts--; // Clockwise rotation
+  } else {
+    pos1_counts++; // Counter-clockwise rotation
+  }
+}
+
+void encoder2_ISR() {
+  if (digitalRead(encPin2A) == digitalRead(encPin2B)) {
+    pos2_counts++; // Counter-clockwise rotation
+  } else {
+    pos2_counts--; // Clockwise rotation
+  }
+}
+
+void loop() {
+  // Convert encoder counts to radians
+  float pos1_rad = 2 * PI * (float)pos1_counts / 3200;
+  float pos2_rad = 2 * PI * (float)pos2_counts / 3200;
+
+  // Calculate elapsed time in seconds
+  current_time = (float)(last_time_ms - start_time_ms) / 1000.0;
+
+  // Print the timestamp and positions in radians
+  // Serial.print(current_time);
+  // Serial.print("\t");
+  // Serial.print(pos1_rad);
+  // Serial.print("\t");
+  // Serial.print(pos2_rad);
+  // Serial.println("");
+
+  // CODE IS CURRENTLY SET UP FOR A STEP RESPONSE TEST FOR MOTOR 1
+
+  // Time bounds for Step Response
+  if (current_time >= 1 & current_time <= 3) {
+    voltage = 3;
+  } else {
+    voltage = 0;
+  }
+
+  // PWM control - Example with a fixed 128 PWM (50% duty cycle) for motors
+  // PWM counts = voltage * 255 / 7.8
+  // higher number speeds up
+  analogWrite(pwmPin1, 0); //motor 1
+  analogWrite(pwmPin2, voltage * 255 / 7.8); //motor 2
+  
+  // Direction control - Motor 1 and Motor 2 forward
+  digitalWrite(dirPin1, HIGH); // Motor 1 forward (HIGH is forward, LOW is backward)
+  digitalWrite(dirPin2, HIGH); // Motor 2 forward (HIGH is forward, LOW is backward)
+
+  // Calculate the change in position (delta_pos) in radians
+  float delta_pos1 = pos1_rad - prev_pos1_rad;
+  float delta_pos2 = pos2_rad - prev_pos2_rad;
+
+  // Calculate the velocity (change in position / delta_time)
+  float vel1_rad_s = delta_pos1 / ((float)desired_Ts_ms / 1000);
+  float vel2_rad_s = delta_pos2 / ((float)desired_Ts_ms / 1000);
+
+  //for motor 2 swap power connections (red and black wires) to the motor driver board so the above convention is true
+
+  // Timing bounds on step response test serial print
+  if (current_time <= 3) {
+    Serial.print(current_time, 3);
+    Serial.print("\t");
+    Serial.print(voltage);
+    Serial.print("\t");
+    Serial.print(vel2_rad_s);
+    Serial.print("\n\r");
+  }
+
+  // Controller for Motor 1
+  // error = desired_speed_2 - actual_speed_1;
+  // Voltage = Kp_1*error;
+
+  // // check the sign of voltage and set the motor driver to sign pin as appropriate
+  // if (Voltage > 0) {
+  //   digitalWrite(dirPin1, HIGH);
+  // } else {
+  //   digitalWrite(dirPin1, LOW);
+  // }
+  // // Apply the requested voltage, up to the maximum avaliable
+  // PWM_1 = 255 * abs(Voltage) / Batter_Voltage;
+  // analogWrite(pwmPin1, min(PWM, 255_1));
+  
+  // Controller for Motor 2
+  // error = desired_speed_2 - actual_speed_2;
+  // Voltage = Kp_2*error;
+
+  // // check the sign of voltage and set the motor driver to sign pin as appropriate
+  // if (Voltage > 0) {
+  //   digitalWrite(dirPin2, HIGH);
+  // } else {
+  //   digitalWrite(dirPin2, LOW);
+  // }
+  // // Apply the requested voltage, up to the maximum avaliable
+  // PWM_2 = 255 * abs(Voltage) / Batter_Voltage;
+  // analogWrite(pwmPin2, min(PWM_2, 255));
+
+  // Wait until the desired time has passed for the next sample
+  while (millis() < last_time_ms + desired_Ts_ms) {
+    // Wait for the next sample period
+  }
+
+  // Update last_time_ms to the current time for the next loop
+  last_time_ms = millis();
+
+  // Store current position and time for the next loop
+  prev_pos1_rad = pos1_rad;
+  prev_pos2_rad = pos2_rad;
+}
