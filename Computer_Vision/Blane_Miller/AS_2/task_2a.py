@@ -17,6 +17,7 @@ camera = cv2.VideoCapture(0)
 sleep(.5)
 
 last_marker_id = None
+message_displayed = None
 
 while(True):
     ret, frame = camera.read()
@@ -35,13 +36,16 @@ while(True):
         if current_marker_id != last_marker_id:
             lcd.clear()
             lcd.message = f"The id is {current_marker_id}"
+            message_displayed = f"The id is {current_marker_id}"
             last_marker_id = current_marker_id
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
             overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2) 
     else:
+        if message_displayed != "No markers found":
             lcd.clear()
             lcd.message = "No markers found"
+            message_displayed = "No markers found"
             last_marker_id = None
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
