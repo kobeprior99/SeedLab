@@ -35,8 +35,9 @@ while(True):
         # Determine message based on number of detected markers
         if len(ids) == 1:
             message = f"The id is {ids[0]}"
-        elif len(ids) >= 2:
-            message = f"ids are {ids[0]} & {ids[1]}"
+        elif len(ids) > 1:
+            delimiter = '&'
+            message = f"ids are {delimiter.join(ids[:])}"
         else:
             message = "No markers found"
 
