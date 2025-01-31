@@ -23,9 +23,9 @@ from time import sleep
 # mask_green function that takes in an image and returns a mask for the green color
 def mask_green(img):
     # [64, 140, 73] value using colorThresholdFinder.py from tutorial
-    # green hue between 100 and 140 degrees
-    # saturation    0-255
-    # value         25-255
+    # green hue between 100 and 160 degrees
+    # saturation    50-255
+    # value         50-255
     lowergreen = np.array([50, 50, 50])
     uppergreen = np.array([80, 255, 255])
     # convert the image to hsv
