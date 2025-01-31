@@ -23,33 +23,48 @@ while(True):
     ret, frame = camera.read()
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-    grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY) #make the image greyscale for aruco detection
-    # cv2.imshow("overlay", grey)
+    grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale for ArUco detection
 
     corners, ids, rejected = aruco.detectMarkers(grey, myDict)
     overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
-    overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor = 4)
+    overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
 
-    if not ids is None: 
+    if ids is not None: 
         ids = ids.flatten()
-        current_marker_id = ids[0] 
-        if current_marker_id != last_marker_id:
+        
+        # Determine message based on number of detected markers
+        if len(ids) == 1:
+            message = f"The id is {ids[0]}"
+        elif len(ids) > 1:
+            delimiter = '&'
+            message = f"ids are {delimiter.join(map(str, ids))}"
+        else:
+            message = "No markers found"
+
+        # Update the LCD display only if the message has changed
+        if message != message_displayed:
             lcd.clear()
-            lcd.message = f"The id is {current_marker_id}"
-            message_displayed = f"The id is {current_marker_id}"
-            last_marker_id = current_marker_id
+            lcd.message = message
+            message_displayed = message
+            last_marker_id = ids[0]  # Store first ID for reference
+        
+        # Draw marker IDs on the image
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
-            overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),cv2.FONT_HERSHEY_SIMPLEX,0.5, (255,0,0), 2) 
+            overlay = cv2.putText(overlay, str(id), 
+                                  (int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),
+                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
     else:
         if message_displayed != "No markers found":
             lcd.clear()
             lcd.message = "No markers found"
             message_displayed = "No markers found"
             last_marker_id = None
-    cv2.imshow("overlay",overlay)
+
+    cv2.imshow("overlay", overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
         cv2.destroyAllWindows()
         break
+
 camera.release()
