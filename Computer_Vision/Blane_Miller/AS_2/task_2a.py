@@ -1,3 +1,20 @@
+'''
+*******************************************************************
+* File Name         : task2b.py
+* Description       : take a picture of colors.pdf to detect green shapes, then perform
+morphological transformations to clean up the mask.
+*                    
+* Revision History  :
+* Date		Author 			Comments
+* ------------------------------------------------------------------
+* 01/27/2025	Blane Miller	Created File
+*
+******************************************************************
+Hardware Setup: Power on the Pi -> either connect peripherials or connect via PiConnect or other VNC service --> connect web cam
+Example Excecution: -> open terminal -> navigate to the directory where the task2b.py file is located using cd command ->
+run the python file using 'python task1.py' command and point the camera towards the something that may contain green.
+'''
+
 import cv2
 from cv2 import aruco
 import numpy as np
