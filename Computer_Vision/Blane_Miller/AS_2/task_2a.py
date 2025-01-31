@@ -36,7 +36,7 @@ while(True):
         if len(ids) == 1:
             message = f"The id is {ids[0]}"
         elif len(ids) >= 2:
-            message = f"The ids are {ids[0]} and {ids[1]}"
+            message = f"ids are {ids[0]} & {ids[1]}"
         else:
             message = "No markers found"
 
