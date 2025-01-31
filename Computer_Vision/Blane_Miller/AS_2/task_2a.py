@@ -32,6 +32,10 @@ while(True):
 
     if not ids is None: 
         ids = ids.flatten()
+        if len(ids) == 1:
+            lcd.message = f"The id is {ids[0]}"
+        elif len(ids) >= 2:
+            message = f"The ids are {ids[0]} and {ids[1]}"
         current_marker_id = ids[0] 
         if current_marker_id != last_marker_id:
             lcd.clear()
@@ -46,7 +50,7 @@ while(True):
             lcd.clear()
             lcd.message = "No markers found"
             message_displayed = "No markers found"
-            last_marker_id = None
+            last_marker_id = ids[0]
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
