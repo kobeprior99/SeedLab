@@ -50,7 +50,7 @@ while(True):
             lcd.clear()
             lcd.message = "No markers found"
             message_displayed = "No markers found"
-            last_marker_id = ids[0]
+            last_marker_id = None
     cv2.imshow("overlay",overlay)
     k = cv2.waitKey(1) & 0xFF
     if k == ord('q'):
