@@ -37,7 +37,7 @@ while(True):
             message = f"The id is {ids[0]}"
         elif len(ids) > 1:
             delimiter = '&'
-            message = f"ids are {delimiter.join(ids[:])}"
+            message = f"ids are {delimiter.join(map(str, ids))}"
         else:
             message = "No markers found"
 
