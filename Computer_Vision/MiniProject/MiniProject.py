@@ -34,6 +34,7 @@ lcd_rows = 2
 i2c_lcd = board.I2C()
 
 LCDqueue = queue.Queue()
+endQueue = False
 
 def LCDdisplay():
     lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
@@ -43,6 +44,8 @@ def LCDdisplay():
             newLocation = LCDqueue.get()
             lcd.clear()
             lcd.message = "Desied Location:\n"+str(newLocation)
+        if endQueue == True:
+            break
 
 LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
@@ -136,4 +139,4 @@ while True:
 
 #close all processes
 camera.release()
-LCDthread.join()
+endQueue = True
