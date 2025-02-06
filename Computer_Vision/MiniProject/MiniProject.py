@@ -114,8 +114,8 @@ while True:
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
-    if (oldLocation != newLocation):
-        send_coordinates(newLocation)
+    # if (oldLocation != newLocation):
+    #     send_coordinates(newLocation)
     k = cv.waitKey(1) & 0xFF
     if k == ord('q'):
         cv.destroyAllWindows()
