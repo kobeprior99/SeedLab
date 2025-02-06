@@ -49,9 +49,6 @@ def send_coordinates(coordinates):
         i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, coordinates)
     except IOError:
         print("Could not write data to the Arduino.")
-    #wait for a bit
-    sleep(.1)
-
 def track_marker_quadrant(corners, width, height):
     x_center = width // 2
     y_center = height // 2
