@@ -76,12 +76,14 @@ while True:
     x_center = width // 2
     y_center = height // 2
     # convert to grayscale
-    #draw horizontal and vertical lines
     grayScale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    cv.line(frame, (0, y_center),(width, y_center), (255, 0, 255), thickness=2)
-    cv.line(frame, (x_center, 0),(x_center, height), (255, 0, 255), thickness = 2)
+    # convert back to BGR to draw colored lines
+    colorFrame = cv.cvtColor(grayScale, cv.COLOR_GRAY2BGR)
+    # draw horizontal and vertical lines
+    cv.line(colorFrame, (0, y_center), (width, y_center), (255, 0, 255), thickness=2)
+    cv.line(colorFrame, (x_center, 0), (x_center, height), (255, 0, 255), thickness=2)
 
-    cv.imshow("quadrant_detect", grayScale)
+    cv.imshow("quadrant_detect", colorFrame)
 
     k = cv.waitKey(1) & 0xFF
     if k == ord('q'):
