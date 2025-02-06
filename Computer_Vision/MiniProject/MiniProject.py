@@ -31,7 +31,7 @@ lcd_columns = 16
 lcd_rows = 2 
 #i2c setup
 i2c_lcd = board.I2C() 
-lcd = character_lcd.Character_LCD_RGB_I2C(i2c, lcd_columns, lcd_rows) 
+lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
