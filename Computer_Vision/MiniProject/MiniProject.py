@@ -37,7 +37,7 @@ ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 #function to send data to the arduino
-def send_string(data1, data2 offset):
+def send_string(data1, data2, offset):
     '''
     Function to send a string to the arduino
     '''
