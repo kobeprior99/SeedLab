@@ -73,8 +73,8 @@ while True:
         break
     #get heigth and width so we can determine center points
     height, width, _ = frame.shape
-    x_center = width / 2
-    y_center = height / 2
+    x_center = width // 2
+    y_center = height // 2
     # convert to grayscale
     cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     #draw horizontal and vertical lines
