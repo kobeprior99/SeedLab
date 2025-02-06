@@ -56,7 +56,10 @@ def send_string(data1, data2 offset):
 #camera setup
 camera = cv.VideoCapture(0)
 #modify height and width of the camera
+camera.set(cv.CAP_PROP_FRAME_WIDTH, 424)
+camera.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
 sleep(.5)
+oldLocation = (0,0)
 
 
 while True:
