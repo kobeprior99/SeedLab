@@ -1,0 +1,15 @@
+Motor 1
+K_1 = 1.5;
+sigma_1 = 14;
+Kp_1 = 1.75;
+P_1 = 23.3173903205445;
+I_1 = 81.8636132310649;
+Voltage standard deviation (used assignment 2 code) = 0.5149
+
+Motor 2
+K_2 = 1.75;
+sigma_2 = 14;
+Kp_2 = 2;
+P_2 = 26.9494689554926;
+I_2 = 117.453423846055;
+Voltage standard deviation (used assignemnt 2 code) = 0.5123

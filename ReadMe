@@ -32,4 +32,4 @@ I then noticed that you had to enter this authentication token every time you pu
 
 in the terminal in the directory of the repository you cloned type: "git remote set-url origin https://<token>@github.com/<username>/<repo>"
 
-where you enter the token in the <token sport>, your username in the <username>, and so on. This allowed me to push and pull without re-authenticating every time. 
+where you enter the token in the <token spot>, your username in the <username>, and so on. This allowed me to push and pull without re-authenticating every time. 
