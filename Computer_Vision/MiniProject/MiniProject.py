@@ -30,9 +30,22 @@ myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 #lcd setup
 lcd_columns = 16
 lcd_rows = 2 
-#i2c setup
-# i2c_lcd = board.I2C() 
-# lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
+
+i2c_lcd = board.I2C()
+
+LCDqueue = queue.Queue()
+
+def LCDdisplay():
+    lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
+    lcd.clear()
+    while True:
+        if not LCDqueue.empty():
+            newLocation = LCDqueue.get()
+            lcd.clear()
+            lcd.message = "Desied Location:\n"+str(newLocation)
+
+LCDthread = threading.thread(target = LCDdisplay, args=())
+LCDthread.start()
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
