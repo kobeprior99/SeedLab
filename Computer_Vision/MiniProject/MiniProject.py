@@ -44,7 +44,7 @@ def LCDdisplay():
             lcd.clear()
             lcd.message = "Desied Location:\n"+str(newLocation)
 
-LCDthread = threading.thread(target = LCDdisplay, args=())
+LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
