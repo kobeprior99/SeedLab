@@ -30,27 +30,27 @@ import queue
 lcd_columns = 16
 lcd_rows = 2 
 #i2c setup
-i2c_lcd = board.I2C() 
-lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
+# i2c_lcd = board.I2C() 
+# lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
-i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
+# i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 #function to send data to the arduino
-def send_string(data1, data2, offset):
-    '''
-    Function to send a string to the arduino
-    '''
-    #convert the string to a list of ascii values list comprehension
-    command = [data1, data2]
-    #handle exception if i2c write fails
-    try:
-        #parameters are address of arduino, register to write to, and data to write
-        i2c_arduino.write_i2c_block_data(ARD_ADDR, offset, command)
-    except IOError:
-        print("Could not write data to the Arduino.")
-    #wait for a bit
-    sleep(.1)
+# def send_string(data1, data2, offset):
+#     '''
+#     Function to send a string to the arduino
+#     '''
+#     #convert the string to a list of ascii values list comprehension
+#     command = [data1, data2]
+#     #handle exception if i2c write fails
+#     try:
+#         #parameters are address of arduino, register to write to, and data to write
+#         i2c_arduino.write_i2c_block_data(ARD_ADDR, offset, command)
+#     except IOError:
+#         print("Could not write data to the Arduino.")
+#     #wait for a bit
+#     sleep(.1)
 
 
 #camera setup
@@ -73,8 +73,8 @@ while True:
         break
     #get heigth and width so we can determine center points
     height, width, _ = frame.shape
-    x_center = width // 2
-    y_center = height //2
+    x_center = width / 2
+    y_center = height /2
     # convert to grayscale
     cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     #draw horizontal and vertical lines
