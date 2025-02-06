@@ -41,14 +41,22 @@ LCDqueue = queue.Queue()
 endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
-    lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
-    lcd.clear()
+    try:
+        lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+        lcd.clear()
+    except Exception as e:
+        print(f"LCD initialization failed: {e}")
+        return
+
     while True:
         if not LCDqueue.empty():
             newLocation = LCDqueue.get()
-            lcd.clear()
-            lcd.message = "Desied Location:\n"+str(newLocation)
-        if endQueue == True:
+            try:
+                lcd.clear()
+                lcd.message = "Desired Location:\n" + str(newLocation)
+            except Exception as e:
+                print(f"Failed to update LCD: {e}")
+        if endQueue:
             break
 
 LCDthread = threading.Thread(target = LCDdisplay, args=())
