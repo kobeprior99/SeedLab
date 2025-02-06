@@ -77,9 +77,9 @@ while True:
     y_center = height // 2
     # convert to grayscale
     #draw horizontal and vertical lines
-    cv.line(frame, (0, y_center),(width, y_center), (255, 0, 255), thickness=1)
-    cv.line(frame, (x_center, 0),(x_center, height), (255, 0, 255), thickness = 1)
     grayScale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    cv.line(frame, (0, y_center),(width, y_center), (255, 0, 255), thickness=2)
+    cv.line(frame, (x_center, 0),(x_center, height), (255, 0, 255), thickness = 2)
 
     cv.imshow("quadrant_detect", grayScale)
 
