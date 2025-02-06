@@ -67,8 +67,8 @@ def track_marker_quadrant(corners, width, height):
         quadrant_x = 1 if markerX > x_center else 0
         quadrant_y = 1 if markerY > y_center else 0
         quadrant = (quadrant_x, quadrant_y)
-
-        print(f"Marker Center: ({markerX}, {markerY}), Quadrant: {quadrant}")
+        # debug marker quadrant:
+        # print(f"Marker Center: ({markerX}, {markerY}), Quadrant: {quadrant}")
 
     return quadrant
 
@@ -110,7 +110,10 @@ while True:
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
-            quadrant = track_marker_quadrant(corners, width, height)
+            newLocation = track_marker_quadrant(corners, width, height)
+            if oldLocation != newLocation:
+                oldLocation = newLocation
+                send_coordinates(newLocation)
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
