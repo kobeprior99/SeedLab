@@ -55,6 +55,9 @@ def send_string(data1, data2 offset):
 
 #camera setup
 camera = cv.VideoCapture(0)
+if not camera.isOpened():
+    print("Error: Could not open video.")
+    exit()
 #modify height and width of the camera
 camera.set(cv.CAP_PROP_FRAME_WIDTH, 424)
 camera.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
@@ -65,6 +68,20 @@ oldLocation = (0,0)
 while True:
     #while true loop to send information about the aruco markers location to the arduino
     ret, frame = camera.read() #read the camera frame
+    #ensure camera is ready
+    if not ret: 
+        break
+    #get heigth and width so we can determine center points
+    height, width, _ = frame.shape
+    x_center = width // 2
+    y_center = height //2
+    # convert to grayscale
+    cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    #draw horizontal and vertical lines
+    cv.line(frame, (0, y_center),(width, y_center), (255, 0, 255), thickness=1)
+    cv.line(frame, (x_center, 0),(x_center, height), (255, 0, 255), thickness = 1)
+    cv.imshow("quadrant_detect", frame)
+
     k = cv.waitKey(1) & 0xFF
     if k == ord('q'):
         cv.destroyAllWindows()
