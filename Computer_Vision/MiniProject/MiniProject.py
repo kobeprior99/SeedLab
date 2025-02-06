@@ -121,6 +121,7 @@ while True:
         if oldLocation != newLocation:
             oldLocation = newLocation
             send_coordinates(newLocation)
+            LCDqueue.put(newLocation)
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
