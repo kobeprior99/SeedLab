@@ -85,7 +85,7 @@ while True:
     cv.line(colorFrame, (0, y_center), (width, y_center), (255, 0, 255), thickness=2)
     cv.line(colorFrame, (x_center, 0), (x_center, height), (255, 0, 255), thickness=2)
 
-    corners, ids, rejected = aruco.detectMarkers(frame, myDict)
+    corners, ids, rejected = aruco.detectMarkers(grayScale, myDict)
     colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=4)
     for (outline, id) in zip(corners, ids):
         markerCorners = outline.reshape((4,2))
