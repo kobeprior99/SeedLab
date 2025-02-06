@@ -17,14 +17,13 @@ Hardware Setup:  Place LCD header on Pi, connect following headers to arduino:
 Connect camera to the pi
 Example Excecution: navigate to the directory this file the type python MiniProject.py
 '''
+
 #import necessary libraries
 import cv2 as cv
 from smbus2 import SMBus
-import numpy as np
 from cv2 import aruco
 from time import sleep
 import board
-import time
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
@@ -39,7 +38,7 @@ lcd_rows = 2
 i2c_lcd = board.I2C()
 
 LCDqueue = queue.Queue()
-endQueue = False
+endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
     lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows) 
@@ -134,8 +133,7 @@ while True:
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
-    # if (oldLocation != newLocation):
-    #     send_coordinates(newLocation)
+    #destroy all windows and break inf loop if q pressed.
     k = cv.waitKey(1) & 0xFF
     if k == ord('q'):
         cv.destroyAllWindows()
