@@ -52,6 +52,25 @@ def send_coordinates(coordinates):
     #wait for a bit
     sleep(.1)
 
+def track_marker_quadrant(corners, width, height):
+    x_center = width // 2
+    y_center = height // 2
+
+    for outline in corners:
+        markerCorners = outline.reshape((4,2))
+        
+        # Compute the center of the marker
+        markerX = int((markerCorners[0,0] + markerCorners[2,0]) / 2)
+        markerY = int((markerCorners[0,1] + markerCorners[2,1]) / 2)
+
+        # Determine the quadrant
+        quadrant_x = 1 if markerX > x_center else 0
+        quadrant_y = 1 if markerY > y_center else 0
+        quadrant = (quadrant_x, quadrant_y)
+
+        print(f"Marker Center: ({markerX}, {markerY}), Quadrant: {quadrant}")
+
+    return quadrant
 
 #camera setup
 camera = cv.VideoCapture(0)
@@ -91,6 +110,7 @@ while True:
 
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
+            quadrant = track_marker_quadrant(corners, width, height)
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
