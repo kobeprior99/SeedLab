@@ -9,8 +9,13 @@
 * 02/03/2025	Kobe Prior and Blane Miller	Created File
 *
 ******************************************************************
-Hardware Setup:  <TODO>
-Example Excecution: <TODO>
+Hardware Setup:  Place LCD header on Pi, connect following headers to arduino:
+-connect gnd to gnd, sda to sda, and scl to scl from pi to arduino.
+-connect pin 3 on Pi to pin A4 on Arduino (SDA)
+-connect pin 5 on Pi to pin A5 on Arduino (SCL)
+-connect pin 6 on Pi to GND on Arduino
+Connect camera to the pi
+Example Excecution: navigate to the directory this file the type python MiniProject.py
 '''
 #import necessary libraries
 import cv2 as cv
@@ -54,15 +59,14 @@ ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # function to send coordinates to the arduino
-def send_coordinates(coordinates):
+def send_coordinates(quadrant):
     '''
-    Function to send a string to the arduino
+    Function to send a quadrant to string to the arduino
     '''
-
     #handle exception if i2c write fails
     try:
         #parameters are address of arduino, register to write to, and data to write
-        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, coordinates)
+        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, quadrant)
     except IOError:
         print("Could not write data to the Arduino.")
 def track_marker_quadrant(corners, width, height):
