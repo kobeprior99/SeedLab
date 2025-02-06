@@ -135,3 +135,4 @@ while True:
 
 #close all processes
 camera.release()
+LCDthread.join()
