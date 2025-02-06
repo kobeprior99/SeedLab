@@ -74,9 +74,7 @@ while(True):
         # Draw marker IDs on the image
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
-            overlay = cv2.putText(overlay, str(id), 
-                                  (int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),
-                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
+            overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
             
     # Make sure that the message starts as No markers found if no aruco is immediately detected
     else:

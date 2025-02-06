@@ -24,6 +24,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
 
+myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
 #set up the lcd
 #lcd setup
@@ -71,6 +72,7 @@ while True:
     #ensure camera is ready
     if not ret: 
         break
+
     #get heigth and width so we can determine center points
     height, width, _ = frame.shape
     x_center = width // 2
@@ -83,6 +85,12 @@ while True:
     cv.line(colorFrame, (0, y_center), (width, y_center), (255, 0, 255), thickness=2)
     cv.line(colorFrame, (x_center, 0), (x_center, height), (255, 0, 255), thickness=2)
 
+    corners, ids, rejected = aruco.detectMarkers(frame, myDict)
+    colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=4)
+    for (outline, id) in zip(corners, ids):
+        markerCorners = outline.reshape((4,2))
+        colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
+        
     cv.imshow("quadrant_detect", colorFrame)
 
     k = cv.waitKey(1) & 0xFF
