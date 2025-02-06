@@ -86,7 +86,7 @@ while True:
     cv.line(colorFrame, (x_center, 0), (x_center, height), (255, 0, 255), thickness=2)
 
     corners, ids, rejected = aruco.detectMarkers(grayScale, myDict)
-    colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=4)
+    colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=(0,255,0))
     if ids is not None: 
         ids = ids.flatten()
 
