@@ -104,13 +104,12 @@ while True:
     colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=(0,255,0))
     if ids is not None: 
         ids = ids.flatten()
-
+        newLocation = track_marker_quadrant(corners, width, height)
+        if oldLocation != newLocation:
+            oldLocation = newLocation
+            send_coordinates(newLocation)
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
-            newLocation = track_marker_quadrant(corners, width, height)
-            if oldLocation != newLocation:
-                oldLocation = newLocation
-                send_coordinates(newLocation)
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
