@@ -16,13 +16,9 @@ void setup() {
 //left wheel coordinates[0], right wheel coordinates[1]
 
 void receive(){
-  int i=0; //reset index
-  //   clear index coord
-  coordinates = {}
   offset = Wire.read();//even though we don't use the offset you have to read this data
-  while(Wire.available()){
-    //populate coordinate (characters)
+//   fill the coordinate array when data available on wire
+  for(int i = 0; i< 2 && Wire.available(); i++){
     coordinates[i] = Wire.read();
-    i++;
-    }
+  }
   }

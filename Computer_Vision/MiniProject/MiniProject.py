@@ -73,7 +73,8 @@ def send_coordinates(quadrant):
     #handle exception if i2c write fails
     try:
         #parameters are address of arduino, register to write to, and data to write
-        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, quadrant)
+        coord_array = [quadrant[0], quadrant[1]]
+        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, coord_array)
     except IOError:
         print("Could not write data to the Arduino.")
 def track_marker_quadrant(corners, width, height):
