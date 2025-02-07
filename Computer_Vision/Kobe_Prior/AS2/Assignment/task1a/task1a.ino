@@ -37,7 +37,6 @@ void printRecieved(){
     Serial.print(String(instruction[i])+"");
     }
     Serial.println("");//newline
-  
   }
 
 void receive(){
