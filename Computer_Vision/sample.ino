@@ -1,7 +1,7 @@
 #include <Wire.h>
 #define MY_ADDR 8
 volatile uint8_t offset = 0;
-volatile uint8_t coordinates[32] = {}; 
+volatile uint8_t coordinates[2] = {}; 
 
 void setup() {
   // put your setup code here, to run once:
