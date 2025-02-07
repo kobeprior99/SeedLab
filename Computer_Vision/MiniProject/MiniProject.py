@@ -41,6 +41,19 @@ LCDqueue = queue.Queue()
 endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
+    """
+    Initializes and updates an LCD display with messages from a queue.
+
+    This function attempts to initialize an LCD display using the 
+    character_lcd.Character_LCD_RGB_I2C class. If initialization fails, 
+    it prints an error message and exits the function. Once initialized, 
+    the function enters an infinite loop where it checks for new messages 
+    in the LCDqueue. If a new message is found, it updates the LCD display 
+    with the message. The loop breaks if the endQueue flag is set.
+
+    Exceptions:
+        Prints error messages if LCD initialization or message update fails.
+    """
     try:
         lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
         lcd.clear()
@@ -58,9 +71,10 @@ def LCDdisplay():
                 print(f"Failed to update LCD: {e}")
         if endQueue:
             break
-
+#start LCD thread
 LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
+
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
@@ -72,12 +86,25 @@ def send_coordinates(quadrant):
     '''
     #handle exception if i2c write fails
     try:
-        #parameters are address of arduino, register to write to, and data to write
         coord_array = [quadrant[0], quadrant[1]]
+        #parameters are address of arduino, register to write to, and data to write
         i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, coord_array)
     except IOError:
         print("Could not write data to the Arduino.")
+
+
 def track_marker_quadrant(corners, width, height):
+    """
+    Determines the quadrant of the image in which the marker is located.
+    Args:
+        corners (list): A list of arrays containing the corner points of the markers.
+        width (int): The width of the image.
+        height (int): The height of the image.
+    Returns:
+        tuple: A tuple representing the quadrant (quadrant_x, quadrant_y) where:
+            - quadrant_x is 0 if the marker is in the left half, 1 if in the right half.
+            - quadrant_y is 0 if the marker is in the top half, 1 if in the bottom half.
+    """
     x_center = width // 2
     y_center = height // 2
 
@@ -120,6 +147,7 @@ while True:
     height, width, _ = frame.shape
     x_center = width // 2
     y_center = height // 2
+
     # convert to grayscale
     grayScale = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     # convert back to BGR to draw colored lines
@@ -133,12 +161,15 @@ while True:
     if ids is not None: 
         ids = ids.flatten()
         newLocation = track_marker_quadrant(corners, width, height)
+        
         if oldLocation != newLocation:
             oldLocation = newLocation
             send_coordinates(newLocation)
             LCDqueue.put(newLocation)
+
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
+            # place idea above aruco marker
             colorFrame = cv.putText(colorFrame, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
         
     cv.imshow("quadrant_detect", colorFrame)
