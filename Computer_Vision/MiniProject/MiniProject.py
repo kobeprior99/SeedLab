@@ -1,13 +1,14 @@
 '''
 *******************************************************************
 * File Name         : miniProject.py
-* Description       : 
+* Description       : Detect which quadrant an aruco marker is in and display this on LCD screen 
+and send the information about the quadrant to the arduino.
 *                    
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
 * 02/03/2025	Kobe Prior and Blane Miller	Created File
-*
+* 02/10/2025    Kobe Prior and Blane Miller Added documentation
 ******************************************************************
 Hardware Setup:  Place LCD header on Pi, connect following headers to arduino:
 -connect gnd to gnd, sda to sda, and scl to scl from pi to arduino.
@@ -15,7 +16,7 @@ Hardware Setup:  Place LCD header on Pi, connect following headers to arduino:
 -connect pin 5 on Pi to pin A5 on Arduino (SCL)
 -connect pin 6 on Pi to GND on Arduino
 Connect camera to the pi
-Example Excecution: navigate to the directory this file the type python MiniProject.py
+Example Excecution: navigate to the directory this file the type python MiniProject.py press q to end program
 '''
 
 #import necessary libraries
@@ -79,10 +80,15 @@ LCDthread.start()
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
+
 # function to send coordinates to the arduino
 def send_coordinates(quadrant):
     '''
-    Function to send a quadrant to string to the arduino
+    Function to send a quadrant to the arduino via I2c as an array
+    Args: 
+        quadrant (tuple): a list containing x-y coordinates of centroid of aruco marker
+    Exception: 
+        print error message when data cannot be written to arduino via I2c
     '''
     #handle exception if i2c write fails
     try:
@@ -123,6 +129,7 @@ def track_marker_quadrant(corners, width, height):
         # print(f"Marker Center: ({markerX}, {markerY}), Quadrant: {quadrant}")
 
     return quadrant
+
 
 #camera setup
 camera = cv.VideoCapture(0)
