@@ -1,9 +1,11 @@
 '''
 *******************************************************************
 * File Name         : miniProject.py
+
 * Description       : Detect which quadrant an aruco marker is in and display this on LCD screen 
 and send the information about the quadrant to the arduino.
-*                    
+*
+* Supplementary File(s): sample.ino                  
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
