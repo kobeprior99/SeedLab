@@ -1,8 +1,7 @@
 '''
 *******************************************************************
-* File Name         : task2b.py
-* Description       : take a picture of colors.pdf to detect green shapes, then perform
-morphological transformations to clean up the mask.
+* File Name         : task_2a.py
+* Description       : recognize different aruco markers and have the lcd screen reflect that
 *                    
 * Revision History  :
 * Date		Author 			Comments
@@ -11,7 +10,7 @@ morphological transformations to clean up the mask.
 *
 ******************************************************************
 Hardware Setup: Power on the Pi -> either connect peripherials or connect via PiConnect or other VNC service --> connect web cam
-Example Excecution: -> open terminal -> navigate to the directory where the task2b.py file is located using cd command ->
+Example Excecution: -> open terminal -> navigate to the directory where the task_2a.py file is located using cd command ->
 run the python file using 'python task1.py' command and point the camera towards the something that may contain green.
 '''
 
@@ -75,9 +74,7 @@ while(True):
         # Draw marker IDs on the image
         for (outline, id) in zip(corners, ids):
             markerCorners = outline.reshape((4,2))
-            overlay = cv2.putText(overlay, str(id), 
-                                  (int(markerCorners[0,0]), int(markerCorners[0,1]) - 15),
-                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
+            overlay = cv2.putText(overlay, str(id),(int(markerCorners[0,0]), int(markerCorners[0,1]) - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,0,0), 2) 
             
     # Make sure that the message starts as No markers found if no aruco is immediately detected
     else:
