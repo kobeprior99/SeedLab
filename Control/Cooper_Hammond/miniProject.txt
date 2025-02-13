@@ -1,6 +1,15 @@
-//SEED MINI PROJECT
+//SEED MINI PROJECT 
 //Localization and Controls
-//Cooper Hammond and Roland Gaines
+//Cooper Hammond and Ron Gaines
+
+// 0,0 | 1,0
+// ----|----
+// 0,1 | 1,1
+
+//PI communication Initialization
+#include <Wire.h>
+#define MY_ADDR 8
+volatile uint8_t offset = 0;
 
 // Pin definitions
 const int enablePin = 4;    // Pin 4 to enable the motor driver
@@ -15,37 +24,55 @@ const int encPin2A = 3; // Encoder pin A for motor 2
 const int encPin1B = 5; // Encoder pin B for motor 1
 const int encPin2B = 6; // Encoder pin B for motor 2
 
-//only pins 2 and 3 have ISR functions, so update code for ISRs to make motor 1 and motor 2 use the pins and work together
-
 // Timing variables
-unsigned long desired_Ts_ms = 10;  // Desired sample time in milliseconds
+unsigned long desired_Ts_ms = 100;  // Desired sample time in milliseconds
 unsigned long last_time_ms;
 unsigned long start_time_ms;
 float current_time;
-float prev_pos1_rad = 0;  // Store the previous count for velocity calculation
-float prev_pos2_rad = 0;
 
-//Variables for calculating position
-long pos1_counts; 
-long pos2_counts;
-float pos1_rad;
-float pos2_rad;
-const float radius = 0.059;
+//Array variables [motor1, motor2]
+  //volatile
+volatile int piCommand[2] = {0, 0};
+volatile int prevPiCommand[2] = {0, 0};
+volatile int pos_counts[2] = {0, 0};
+volatile int prev_counts[2] = {0, 0};
+  //set in error correction
+float pos_error[2] = {0, 0};
+float integral_error[2] = {0, 0};
+float desired_speed[2] = {0, 0};
+float error[2] = {0, 0};
+float Voltage[2] = {0, 0};
+  //calculations
+float desired_pos[2] = {0, 0}; //need to write code for
+float actual_pos[2] = {0, 0}; //is pos_counts in radians
+float prev_actual_pos[2] = {0, 0}; //is prev_counts in radians
+float delta_pos[2] = {0, 0};
+float actual_speed[2] = {0, 0};
+float PWM[2] = {0, 0};
 
-// Variables for testing
-float voltage;
-float desired_speed;
+//Array Constants [motor1, motor2]
+const float K = [1.5, 1.75];
+const float sigma = [14, 14];
+const float Kp = [1.75, 2];
+const float P = [23.3173903205445, 26.9494689554926]
+const float I = [81.8636132310649, 117.453423846055]
+
+//Constants
+const float desired_speed = 3.0;
 const float Battery_Voltage = 7.8;
-  // Motor 1
-const float K_1 = 1.5;
-const float sigma_1 = 14;
-const float Kp_1 = 2.1;
-  // Motor 2
-const float K_2 = 1.75;
-const float sigma_2 = 14;
-const float Kp_2 = 2;
+
+//Boolean Values
+boolean go = false;
 
 void setup() {
+   // Initialize Serial communication
+  Serial.begin(115200); // Set baud rate to 115200 for fast data output
+  
+  //PI Communication Setup
+  Wire.begin(MY_ADDR);
+  Wire.onReceive(receive);
+  Serial.println("Arduino ready to receive data:");
+  
   // Set motor control pins as outputs
   pinMode(enablePin, OUTPUT);
   pinMode(pwmPin1, OUTPUT);
@@ -60,9 +87,6 @@ void setup() {
   // Enable the motor driver by setting the enable pin HIGH
   digitalWrite(enablePin, HIGH);
 
-  // Initialize Serial communication
-  Serial.begin(115200); // Set baud rate to 115200 for fast data output
-
   // Initialize timing
   last_time_ms = millis();  // Record the start time for the first sample
   start_time_ms = last_time_ms;
@@ -72,102 +96,104 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(encPin2A), encoder2_ISR, CHANGE);
 }
 
+//Funtions
+
+//PI Communication Function
+void receive() {
+  offset = Wire.read();
+  for (int i = 0; i<2 && Wire.available(); i++){
+      piCommand[i] = Wire.read();
+    }  
+}
+
 // Interrupt service routines (ISR) for counting encoder pulses
 void encoder1_ISR() {
   if (digitalRead(encPin1A) == digitalRead(encPin1B)) {
-    pos1_counts -= 2; // Clockwise rotation
+    pos_counts[0] -= 2; // Clockwise rotation
   } else {
-    pos1_counts += 2; // Counter-clockwise rotation
+    pos_counts[0] += 2; // Counter-clockwise rotation
   }
 }
 
 void encoder2_ISR() {
   if (digitalRead(encPin2A) == digitalRead(encPin2B)) {
-    pos2_counts += 2; // Counter-clockwise rotation
+    pos_counts[1] += 2; // Counter-clockwise rotation
   } else {
-    pos2_counts -= 2; // Clockwise rotation
+    pos_counts[1] -= 2; // Clockwise rotation
   }
 }
+
 
 void loop() {
-  // Convert encoder counts to radians
-  float pos1_rad = 2 * PI * (float)pos1_counts / 3200;
-  float pos2_rad = 2 * PI * (float)pos2_counts / 3200;
+  receive(); // Get updated commands from Raspberry Pi
 
-  // Calculate elapsed time in seconds
-  current_time = (float)(last_time_ms - start_time_ms) / 1000.0;
+  // Print only when piCommand changes
+  if ( (piCommand[0] != prevPiCommand[0]) || (piCommand[1] != prevPiCommand[1]) ) {
+    Serial.print("Sector: (");
+    Serial.print(piCommand[0]);
+    Serial.print(", ");
+    Serial.print(piCommand[1]);
+    Serial.println(") ");
 
-  // Calculate the change in position (delta_pos) in radians
-  float delta_pos1 = pos1_rad - prev_pos1_rad;
-  float delta_pos2 = pos2_rad - prev_pos2_rad;
+    Serial.print("Positions: ");
+    Serial.print(pos_counts[0]);
+    Serial.print(" ");
+    Serial.println(pos_counts[1]);
 
-  // Calculate the velocity (change in position / delta_time)
-  float vel1_rad_s = delta_pos1 / ((float)desired_Ts_ms / 1000);
-  float vel2_rad_s = delta_pos2 / ((float)desired_Ts_ms / 1000);
-
-  // Calculate Actual Speeds (change to multiply right side by radius if m/s is needed)
-  float actual_speed_1 = vel1_rad_s;
-  float actual_speed_2 = vel2_rad_s;
-
-  // Set desired speed (in rad/s) and time bounds
-  // Use v = r*w to convert from velocity to angular velocity as necessary
-  if (current_time < 1) {
-    desired_speed = 0;
-  } else {
-    desired_speed = 6.2;
+    prev_counts[0] = pos_counts[0];
+    prev_counts[1] = pos_counts[1];
+    
+    go = true;
   }
 
-  // Controller for Motor 1
-  float error_1 = desired_speed - actual_speed_1;
-  float Voltage_1 = Kp_1 * error_1;
+  for(i=0;i<2;i++) {
+    actual_pos[i] = 2 * PI * (float)pos_counts[i] / 3200;
+    prev_actual_pos[i] = 2 * PI * (float)prev_counts[i] / 3200;
+    delta_pos[i] = actual_pos[i] - prev_actual_pos[i];
+    actual_speed[i] = delta_pos[i] / ((float)desired_Ts_ms / 1000);
 
-  // check the sign of voltage and set the motor driver to sign pin as appropriate
-  if (Voltage_1 > 0) {
-    digitalWrite(dirPin1, HIGH);
-  } else {
-    digitalWrite(dirPin1, LOW);
+    //given error code
+    pos_error[i] = desired_pos[i] - actual_pos[i];
+    integral_error[i] = integral_error[i] + pos_error[i]*((float)desired_Ts_ms /1000);
+    desired_speed[i] = P[i] * pos_error[i] + I[i] * integral_error[i];
+    error[i] = desired_speed[i] - actual_speed[i];
+    Voltage[i] = Kp[i] * error[i];
+
+    PWM[i] = 255 * abs(Voltage[i]) / Battery_Voltage;
   }
-  // Apply the requested voltage, up to the maximum avaliable
-  unsigned int PWM_1 = 255 * abs(Voltage_1) / Battery_Voltage;
-  analogWrite(pwmPin1, min(PWM_1, 255));
   
-  //Controller for Motor 2
-  float error_2 = desired_speed - actual_speed_2;
-  float Voltage_2 = Kp_2*error_2;
-
-  //check the sign of voltage and set the motor driver to sign pin as appropriate
-  if (Voltage_2 > 0) {
-    digitalWrite(dirPin2, HIGH);
+  // Motor Control Logic
+    //Motor 1
+  if ( (pos_counts[0] < (prev_counts[0] + 1600)) && (pos_counts[0] > (prev_counts[0] - 1600)) && go == true) {
+    if(piCommand[0] != prevPiCommand[0]){
+      digitalWrite( dirPin1, HIGH );
+      analogWrite( pwmPin1, min(PWM[0], 255));
+    }
   } else {
-    digitalWrite(dirPin2, LOW);
+    analogWrite(pwmPin1, 0);
+    go = false;
   }
-  // Apply the requested voltage, up to the maximum avaliable
-  unsigned int PWM_2 = 255 * abs(Voltage_2) / Battery_Voltage;
-  analogWrite(pwmPin2, min(PWM_2, 255));
+    //Motor 2
+  if ( (pos_counts[1] < (prev_counts[1] + 1600)) && (pos_counts[1] > (prev_counts[1] - 1600)) && go == true) {
+    if(piCommand[1] != prevPiCommand[1]){
+      digitalWrite( dirPin2, HIGH );
+      analogWrite( pwmPin2, min(PWM[1], 255));
+    }
+  } else {
+    analogWrite(pwmPin2, 0);
+    go = false;
+  }
 
-  // Wait until the desired time has passed for the next sample
+  //Reset piCommand
+  prevPiCommand[0] = piCommand[0];
+  prevPiCommand[1] = piCommand[1];
+  
+  // Wait until the next sample period
   while (millis() < last_time_ms + desired_Ts_ms) {
-    // Wait for the next sample period
+    // Idle loop to maintain timing
   }
 
-  // Print out time, motor 1 voltage, motor 1 velocity, motor 2 voltage, and motor 2 velocity
-  if (current_time <= 3) {
-    Serial.print(current_time, 3);
-    Serial.print("\t");
-    Serial.print(Voltage_1);
-    Serial.print("\t");
-    Serial.print(vel1_rad_s);
-    Serial.print("\t");
-    Serial.print(Voltage_2);
-    Serial.print("\t");
-    Serial.print(vel2_rad_s);
-    Serial.print("\n\r");
-  }
-
-  // Update last_time_ms to the current time for the next loop
-  last_time_ms = millis();
-
-  // Store current position and time for the next loop
-  prev_pos1_rad = pos1_rad;
-  prev_pos2_rad = pos2_rad;
+  last_time_ms = millis(); // Update last timestamp
+  
 }
+coopers new code
