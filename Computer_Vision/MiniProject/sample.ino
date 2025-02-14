@@ -10,6 +10,7 @@
  * The left wheel coordinate is stored in coordinates[0], and the right wheel coordinate
  * is stored in coordinates[1].
  * 
+ * Hardware setup same as MiniProject.py
  * @author 'Kobe Prior'
  * @date Feb 7, 2025
  */

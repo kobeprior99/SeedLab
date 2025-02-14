@@ -3,22 +3,28 @@
 * File Name         : miniProject.py
 
 * Description       : Detect which quadrant an aruco marker is in and display this on LCD screen 
-and send the information about the quadrant to the arduino.
+and send the information about the quadrant to the arduino via I2C.
 *
-* Supplementary File(s): sample.ino                  
+* Supplementary File(s): Computer_Vision/MiniProject/sample.ino
+* Computer_Vision/Kobe_Prior/AS2/examples/aruco.py  used to generate aruco marker to be printed        
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
 * 02/03/2025	Kobe Prior and Blane Miller	Created File
 * 02/10/2025    Kobe Prior and Blane Miller Added documentation
 ******************************************************************
-Hardware Setup:  Place LCD header on Pi, connect following headers to arduino:
+Hardware Setup:  Place -connect pin 3 on Pi to pin A4 on Arduino (SDA)
+-connect pin 5 on Pi to pin A5 on Arduino (SCL)
+-connect pin 6 on Pi to GND on Arduino LCD header on Pi, connect following headers to arduino:
 -connect gnd to gnd, sda to sda, and scl to scl from pi to arduino.
 -connect pin 3 on Pi to pin A4 on Arduino (SDA)
 -connect pin 5 on Pi to pin A5 on Arduino (SCL)
 -connect pin 6 on Pi to GND on Arduino
 Connect camera to the pi
-Example Excecution: navigate to the directory this file the type python MiniProject.py press q to end program
+Example Excecution: Using Pi Connect remotely access the raspberry pi,
+navigate to the directory this file is in the type python MiniProject.py, 
+and press q to end program, move an aruco marker between quadrants to change the outputs sent
+to LCD screen and arduino
 '''
 
 #import necessary libraries
