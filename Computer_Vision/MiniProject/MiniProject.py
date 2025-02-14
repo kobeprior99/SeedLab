@@ -173,6 +173,7 @@ while True:
 
     corners, ids, rejected = aruco.detectMarkers(grayScale, myDict)
     colorFrame = aruco.drawDetectedMarkers(colorFrame, corners, borderColor=(0,255,0))
+    
     if ids is not None: 
         ids = ids.flatten()
         newLocation = track_marker_quadrant(corners, width, height)
