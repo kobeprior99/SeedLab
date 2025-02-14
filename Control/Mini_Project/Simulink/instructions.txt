@@ -1,0 +1,19 @@
+/*
+ * Instructions for Mini Project:
+ * 
+ * 1. Ensure you have Simulink and the Control Design Toolbox installed.
+ * 
+ * 2. Initialize motor parameters:
+ *    - Run motorSim_stepTest.m to initialize K and sigma in the MATLAB workspace.
+ *    - For motor 1: K = 1.5, sigma = 14, Kp = 1.75.
+ *    - For motor 2: K = 1.75, sigma = 14, Kp = 2.
+ *    - Modify stepData1 and data1 to stepData2 and data2 for motor 2 in the stepTest file.
+ * 
+ * 3. Open PID_motor_controller.slx simulation:
+ *    - Double-click on the PI controller block.
+ *    - Click the "tune" button to open the steady-state response graph.
+ *    - Click "tune" and then "update block" to get MATLAB's suggested values.
+ *    - Divide the suggested values by around 1200 or use your own judgment for good P and I values via trial and error.
+ *    - unsure why there is such a large discrepency for integral and proportional controllers used in arduino code
+ * Note: The files will not work without Simulink and the Control Design Toolbox.
+ */
