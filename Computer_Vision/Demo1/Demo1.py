@@ -2,7 +2,8 @@
 *******************************************************************
 * File Name         : Demo1.py
 
-* Description       : <TODO add description>
+* Description       : Accurately measure angle of centroid of ArUco 
+* marker relative to camera and report to LCD screen
 *
 * Supplementary File(s): sample.ino                  
 * Revision History  :
