@@ -25,16 +25,10 @@ void loop() {
 }
 //function to print the string and ascii for each character to serial monitor
 void printRecieved(){
-  Serial.println("String recieved: ");
-  for (int i = 0; i< msgLength; i++){
-    //type cast char to get character version of ascii
-    Serial.print(String(char(instruction[i])));
-  }
-  Serial.println("");//newline
-  Serial.println("ASCII Codes");
+  Serial.println("Coordinates");
   for (int i = 0; i < msgLength; i++){
     //note instructions are sent in ascii so we just need to type cast string for serial print
-    Serial.print(String(instruction[i])+"");
+    Serial.print(String(instruction[i])+" ");
     }
     Serial.println("");//newline
   
