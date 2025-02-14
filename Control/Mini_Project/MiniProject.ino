@@ -9,6 +9,7 @@
 *
 *Supplementary files: Control/Cooper_Hammond/miniProject_CommMove.txt
 Control/Ron_Gaines/Control Values
+Control/MiniProject/Simulink folder contains all values for simulink along with instructions
 ******************************************************************
 Hardware Setup:  Place LCD header on Pi, connect following headers to Arduino:
 -connect gnd to gnd, sda to sda, and scl to scl from Pi to Arduino.
