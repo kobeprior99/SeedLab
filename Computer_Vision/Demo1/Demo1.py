@@ -66,9 +66,17 @@ def detect_aruco_live():
         image_width = frame.shape[1]  # Get image width dynamically
         
         # Apply camera calibration to the frame
-        frame = cv2.undistort(frame, camera_matrix, dist_coeffs)
-        
-        grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        # Undistort with Remapping
+        h,  w = frame.shape[:2]
+        newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coeffs, (w,h), 1, (w,h))
+        mapx, mapy = cv2.initUndistortRectifyMap(camera_matrix, dist_coeffs, None, newCameraMatrix, (w,h), 5)
+        dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+
+        # crop the image
+        x, y, w, h = roi
+        dst = dst[y:y+h, x:x+w]
+
+        grey = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
         # Detect markers
