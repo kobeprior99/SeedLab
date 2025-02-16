@@ -95,5 +95,5 @@ def detect_aruco_live():
     camera.release()
     cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    detect_aruco_live()
+# run it
+detect_aruco_live()
