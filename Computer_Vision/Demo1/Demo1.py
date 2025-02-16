@@ -68,7 +68,7 @@ def detect_aruco_live():
         # Detect markers
         corners, ids, _ = aruco.detectMarkers(grey, my_dict, cameraMatrix=camera_matrix, distCoeff=dist_coeffs)
         overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
-        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
+        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=(0, 255, 0))
         
         if ids is not None:
             ids = ids.flatten()
