@@ -60,7 +60,7 @@ def LCDdisplay():
             newAngle = LCDqueue.get()
             try:
                 lcd.clear()
-                lcd.message = "Angle:\n" + str(newAngle)
+                lcd.message = "Angle:\n" + str(newAngle.2f)
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
@@ -78,7 +78,7 @@ def find_phi(fov, object_pixel, image_width):
     center_pixel = image_width / 2
     pixel_ratio = (object_pixel - center_pixel) / center_pixel
     phi = half_fov * pixel_ratio
-    return phi  # Returning in degrees (- means left relative to camera)
+    return round(phi, 2)  # Returning in degrees (- means left relative to camera)
 
 def load_calibration():
     """
@@ -150,7 +150,7 @@ def detect_aruco_live():
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
-                            
+
         cv2.imshow("Live Detection", overlay)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
