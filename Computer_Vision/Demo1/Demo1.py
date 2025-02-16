@@ -64,11 +64,15 @@ def detect_aruco_live():
             break
         
         image_width = frame.shape[1]  # Get image width dynamically
+        
+        # Apply camera calibration to the frame
+        frame = cv2.undistort(frame, camera_matrix, dist_coeffs)
+        
         grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
         # Detect markers
-        corners, ids, _ = aruco.detectMarkers(grey, my_dict, cameraMatrix=camera_matrix, distCoeff=dist_coeffs)
+        corners, ids, _ = aruco.detectMarkers(grey, my_dict)
         overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
         overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
         
