@@ -98,6 +98,7 @@ def detect_aruco_live():
     """
     Continuously captures frames from the camera, detects ArUco markers, and calculates their angle.
     """
+    oldAngle = 0
     camera = cv2.VideoCapture(0)
     if not camera.isOpened():
         print("Error: Could not open camera.")
@@ -145,9 +146,11 @@ def detect_aruco_live():
                 overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
-                phi = find_phi(fov, center_pixel_x, image_width)
-                # print(f'ArUco marker {marker_id} is {phi:.2f} degrees from camera center')
-        
+                newAngle = find_phi(fov, center_pixel_x, w)
+                if oldAngle != newAngle:
+                    oldAngle = newAngle
+                    LCDqueue.put(newAngle)
+                            
         cv2.imshow("Live Detection", overlay)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -157,3 +160,4 @@ def detect_aruco_live():
 
 if __name__ == "__main__":
     detect_aruco_live()
+    endQueue = True
