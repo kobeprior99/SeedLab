@@ -20,6 +20,55 @@ from cv2 import aruco
 import numpy as np
 import pickle
 import sys
+from time import sleep
+import board
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import threading
+import queue
+
+lcd_columns = 16
+lcd_rows = 2 
+
+i2c_lcd = board.I2C()
+
+LCDqueue = queue.Queue()
+endQueue = False #flag to end inf loop in LCD display
+
+def LCDdisplay():
+    """
+    Initializes and updates an LCD display with messages from a queue.
+
+    This function attempts to initialize an LCD display using the 
+    character_lcd.Character_LCD_RGB_I2C class. If initialization fails, 
+    it prints an error message and exits the function. Once initialized, 
+    the function enters an infinite loop where it checks for new messages 
+    in the LCDqueue. If a new message is found, it updates the LCD display 
+    with the message. The loop breaks if the endQueue flag is set.
+
+    Exceptions:
+        Prints error messages if LCD initialization or message update fails.
+    """
+    try:
+        lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+        lcd.clear()
+    except Exception as e:
+        print(f"LCD initialization failed: {e}")
+        return
+
+    while True:
+        if not LCDqueue.empty():
+            newAngle = LCDqueue.get()
+            try:
+                lcd.clear()
+                lcd.message = "Angle:\n" + str(newAngle)
+            except Exception as e:
+                print(f"Failed to update LCD: {e}")
+        if endQueue:
+            break
+        
+#start LCD thread
+LCDthread = threading.Thread(target = LCDdisplay, args=())
+LCDthread.start()
 
 def find_phi(fov, object_pixel, image_width):
     """
