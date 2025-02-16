@@ -60,7 +60,7 @@ def LCDdisplay():
             newAngle = LCDqueue.get()
             try:
                 lcd.clear()
-                lcd.message = "Angle:\n" + str(newAngle.2f)
+                lcd.message = "Angle:\n" + str(newAngle)
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
