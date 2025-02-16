@@ -15,11 +15,11 @@
 Hardware Setup: <TODO>
 Example Excecution: <TODO>
 '''
-
 import cv2
 from cv2 import aruco
 import numpy as np
 import pickle
+import sys
 
 def find_phi(fov, object_pixel, image_width):
     """
@@ -33,17 +33,25 @@ def find_phi(fov, object_pixel, image_width):
 
 def load_calibration():
     """
-    Loads camera calibration data from pickle files.
+    Loads camera calibration data from pickle files, handling potential errors.
     """
-    with open("calibration.pkl", "rb") as f:
-        camera_matrix, dist_coeffs = pickle.load(f)
-    return camera_matrix, dist_coeffs
+    try:
+        with open("calibration.pkl", "rb") as f:
+            camera_matrix, dist_coeffs = pickle.load(f)
+        return camera_matrix, dist_coeffs
+    except (FileNotFoundError, IOError) as e:
+        print(f"Error loading calibration data: {e}")
+        sys.exit(1)
 
 def detect_aruco_live():
     """
     Continuously captures frames from the camera, detects ArUco markers, and calculates their angle.
     """
     camera = cv2.VideoCapture(0)
+    if not camera.isOpened():
+        print("Error: Could not open camera.")
+        sys.exit(1)
+    
     fov = 68.5  # Field of view in degrees
     camera_matrix, dist_coeffs = load_calibration()
     
