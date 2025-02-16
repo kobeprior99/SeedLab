@@ -36,10 +36,12 @@ def load_calibration():
     Loads camera calibration data from pickle files, handling potential errors.
     """
     try:
-        with open("calibration.pkl", "rb") as f:
-            camera_matrix, dist_coeffs = pickle.load(f)
+        with open("cameraMatrix.pkl", "rb") as f:
+            camera_matrix = pickle.load(f)
+        with open("dist.pkl", "rb") as f:
+            dist_coeffs = pickle.load(f)
         return camera_matrix, dist_coeffs
-    except (FileNotFoundError, IOError) as e:
+    except (FileNotFoundError, IOError, pickle.UnpicklingError) as e:
         print(f"Error loading calibration data: {e}")
         sys.exit(1)
 
@@ -68,7 +70,7 @@ def detect_aruco_live():
         # Detect markers
         corners, ids, _ = aruco.detectMarkers(grey, my_dict, cameraMatrix=camera_matrix, distCoeff=dist_coeffs)
         overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
-        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=(0, 255, 0))
+        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
         
         if ids is not None:
             ids = ids.flatten()
@@ -95,5 +97,5 @@ def detect_aruco_live():
     camera.release()
     cv2.destroyAllWindows()
 
-# run it
-detect_aruco_live()
+if __name__ == "__main__":
+    detect_aruco_live()
