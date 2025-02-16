@@ -40,7 +40,7 @@ criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 objp = np.zeros((chessboardSize[0] * chessboardSize[1], 3), np.float32)
 objp[:,:2] = np.mgrid[0:chessboardSize[0],0:chessboardSize[1]].T.reshape(-1,2)
 
-size_of_chessboard_squares_mm = 20
+size_of_chessboard_squares_mm = 23
 objp = objp * size_of_chessboard_squares_mm
 
 
@@ -69,7 +69,7 @@ for image in images:
         # Draw and display the corners
         cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
         cv.imshow('img', img)
-        cv.waitKey(10000)
+        cv.waitKey(1000)
 
 
 cv.destroyAllWindows()
