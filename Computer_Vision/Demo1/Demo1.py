@@ -92,15 +92,12 @@ def detect_aruco_live():
                 center_pixel_y = int(np.mean(marker_corners[:, 1]))
                 
                 # Display marker ID and center position
-                overlay = cv2.putText(overlay, str(marker_id),
-                                      (int(marker_corners[0, 0]), int(marker_corners[0, 1]) - 15),
-                                      cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),
-                                      cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                overlay = cv2.putText(overlay, str(marker_id),(int(marker_corners[0, 0]), int(marker_corners[0, 1]) - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
                 phi = find_phi(fov, center_pixel_x, image_width)
-                print(f'ArUco marker {marker_id} is {phi:.2f} degrees from camera center')
+                # print(f'ArUco marker {marker_id} is {phi:.2f} degrees from camera center')
         
         cv2.imshow("Live Detection", overlay)
         if cv2.waitKey(1) & 0xFF == ord('q'):
