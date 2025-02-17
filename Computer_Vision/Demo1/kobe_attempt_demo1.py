@@ -56,19 +56,16 @@ def find_phi(center,camera_matrix):
     """
     # Get the optical center and focal lengths from the camera matrix
     fx = camera_matrix[0, 0]  # Focal length in x
-    fy = camera_matrix[1, 1]  # Focal length in y
     cx = camera_matrix[0, 2]  # Optical center x-coordinate
-    cy = camera_matrix[1, 2]  # Optical center y-coordinate
     
     # Get the center of the marker (center is the tuple (center_pixel_x, center_pixel_y))
-    marker_center_x, marker_center_y = center
+    marker_center_x, _ = center
+    #only looking for horizontal angle
     
     # Convert pixel coordinates to normalized camera coordinates
-    normalized_x = (marker_center_x - cx) / fx
-    normalized_y = (marker_center_y - cy) / fy
-    
+    delta_x = marker_center_x - cx #distance from marker center to camera center
+    phi = np.arctan2(delta_x,fx)
     # Calculate the angle (phi) between the camera center and the marker center
-    phi = np.arctan2(normalized_y, normalized_x)
     
     # Convert phi to degrees
     phi_degrees = np.degrees(phi)
@@ -135,7 +132,7 @@ def detect_aruco_live():
                 center = (center_pixel_x,center_pixel_y)
                 # Display marker ID and center position
                 overlay = cv2.putText(overlay, str(marker_id),(int(marker_corners[0, 0]), int(marker_corners[0, 1]) - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                overlay = cv2.putText(overlay, "+", center,cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                cv2.circle(overlay, center, 1, (255,0,0), 1)
                 
                 # Calculate angle
                 
