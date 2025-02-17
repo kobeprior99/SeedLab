@@ -70,17 +70,15 @@ def LCDdisplay():
 LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
 
-def find_phi(corners, rvecs, tvecs):
+def find_phi(fov, object_pixel, image_width):
     """
     Calculate the angle (phi) of the object relative to the camera center.
     """
-    if len(corners)> 0: 
-        rvec, tvec = rvecs[0], tvecs[0]  # Get the rvec and tvec for the detected marker
-        
-        tx,ty,_ = tvec
-        angle_to_marker = np.arctan2(ty,tx)
-        phi = np.degrees(angle_to_marker)
-    return phi
+    half_fov = fov / 2
+    center_pixel = image_width / 2
+    pixel_ratio = (object_pixel - center_pixel) / center_pixel
+    phi = half_fov * pixel_ratio
+    return phi  # Returning in degrees (- means left relative to camera)
 
 def load_calibration():
     """
@@ -88,7 +86,8 @@ def load_calibration():
     """
     try:
         with open("calibration.pkl", "rb") as f:
-            camera_matrix, dist_coeffs, rvecs, tvecs = pickle.load(f)
+            camera_matrix,dist_coeffs,rvecs, tvecs = pickle.load(f)
+
         return camera_matrix, dist_coeffs, rvecs, tvecs
     except (FileNotFoundError, IOError, pickle.UnpicklingError) as e:
         print(f"Error loading calibration data: {e}")
@@ -104,16 +103,16 @@ def detect_aruco_live():
         print("Error: Could not open camera.")
         sys.exit(1)
     
-    # fov = 68  # Field of view in degrees
-    camera_matrix, dist_coeffs, rvecs, tvecs = load_calibration()
-    print(tvecs[0])
-    # print(tvecs)
+    fov = 68.5  # Field of view in degrees
+    camera_matrix, dist_coeffs = load_calibration()
+    
     while True:
         ret, frame = camera.read()
         if not ret:
             print("Failed to capture image.")
             break
         
+        image_width = frame.shape[1]  # Get image width dynamically
         
         # Apply camera calibration to the frame
         # Undistort with Remapping
@@ -146,11 +145,12 @@ def detect_aruco_live():
                 overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
-                newAngle = find_phi(corners, rvecs, tvecs)
+                newAngle = find_phi(fov, center_pixel_x, image_width)
                 if oldAngle != newAngle:
-                    oldAngle = newAngle
+                    oldLocation = newAngle
                     LCDqueue.put(newAngle)
-
+                # print(f'ArUco marker {marker_id} is {phi:.2f} degrees from camera center')
+        
         cv2.imshow("Live Detection", overlay)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
