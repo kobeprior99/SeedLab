@@ -96,7 +96,8 @@ def detect_marker_and_angle():
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
 
         # Convert the image to grayscale
-        gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
+        gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255, 
+                             cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
         # Detect ArUco markers
         corners, ids, rejected = aruco.detectMarkers(gray, myDict)
@@ -115,7 +116,8 @@ def detect_marker_and_angle():
                 cv2.circle(frame_undistorted, (center_x, center_y), 5, (0, 255, 0), -1)
 
                 # Calculate the angle of the marker relative to the camera's center
-                newAngle = findPhi(fov, center_x, 640, cameraMatrix[0,2], cameraMatrix[0,0])
+                height, width = frame.shape[:2]
+                newAngle = findPhi(fov, center_x, width, cameraMatrix[0,2], cameraMatrix[0,0])
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
