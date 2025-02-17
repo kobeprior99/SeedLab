@@ -186,7 +186,7 @@ def detect_marker_and_angle():
             cv2.circle(frame_undistorted, center, 3, (0, 255, 0), -1)
 
             # Calculate the angle of the marker relative to the camera's center
-            newAngle = calc_angle_using_pose(rvec)
+            newAngle = find_phi(corners, cameraMatrix,dist)
             ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
