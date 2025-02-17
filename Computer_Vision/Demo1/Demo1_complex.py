@@ -111,7 +111,7 @@ def find_phi(corners, cameraMatrix, distCoeffs):
     #image points, 
     for outline in corners:
             marker_corners = outline.reshape((4,2))    # Use solvePnP to get the rotation (rvec) and translation (tvec) vectors
-
+    print(marker_corners)
     _, rvec, tvec = cv2.solvePnP(marker_3d_points, marker_corners, cameraMatrix, distCoeffs)
 
     # Project the 3D points to 2D points on the image plane
@@ -130,7 +130,7 @@ def find_phi(corners, cameraMatrix, distCoeffs):
     # Calculate the angle in the x-y plane (in radians) and convert to degrees
     phi = np.degrees(np.arctan2(dy, dx))
     
-    return phi
+    return phi  
 
 
 def detect_marker_and_angle():
