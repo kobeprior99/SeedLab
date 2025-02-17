@@ -151,7 +151,7 @@ def detect_marker_and_angle():
                 cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
-        cv2.imshow('ArUco Marker Detection', gray)
+        cv2.imshow('ArUco Marker Detection', frame_undistorted)
 
         # Break the loop on pressing 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
