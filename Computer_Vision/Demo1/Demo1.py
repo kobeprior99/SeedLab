@@ -56,7 +56,8 @@ def findPhi(object_pixel, cameraMatrix):
     cx = cameraMatrix[0,2]
     fx = cameraMatrix[0,0]
     # Compute angle using arctan
-    phi = np.degrees(np.arctan((object_pixel - cx) / fx))
+    #return positive angle when marker is left of camera axis
+    phi = np.degrees(np.arctan((cx - object_pixel) / fx))
     
     return round(phi,2)
 
@@ -67,7 +68,7 @@ lcd_rows = 2
 
 i2c_lcd = board.I2C()
 
-LCDqueue = queue.Queue()
+LCDqueue = queue.Queue(maxsize = 4)
 endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
@@ -184,6 +185,9 @@ def detect_marker_and_angle():
             ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
+
+                if not LCDqueue.empty():
+                    LCDqueue.get_nowait() #remove old value immediately
                 LCDqueue.put(newAngle)
 
 
