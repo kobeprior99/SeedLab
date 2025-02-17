@@ -182,7 +182,7 @@ def detect_marker_and_angle():
 
             # Calculate the angle of the marker relative to the camera's center
             newAngle = findPhi(center[0], cameraMatrix[0,2], cameraMatrix[0,0])
-            ANGLE_THRESHOLD = 0.01
+            ANGLE_THRESHOLD = 0.001
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
 
