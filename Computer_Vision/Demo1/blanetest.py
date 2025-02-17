@@ -10,11 +10,11 @@ import threading
 import queue
 
 # Load the camera calibration results
-with open('cameraMatrix.pkl', 'rb') as f:
-    cameraMatrix = pickle.load(f)
+with open('calibration.pkl', 'rb') as f:
+    cameraMatrix,dist,rvec,tvec = pickle.load(f)
 
-with open('dist.pkl', 'rb') as f:
-    dist = pickle.load(f)
+# with open('dist.pkl', 'rb') as f:
+#     dist = pickle.load(f)
 
 # Function to calculate the angle
 def findPhi(fov, object_pixel, image_width):
