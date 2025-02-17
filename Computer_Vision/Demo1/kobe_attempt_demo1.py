@@ -50,15 +50,32 @@ def LCDdisplay():
             break
         
 
-def find_phi(fov, object_pixel, image_width):
+def find_phi(center,camera_matrix):
     """
     Calculate the angle (phi) of the object relative to the camera center.
     """
-    half_fov = fov / 2
-    center_pixel = image_width / 2
-    pixel_ratio = (object_pixel - center_pixel) / center_pixel
-    phi = half_fov * pixel_ratio
-    return phi  # Returning in degrees (- means left relative to camera)
+    # Get the optical center and focal lengths from the camera matrix
+    fx = camera_matrix[0, 0]  # Focal length in x
+    fy = camera_matrix[1, 1]  # Focal length in y
+    cx = camera_matrix[0, 2]  # Optical center x-coordinate
+    cy = camera_matrix[1, 2]  # Optical center y-coordinate
+    
+    # Get the center of the marker (center is the tuple (center_pixel_x, center_pixel_y))
+    marker_center_x, marker_center_y = center
+    
+    # Convert pixel coordinates to normalized camera coordinates
+    normalized_x = (marker_center_x - cx) / fx
+    normalized_y = (marker_center_y - cy) / fy
+    
+    # Calculate the angle (phi) between the camera center and the marker center
+    phi = np.arctan2(normalized_y, normalized_x)
+    
+    # Convert phi to degrees
+    phi_degrees = np.degrees(phi)
+    
+    return round(phi_degrees,2)
+
+    
 
 def load_calibration():
     """
@@ -86,7 +103,7 @@ def detect_aruco_live():
         print("Error: Could not open camera.")
         sys.exit(1)
     
-    camera_matrix, dist_coeffs, tvecs, rvecs = load_calibration()
+    camera_matrix, dist_coeffs, _, _ = load_calibration()
     
     while True:
         ret, frame = camera.read()
@@ -98,10 +115,10 @@ def detect_aruco_live():
         h,  w = frame.shape[:2]
         newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coeffs, (w,h), 1, (w,h))
         mapx, mapy = cv2.initUndistortRectifyMap(camera_matrix, dist_coeffs, None, newCameraMatrix, (w,h), 5)
-        dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
+        undistorted_img = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
 
 
-        grey = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
+        grey = cv2.cvtColor(undistorted_img, cv2.COLOR_BGR2GRAY)
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
         # Detect markers
@@ -115,13 +132,14 @@ def detect_aruco_live():
                 marker_corners = outline.reshape((4, 2))
                 center_pixel_x = int(np.mean(marker_corners[:, 0]))
                 center_pixel_y = int(np.mean(marker_corners[:, 1]))
-                
+                center = (center_pixel_x,center_pixel_y)
                 # Display marker ID and center position
                 overlay = cv2.putText(overlay, str(marker_id),(int(marker_corners[0, 0]), int(marker_corners[0, 1]) - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                overlay = cv2.putText(overlay, "+", center,cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
-                newAngle = find_phi(fov, center_pixel_x, image_width)
+                
+                newAngle = find_phi(center, camera_matrix)
                 if oldAngle != newAngle:
                     oldLocation = newAngle
                     LCDqueue.put(newAngle)
