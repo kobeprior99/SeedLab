@@ -76,7 +76,7 @@ def find_phi(corners, rvecs, tvecs):
     """
     if len(corners)> 0: 
         rvec, tvec = rvecs[0], tvecs[0]  # Get the rvec and tvec for the detected marker
-        print(tvec[0])
+        # print(tvec[0])
         # angle_to_marker = np.arctan2(ty,tx)
         # phi = np.degrees(angle_to_marker)
     return 
@@ -105,7 +105,8 @@ def detect_aruco_live():
     
     # fov = 68  # Field of view in degrees
     camera_matrix, dist_coeffs, rvecs, tvecs = load_calibration()
-    
+    print(rvecs)
+    print(tvecs)
     while True:
         ret, frame = camera.read()
         if not ret:
