@@ -98,7 +98,7 @@ def LCDdisplay():
                 LCDqueue.get_nowait()#clear the queu of intermediate angles
             try:
                 lcd.clear()
-                lcd.message = f"Angle:\n{:.2f}.format(newAngle)"
+                lcd.message = f"Angle:\n{newAngle:.2f}"
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
