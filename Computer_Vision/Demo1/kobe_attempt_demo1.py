@@ -137,7 +137,7 @@ def detect_aruco_live():
                 # Calculate angle
                 
                 newAngle = find_phi(center, camera_matrix)
-                if oldAngle != newAngle:
+                if round(oldAngle,2) != round(newAngle,2):
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
                 # print(f'ArUco marker {marker_id} is {phi:.2f} degrees from camera center')
