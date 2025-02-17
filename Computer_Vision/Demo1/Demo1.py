@@ -40,8 +40,7 @@ import queue
 with open('calibration.pkl', 'rb') as f:
     cameraMatrix,dist,_,_ = pickle.load(f)
 
-
-def findPhi(object_pixel, cameraMatrix):
+def findPhi(object_pixel, cx,fx):
     """
     Calculate the angle (phi) of an object relative to the camera's center.
 
@@ -105,22 +104,26 @@ def LCDdisplay():
             break
 
 
-def find_center(corners):
+def find_center(corners, gray):
     """
-    Calculate the center coordinates of an ArUco marker.
+    Calculate the refined center coordinates of an ArUco marker using subpixel corner refinement.
 
     Args:
         corners (list): A list of corner points of the detected ArUco marker.
+        gray (numpy.ndarray): The grayscale image used for subpixel corner refinement.
 
     Returns:
-        tuple: The (x, y) coordinates of the marker's center.
+        tuple: The (x, y) coordinates of the marker's refined center.
     """
-    for outline in corners:
-        marker_corners = outline.reshape((4,2))
-        
-        # Compute the center of the marker
-        center_x = int(np.mean(marker_corners[:, 0]))
-        center_y = int(np.mean(marker_corners[:, 1]))
+    # Refine the corner positions for better precision
+    for corner in corners:
+        # Apply cornerSubPix to refine the corner points to subpixel accuracy
+        cv2.cornerSubPix(gray, corner, (11, 11), (-1, -1), criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1))
+    
+    # After refinement, compute the center of the marker
+    marker_corners = corners[0].reshape((4, 2))
+    center_x = int(np.mean(marker_corners[:, 0]))
+    center_y = int(np.mean(marker_corners[:, 1]))
 
     return (center_x, center_y)
 
@@ -176,13 +179,13 @@ def detect_marker_and_angle():
             # Draw the detected markers
             frame_undistorted = aruco.drawDetectedMarkers(frame_undistorted, corners, borderColor=(0,255,0))
 
-            center = find_center(corners)
+            center = find_center(corners, gray)
 
             # Mark the center of the marker on the frame
             cv2.circle(frame_undistorted, center, 5, (0, 255, 0), -1)
 
             # Calculate the angle of the marker relative to the camera's center
-            newAngle = findPhi(center[0], cameraMatrix)
+            newAngle = findPhi(center[0], cameraMatrix[0,2], cameraMatrix[0,0])
             ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
