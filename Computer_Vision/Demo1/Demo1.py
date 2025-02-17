@@ -58,7 +58,7 @@ def findPhi(object_pixel, cameraMatrix):
     #return positive angle when marker is left of camera axis
     phi = np.degrees(np.arctan((cx - object_pixel) / fx))
     
-    return round(phi,2)
+    return phi
 
 
 #initialize LCD
@@ -98,7 +98,7 @@ def LCDdisplay():
                 LCDqueue.get_nowait()#clear the queu of intermediate angles
             try:
                 lcd.clear()
-                lcd.message = "Angle:\n" + str(newAngle)
+                lcd.message = f"Angle:\n{:.2f}.format(newAngle)"
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
