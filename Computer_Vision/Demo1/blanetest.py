@@ -15,7 +15,6 @@ with open('calibration.pkl', 'rb') as f:
 
 # with open('dist.pkl', 'rb') as f:
 #     dist = pickle.load(f)
-
 # Function to calculate the angle
 def findPhi(fov, object_pixel, image_width):
     half_fov = fov // 2
@@ -120,7 +119,7 @@ def detect_marker_and_angle():
 
 
                 # Display the angle text on the frame
-                cv2.putText(frame_undistorted, f"{angle:.2f} degrees", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+                cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
         cv2.imshow('ArUco Marker Detection', frame_undistorted)
@@ -134,3 +133,4 @@ def detect_marker_and_angle():
 
 if __name__ == "__main__":
     detect_marker_and_angle()
+    endQueue = True
