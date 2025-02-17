@@ -1,14 +1,21 @@
 import cv2
 from cv2 import aruco
 import numpy as np
-import pickle
+import pickle  # Using pickle to load the calibration data
+import sys
 from time import sleep
+import board
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import threading
+import queue
 
-# Load the camera calibration parameters
-cameraMatrix = pickle.load(open("cameraMatrix.pkl", "rb"))
-dist = pickle.load(open("dist.pkl", "rb"))
+# Load the camera calibration results
+with open('calibration.pkl', 'rb') as f:
+    cameraMatrix,dist,rvec,tvec = pickle.load(f)
 
-# Function to calculate the angle (phi) of the marker
+# with open('dist.pkl', 'rb') as f:
+#     dist = pickle.load(f)
+# Function to calculate the angle
 def findPhi(fov, object_pixel, image_width):
     half_fov = fov // 2
     center_pixel = image_width // 2
@@ -16,63 +23,114 @@ def findPhi(fov, object_pixel, image_width):
     phi = half_fov * pixel_ratio
     return phi
 
-# Open the video stream (use 0 for default camera or set another number if using multiple cameras)
-camera = cv2.VideoCapture(0)
-sleep(0.5)
+lcd_columns = 16
+lcd_rows = 2 
 
-# ArUco dictionary and parameters
-myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-fov = 68.5  # Field of view in degrees (adjust as needed)
+i2c_lcd = board.I2C()
 
-# Initialize video capture and prepare for live stream
-while True:
-    ret, frame = camera.read()
+LCDqueue = queue.Queue()
+endQueue = False #flag to end inf loop in LCD display
 
-    if not ret:
-        print("Failed to grab frame.")
-        break
+def LCDdisplay():
+    """
+    Initializes and updates an LCD display with messages from a queue.
 
-    # Undistort the frame using the calibration parameters
-    h, w = frame.shape[:2]
-    newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
-    frame = cv2.undistort(frame, cameraMatrix, dist, None, newCameraMatrix)
+    This function attempts to initialize an LCD display using the 
+    character_lcd.Character_LCD_RGB_I2C class. If initialization fails, 
+    it prints an error message and exits the function. Once initialized, 
+    the function enters an infinite loop where it checks for new messages 
+    in the LCDqueue. If a new message is found, it updates the LCD display 
+    with the message. The loop breaks if the endQueue flag is set.
 
-    # Convert the image to grayscale for ArUco marker detection
-    grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    Exceptions:
+        Prints error messages if LCD initialization or message update fails.
+    """
+    try:
+        lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+        lcd.clear()
+    except Exception as e:
+        print(f"LCD initialization failed: {e}")
+        return
 
-    # Detect ArUco markers
-    corners, ids, rejected = aruco.detectMarkers(grey, myDict)
+    while True:
+        if not LCDqueue.empty():
+            newAngle = LCDqueue.get()
+            try:
+                lcd.clear()
+                lcd.message = "Angle:\n" + str(newAngle)
+            except Exception as e:
+                print(f"Failed to update LCD: {e}")
+        if endQueue:
+            break
 
-    # Draw the detected markers on the frame
-    overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
-    overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=(0, 255, 0))
+#start LCD thread
+LCDthread = threading.Thread(target = LCDdisplay, args=())
+LCDthread.start()
 
-    # If markers are detected, calculate and display the angle
-    if ids is not None:
-        ids = ids.flatten()
-        for (outline, id) in zip(corners, ids):
-            markerCorners = outline.reshape((4, 2))
-            center_pixel_x = int(np.mean(markerCorners[:, 0]))  # Get x-coordinate of marker center
-            center_pixel_y = int(np.mean(markerCorners[:, 1]))  # Get y-coordinate of marker center
+# Set up ArUco marker detection
+def detect_marker_and_angle():
+    oldAngle = 0
+    # Open the camera feed
+    cap = cv2.VideoCapture(0)
+    if not cap.isOpened():
+        print("Error: Could not open camera.")
+        return
 
-            # Calculate the angle from the center of the image
-            phi = findPhi(fov, center_pixel_x, w)
+    # Set the field of view (fov) of the camera (in degrees)
+    fov = 68.5  # Example FOV; adjust this to your camera's specifications
 
-            # Display the center point and the angle on the frame
-            overlay = cv2.putText(overlay, f"Angle: {phi:.2f}°", (center_pixel_x + 10, center_pixel_y),
-                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+    # ArUco dictionary and parameters
+    myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
+    #parameters = aruco.DetectorParameters_create()
 
-            # Display the center of the marker
-            overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),
-                                  cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            print("Error: Failed to capture image.")
+            break
 
-    # Show the processed video stream with ArUco markers and angle
-    cv2.imshow("ArUco Angle Detection", overlay)
+        # Undistort the frame using the camera matrix and distortion coefficients
+        frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
 
-    # Check for key press to break the loop (press 'q' to quit)
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
+        # Convert the image to grayscale
+        gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
 
-# Release the camera and close the OpenCV windows
-camera.release()
-cv2.destroyAllWindows()
+        # Detect ArUco markers
+        corners, ids, rejected = aruco.detectMarkers(gray, myDict)
+        
+        if len(corners) > 0:
+            # Draw the detected markers
+            frame_undistorted = aruco.drawDetectedMarkers(frame_undistorted, corners, ids)
+
+            for i, corner in enumerate(corners):
+                # Get the coordinates of the ArUco marker's center
+                marker_corners = corner.reshape(4, 2)
+                center_x = int(np.mean(marker_corners[:, 0]))
+                center_y = int(np.mean(marker_corners[:, 1]))
+
+                # Mark the center of the marker on the frame
+                cv2.circle(frame_undistorted, (center_x, center_y), 5, (0, 255, 0), -1)
+
+                # Calculate the angle of the marker relative to the camera's center
+                newAngle = findPhi(fov, center_x, frame.shape[1])
+                if oldAngle != newAngle:
+                    oldAngle = newAngle
+                    LCDqueue.put(newAngle)
+
+
+                # Display the angle text on the frame
+                cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+
+        # Show the output frame with the detected marker and angle
+        cv2.imshow('ArUco Marker Detection', frame_undistorted)
+
+        # Break the loop on pressing 'q'
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+    detect_marker_and_angle()
+    endQueue = True
