@@ -175,7 +175,7 @@ def detect_marker_and_angle():
             # Draw the detected markers
             frame_undistorted = aruco.drawDetectedMarkers(frame_undistorted, corners, borderColor=(0,255,0))
 
-            center = find_center(corners, gray)
+            center = find_center(corners)
 
             # Mark the center of the marker on the frame
             cv2.circle(frame_undistorted, center, 5, (0, 255, 0), -1)
