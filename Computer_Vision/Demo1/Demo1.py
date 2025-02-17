@@ -30,12 +30,12 @@ import cv2
 from cv2 import aruco
 import numpy as np
 import pickle  # Using pickle to load the calibration data
-import sys
+import time
 from time import sleep
 import board
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
-import queue
+from collections import deque
 
 # Load the camera calibration results
 with open('calibration.pkl', 'rb') as f:
@@ -68,7 +68,7 @@ lcd_rows = 2
 
 i2c_lcd = board.I2C()
 
-LCDqueue = queue.Queue(maxsize = 4)
+LCDqueue = deque(maxsize = 5)#stores at most 5 most recent angles
 endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
@@ -92,14 +92,22 @@ def LCDdisplay():
         print(f"LCD initialization failed: {e}")
         return
 
+    last_update_time = time.time()
+    UPDATE_INTERVAL = 0.4  # Only update every 0.4 seconds
+
     while True:
         if not LCDqueue.empty():
             newAngle = LCDqueue.get()
-            try:
-                lcd.clear()
-                lcd.message = "Angle:\n" + str(newAngle)
-            except Exception as e:
-                print(f"Failed to update LCD: {e}")
+            current_time = time.time()
+            
+            if current_time - last_update_time >= UPDATE_INTERVAL:
+                try:
+                    lcd.clear()
+                    lcd.message = f"Angle:\n{newAngle:.2f}"
+                    last_update_time = current_time
+                except Exception as e:
+                    print(f"Failed to update LCD: {e}")
+
         if endQueue:
             break
 
@@ -185,10 +193,7 @@ def detect_marker_and_angle():
             ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
-
-                if not LCDqueue.empty():
-                    LCDqueue.get_nowait() #remove old value immediately
-                LCDqueue.put(newAngle)
+                LCDqueue.append(newAngle)
 
 
             # Display the angle text on the frame
