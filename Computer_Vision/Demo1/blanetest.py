@@ -23,7 +23,7 @@ def findPhi(fov, object_pixel, image_width, cx, fx):
     # Compute angle using arctan
     phi = np.degrees(np.arctan((object_pixel - cx) / fx))
     
-    return phi
+    return round(phi,2)
 
 
 lcd_columns = 16
