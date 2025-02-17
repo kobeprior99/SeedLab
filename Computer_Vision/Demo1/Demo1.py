@@ -5,7 +5,8 @@
 * Description       : Accurately measure angle of centroid of ArUco 
 * marker relative to camera and report to LCD screen
 *
-* Supplementary File(s): cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file            
+* Supplementary File(s): cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file   
+* blanetest.py, a draft file, found helpful results used in this code     
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
@@ -17,12 +18,12 @@ Hardware Setup:
 - Raspberry Pi
 - Pi Camera
 - I2C LCD Display
-- ArUco markers
+- ArUco markers 5x5 cm per instructions on assignment
 
 Example Execution: 
 - Ensure the camera is calibrated and calibration.pkl is available.
 - Run the script using: python Demo1.py after navigating to the correct directory
-- Place an ArUco marker in front of the camera to see the angle displayed on the LCD.
+- Place an ArUco marker in front of the camera to see the angle displayed on the LCD and the live video feed.
 
 IDEAS TO MAKE MORE ACCURATE -> use full resolution of camera -> slower processing speed but higher precision ->requires we take photos again and regenerate calibration
 '''
@@ -141,6 +142,7 @@ def detect_marker_and_angle():
 
     # initialize angle
     oldAngle = 0.00
+
     #start LCD thread
     LCDthread = threading.Thread(target = LCDdisplay, args=())
     LCDthread.start()
@@ -152,12 +154,11 @@ def detect_marker_and_angle():
         return
 
 
-    # Set the field of view (fov) of the camera (in degrees)
-
     # ArUco dictionary and parameters
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     #parameters = aruco.DetectorParameters_create()
 
+    #start infinite loop press q to quit
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -171,7 +172,7 @@ def detect_marker_and_angle():
         gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
 
         # Detect ArUco markers
-        corners, ids, _ = aruco.detectMarkers(gray, myDict)
+        corners, _, _ = aruco.detectMarkers(gray, myDict)
         
         if len(corners) > 0:
             # Draw the detected markers
@@ -179,21 +180,23 @@ def detect_marker_and_angle():
 
             center = find_center(corners)
 
-            # Mark the center of the marker on the frame
+            # Mark the center of the marker on the frame (mostly for debuging purposes)
             cv2.circle(frame_undistorted, center, 3, (0, 255, 0), -1)
 
             # Calculate the angle of the marker relative to the camera's center
             newAngle = findPhi(center[0], cameraMatrix[0,2], cameraMatrix[0,0])
-            ANGLE_THRESHOLD = 0.001
+
+            ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
                 oldAngle = newAngle
 
+                #queue only keeps most recent angle
                 if not LCDqueue.empty():
                     LCDqueue.get_nowait() #remove old value immediately
                 LCDqueue.put(newAngle)
 
 
-            # Display the angle text on the frame
+            # Display the angle text on the frame above arcuo marker
             cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
@@ -206,6 +209,8 @@ def detect_marker_and_angle():
     cap.release()
     cv2.destroyAllWindows()
 
+
+#run the program
 if __name__ == "__main__":
     detect_marker_and_angle()
-    endQueue = True
+    endQueue = True #after detect_marker_and_angle finishes end LCD thread

@@ -2,7 +2,7 @@
 *******************************************************************
 * File Name         : cam_cal.py
 
-* Description       : develop camera parameters to counteract distortion
+* Description       : develop camera parameters to counteract distortion and store them in a serialized pickle file to be used in later programs
 *        
 * Supplementary files: take_photo.py generates photos of checkerboard that get stored in images folder    
 * References:   https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
@@ -12,9 +12,11 @@
 * ------------------------------------------------------------------
 * 
 * 02/12/2025    Kobe Prior and Blane Miller Created File
+* 02/16/2025    Kobe Prior and Blane Miller ran script and generated further documentation
 ******************************************************************
-Hardware Setup: N/A
-Example Excecution: navigate to the directory that holds this file
+Example Excecution: Remotely Connect to Raspberry Pi, 
+navigate to the directory containing images folder and this script,
+on the raspberry pi run this script using python cam_cal.py, note that mean error calculation takes some time.
 '''
 
 # import necessary libraries
@@ -105,6 +107,7 @@ pickle.dump((cameraMatrix, dist, rvecs, tvecs), open( "calibration.pkl", "wb" ))
 
 
 # Reprojection Error
+#something under .1 reprojection total error is accpetable, in this case we got something like 0.04.
 mean_error = 0
 
 for i in range(len(objpoints)):

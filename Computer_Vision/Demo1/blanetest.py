@@ -1,3 +1,31 @@
+'''
+*******************************************************************
+* File Name         : blanetest.py
+
+* Description       : Fork of old Demo1.py code for experimentation
+*
+* Supplementary File(s): cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file   
+
+* Revision History  :
+* Date		Author 			Comments
+* ------------------------------------------------------------------
+* 
+* 02/16/2025    Blane Miller Made substantial progress: found phi calculation within .5 degrees
+******************************************************************
+Hardware Setup: 
+- Raspberry Pi
+- Pi Camera
+- I2C LCD Display
+- ArUco markers 5x5 cm per instructions on assignment
+
+Example Execution: 
+- Ensure the camera is calibrated and calibration.pkl is available.
+- Run the script using: python blanetest.py after navigating to the correct directory
+- Place an ArUco marker in front of the camera to see the angle displayed on the LCD and the live video feed.
+
+PLEASE NOTE: this is draft code and some documentation is sparse because it will not be submitted for a deliverable, the goal of this file was to quickly develop.
+'''
+
 import cv2
 from cv2 import aruco
 import numpy as np

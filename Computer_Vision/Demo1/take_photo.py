@@ -1,4 +1,12 @@
 #credit: https://github.com/niconielsen32/CameraCalibration/blob/main/getImages.py
+"""
+Open Source code courtesy of niconielsen32
+
+This script captures images from the default camera and saves them when the 's' key is pressed.
+The captured images are saved in the 'images' directory with filenames 'img0.png', 'img1.png', etc.
+Press the 'Esc' key to exit the script.
+"""
+
 import cv2
 
 cap = cv2.VideoCapture(0)
