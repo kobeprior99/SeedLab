@@ -23,6 +23,8 @@ Example Execution:
 - Ensure the camera is calibrated and calibration.pkl is available.
 - Run the script using: python Demo1.py after navigating to the correct directory
 - Place an ArUco marker in front of the camera to see the angle displayed on the LCD.
+
+IDEAS TO MAKE MORE ACCURATE -> use full resolution of camera -> slower processing speed but higher precision ->requires we take photos again and regenerate calibration
 '''
 
 #import necessary libraries
