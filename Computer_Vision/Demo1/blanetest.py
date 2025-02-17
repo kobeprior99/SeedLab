@@ -16,12 +16,15 @@ with open('calibration.pkl', 'rb') as f:
 # with open('dist.pkl', 'rb') as f:
 #     dist = pickle.load(f)
 # Function to calculate the angle
-def findPhi(fov, object_pixel, image_width):
-    half_fov = fov // 2
-    center_pixel = image_width // 2
-    pixel_ratio = (object_pixel - center_pixel) / center_pixel
-    phi = half_fov * pixel_ratio
-    return phi
+def findPhi(fov, object_pixel, image_width, cx, fx):
+    # Convert FOV to radians
+    fov_rad = np.radians(fov)
+
+    # Compute angle using arctan
+    phi = np.degrees(np.arctan((object_pixel - cx) / fx))
+    
+    return round(phi,2)
+
 
 lcd_columns = 16
 lcd_rows = 2 
@@ -112,7 +115,7 @@ def detect_marker_and_angle():
                 cv2.circle(frame_undistorted, (center_x, center_y), 5, (0, 255, 0), -1)
 
                 # Calculate the angle of the marker relative to the camera's center
-                newAngle = findPhi(fov, center_x, frame.shape[1])
+                newAngle = findPhi(fov, center_x, 640, cameraMatrix[0,2], cameraMatrix[0,0])
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
