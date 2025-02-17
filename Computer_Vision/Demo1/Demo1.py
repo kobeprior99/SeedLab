@@ -25,13 +25,6 @@ import board
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
-import collections
-angle_buffer = collections.deque(maxlen=20)  # Store last 20 angles
-
-def smooth_angle(new_angle):
-    angle_buffer.append(new_angle)
-    return sum(angle_buffer) / len(angle_buffer)
-
 
 # Load the camera calibration results
 with open('calibration.pkl', 'rb') as f:
@@ -57,6 +50,8 @@ i2c_lcd = board.I2C()
 
 LCDqueue = queue.Queue()
 endQueue = False #flag to end inf loop in LCD display
+
+
 
 def LCDdisplay():
     """
@@ -94,6 +89,19 @@ def LCDdisplay():
 LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
 
+
+def compute_fov_x(camera_matrix, image_width):
+    """
+    Compute the horizontal Field of View (FoV_x).
+    
+    :param camera_matrix: 3x3 intrinsic camera matrix
+    :param image_width: Width of the image in pixels
+    :return: Horizontal FoV in degrees
+    """
+    fx = camera_matrix[0, 0]  # Focal length in x-direction
+    fov_x = 2 * np.degrees(np.arctan(image_width / (2 * fx)))
+    return fov_x
+
 # Set up ArUco marker detection
 def detect_marker_and_angle():
     oldAngle = 0
@@ -103,8 +111,8 @@ def detect_marker_and_angle():
         print("Error: Could not open camera.")
         return
 
+
     # Set the field of view (fov) of the camera (in degrees)
-    fov = 68.5  # Example FOV; adjust this to your camera's specifications
 
     # ArUco dictionary and parameters
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
@@ -141,7 +149,9 @@ def detect_marker_and_angle():
 
                 # Calculate the angle of the marker relative to the camera's center
                 height, width = frame.shape[:2]
-                newAngle = smooth_angle(findPhi(fov, center_x, width, cameraMatrix[0,2], cameraMatrix[0,0]))
+                fov = compute_fov_x(cameraMatrix, width)
+                
+                newAngle = findPhi(fov, center_x, width, cameraMatrix[0,2], cameraMatrix[0,0])
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
