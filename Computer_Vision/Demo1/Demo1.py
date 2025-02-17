@@ -128,8 +128,7 @@ def detect_aruco_live():
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
         # Detect markers
-        parameters = cv2.aruco.DetectorParameters_create()
-        corners, ids, _ = aruco.detectMarkers(grey, my_dict, parameters=parameters)
+        corners, ids, _ = aruco.detectMarkers(grey, my_dict)
         overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
         overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
         
