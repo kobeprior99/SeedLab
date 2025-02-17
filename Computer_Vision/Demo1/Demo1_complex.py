@@ -63,7 +63,7 @@ def find_phi(rvec, tvec):
     # Calculate the angle (phi) from the camera to the center of the ArUco marker
     R, _ = cv2.Rodrigues(rvec)
     camera_position = -np.matrix(R).T * np.matrix(tvec)
-    phi = np.degrees(np.arctan2(camera_position[0][0], camera_position[2][0]))
+    phi = np.degrees(np.arctan2(float(camera_position[0][0]), float(camera_position[2][0])))
     return phi
 
 def detect_marker_and_angle():
@@ -86,7 +86,7 @@ def detect_marker_and_angle():
 
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = aruco.detectMarkers(gray, myDict)
+        corners, _, _ = aruco.detectMarkers(gray, myDict)
 
         if len(corners) > 0:
             frame_undistorted = aruco.drawDetectedMarkers(frame_undistorted, corners, borderColor=(0, 255, 0))
