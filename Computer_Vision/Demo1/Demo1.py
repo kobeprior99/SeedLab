@@ -25,6 +25,13 @@ import board
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
+import collections
+
+angle_buffer = collections.deque(maxlen=5)  # Store last 5 angles
+
+def smooth_angle(new_angle):
+    angle_buffer.append(new_angle)
+    return sum(angle_buffer) / len(angle_buffer)
 
 lcd_columns = 16
 lcd_rows = 2 
@@ -141,7 +148,7 @@ def detect_aruco_live():
                 overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
-                newAngle = find_phi(fov, center_pixel_x, image_width)
+                newAngle = smooth_angle(find_phi(fov, center_pixel_x, image_width))
                 if oldAngle != newAngle:
                     oldLocation = newAngle
                     LCDqueue.put(newAngle)
