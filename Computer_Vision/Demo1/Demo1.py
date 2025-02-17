@@ -26,7 +26,7 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
 import collections
-angle_buffer = collections.deque(maxlen=5)  # Store last 5 angles
+angle_buffer = collections.deque(maxlen=20)  # Store last 20 angles
 
 def smooth_angle(new_angle):
     angle_buffer.append(new_angle)
