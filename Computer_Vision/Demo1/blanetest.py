@@ -82,7 +82,7 @@ def detect_marker_and_angle():
 
     # ArUco dictionary and parameters
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-    parameters = aruco.DetectorParameters_create()
+    #parameters = aruco.DetectorParameters_create()
 
     while True:
         ret, frame = cap.read()
@@ -97,7 +97,7 @@ def detect_marker_and_angle():
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
 
         # Detect ArUco markers
-        corners, ids, rejected = aruco.detectMarkers(gray, myDict, parameters=parameters)
+        corners, ids, rejected = aruco.detectMarkers(gray, myDict)
         
         if len(corners) > 0:
             # Draw the detected markers
