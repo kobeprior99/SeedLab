@@ -26,12 +26,12 @@ import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 import queue
 import collections
-
 angle_buffer = collections.deque(maxlen=5)  # Store last 5 angles
 
 def smooth_angle(new_angle):
     angle_buffer.append(new_angle)
     return sum(angle_buffer) / len(angle_buffer)
+
 
 # Load the camera calibration results
 with open('calibration.pkl', 'rb') as f:
@@ -126,26 +126,6 @@ def detect_marker_and_angle():
         # Detect ArUco markers
         corners, ids, rejected = aruco.detectMarkers(gray, myDict)
         
-<<<<<<< HEAD
-        # Detect markers
-        corners, ids, _ = aruco.detectMarkers(grey, my_dict)
-        overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
-        overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
-        
-        if ids is not None:
-            ids = ids.flatten()
-            for (outline, marker_id) in zip(corners, ids):
-                marker_corners = outline.reshape((4, 2))
-                center_pixel_x = int(np.mean(marker_corners[:, 0]))
-                center_pixel_y = int(np.mean(marker_corners[:, 1]))
-                
-                # Display marker ID and center position
-                overlay = cv2.putText(overlay, str(marker_id),(int(marker_corners[0, 0]), int(marker_corners[0, 1]) - 15),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                
-                # Calculate angle
-                newAngle = smooth_angle(find_phi(fov, center_pixel_x, image_width))
-=======
         if len(corners) > 0:
             # Draw the detected markers
             frame_undistorted = aruco.drawDetectedMarkers(frame_undistorted, corners, ids)
@@ -161,8 +141,7 @@ def detect_marker_and_angle():
 
                 # Calculate the angle of the marker relative to the camera's center
                 height, width = frame.shape[:2]
-                newAngle = findPhi(fov, center_x, width, cameraMatrix[0,2], cameraMatrix[0,0])
->>>>>>> 40c2d69e32d4f9440fff3f3036d5cf7753c81371
+                newAngle = smooth_angle(findPhi(fov, center_x, width, cameraMatrix[0,2], cameraMatrix[0,0]))
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
@@ -172,7 +151,7 @@ def detect_marker_and_angle():
                 cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center_x + 10, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
-        cv2.imshow('ArUco Marker Detection', frame_undistorted)
+        cv2.imshow('ArUco Marker Detection', gray)
 
         # Break the loop on pressing 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
