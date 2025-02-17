@@ -107,8 +107,12 @@ def find_phi(corners, cameraMatrix, distCoeffs):
         [-marker_size / 2, marker_size / 2, 0]    # Top-left corner
     ], dtype=np.float32)
 
-    # Use solvePnP to get the rotation (rvec) and translation (tvec) vectors
-    _, rvec, tvec = cv2.solvePnP(marker_3d_points, corners, cameraMatrix, distCoeffs)
+
+    #image points, 
+    for outline in corners:
+            marker_corners = outline.reshape((4,2))    # Use solvePnP to get the rotation (rvec) and translation (tvec) vectors
+
+    _, rvec, tvec = cv2.solvePnP(marker_3d_points, marker_corners, cameraMatrix, distCoeffs)
 
     # Project the 3D points to 2D points on the image plane
     projected_points, _ = cv2.projectPoints(marker_3d_points, rvec, tvec, cameraMatrix, distCoeffs)
