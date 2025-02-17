@@ -68,7 +68,7 @@ lcd_rows = 2
 
 i2c_lcd = board.I2C()
 
-LCDqueue = deque(maxsize = 5)#stores at most 5 most recent angles
+LCDqueue = deque(maxlen= 5)#stores at most 5 most recent angles
 endQueue = False #flag to end inf loop in LCD display
 
 def LCDdisplay():
