@@ -88,20 +88,20 @@ pickle.dump((cameraMatrix, dist, rvecs, tvecs), open( "calibration.pkl", "wb" ))
 
 
 ############## UNDISTORTION #####################################################
+# # example
+# img = cv.imread('images/img5.png')
+# h,  w = img.shape[:2]
+# newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
 
-img = cv.imread('images/img5.png')
-h,  w = img.shape[:2]
-newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
 
 
+# # Undistort
+# dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
 
-# Undistort
-dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
-
-# crop the image
-x, y, w, h = roi
-dst = dst[y:y+h, x:x+w]
-cv.imwrite('caliResult1.png', dst)
+# # crop the image
+# x, y, w, h = roi
+# dst = dst[y:y+h, x:x+w]
+# cv.imwrite('caliResult1.png', dst)
 
 
 # Reprojection Error
