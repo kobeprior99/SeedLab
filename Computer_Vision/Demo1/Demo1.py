@@ -70,15 +70,16 @@ def LCDdisplay():
 LCDthread = threading.Thread(target = LCDdisplay, args=())
 LCDthread.start()
 
-def find_phi(fov, object_pixel, image_width):
+def find_phi(corners, rvecs, tvecs):
     """
     Calculate the angle (phi) of the object relative to the camera center.
     """
-    half_fov = fov / 2
-    center_pixel = image_width / 2
-    pixel_ratio = (object_pixel - center_pixel) / center_pixel
-    phi = half_fov * pixel_ratio
-    return round(phi, 2)  # Returning in degrees (- means left relative to camera)
+    if len(corners)> 0: 
+        rvec, tvec = rvecs[0], tvecs[0]  # Get the rvec and tvec for the detected marker
+        tx,ty,tz = tvec[0]
+        angle_to_marker = np.arctan2(ty,tx)
+        phi = np.degrees(angle_to_marker)
+    return phi
 
 def load_calibration():
     """
@@ -105,7 +106,7 @@ def detect_aruco_live():
         sys.exit(1)
     
     fov = 68.5  # Field of view in degrees
-    camera_matrix, dist_coeffs = load_calibration()
+    camera_matrix, dist_coeffs, rvecs, tvecs = load_calibration()
     
     while True:
         ret, frame = camera.read()
@@ -129,7 +130,8 @@ def detect_aruco_live():
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
         # Detect markers
-        corners, ids, _ = aruco.detectMarkers(grey, my_dict)
+        parameters = cv2.aruco.DetectorParameters_create()
+        corners, ids, _ = aruco.detectMarkers(grey, my_dict, parameters=parameters)
         overlay = cv2.cvtColor(grey, cv2.COLOR_GRAY2RGB)
         overlay = aruco.drawDetectedMarkers(overlay, corners, borderColor=4)
         
@@ -145,7 +147,7 @@ def detect_aruco_live():
                 overlay = cv2.putText(overlay, "+", (center_pixel_x, center_pixel_y),cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Calculate angle
-                newAngle = find_phi(fov, center_pixel_x, w)
+                newAngle = find_phi(corners, rvecs, tvecs)
                 if oldAngle != newAngle:
                     oldAngle = newAngle
                     LCDqueue.put(newAngle)
