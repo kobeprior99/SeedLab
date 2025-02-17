@@ -113,7 +113,6 @@ def detect_aruco_live():
             print("Failed to capture image.")
             break
         
-        image_width = frame.shape[1]  # Get image width dynamically
         
         # Apply camera calibration to the frame
         # Undistort with Remapping
