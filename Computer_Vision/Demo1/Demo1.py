@@ -96,10 +96,10 @@ def LCDdisplay():
     UPDATE_INTERVAL = 0.4  # Only update every 0.4 seconds
 
     while True:
-        if not LCDqueue.empty():
-            newAngle = LCDqueue.get()
-            current_time = time.time()
+        if LCDqueue: #check if LCDqueue isn't empty
+            newAngle = LCDqueue.popleft() #gets oldest value
             
+            current_time = time.time()
             if current_time - last_update_time >= UPDATE_INTERVAL:
                 try:
                     lcd.clear()
