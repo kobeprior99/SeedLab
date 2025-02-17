@@ -104,26 +104,22 @@ def LCDdisplay():
             break
 
 
-def find_center(corners, gray):
+def find_center(corners):
     """
-    Calculate the refined center coordinates of an ArUco marker using subpixel corner refinement.
+    Calculate the center coordinates of an ArUco marker.
 
     Args:
         corners (list): A list of corner points of the detected ArUco marker.
-        gray (numpy.ndarray): The grayscale image used for subpixel corner refinement.
 
     Returns:
-        tuple: The (x, y) coordinates of the marker's refined center.
+        tuple: The (x, y) coordinates of the marker's center.
     """
-    # Refine the corner positions for better precision
-    for corner in corners:
-        # Apply cornerSubPix to refine the corner points to subpixel accuracy
-        cv2.cornerSubPix(gray, corner, (11, 11), (-1, -1), criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 30, 0.1))
-    
-    # After refinement, compute the center of the marker
-    marker_corners = corners[0].reshape((4, 2))
-    center_x = int(np.mean(marker_corners[:, 0]))
-    center_y = int(np.mean(marker_corners[:, 1]))
+    for outline in corners:
+        marker_corners = outline.reshape((4,2))
+        
+        # Compute the center of the marker
+        center_x = int(np.mean(marker_corners[:, 0]))
+        center_y = int(np.mean(marker_corners[:, 1]))
 
     return (center_x, center_y)
 
