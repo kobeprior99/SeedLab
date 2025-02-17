@@ -1,20 +1,3 @@
-'''
-*******************************************************************
-* File Name         : Demo1.py
-
-* Description       : Accurately measure angle of centroid of ArUco 
-* marker relative to camera and report to LCD screen
-*
-* Supplementary File(s): sample.ino                  
-* Revision History  :
-* Date		Author 			Comments
-* ------------------------------------------------------------------
-* 
-* 02/10/2025    Kobe Prior and Blane Miller Created File
-******************************************************************
-Hardware Setup: <TODO>
-Example Excecution: <TODO>
-'''
 import cv2
 from cv2 import aruco
 import numpy as np
@@ -66,9 +49,6 @@ def LCDdisplay():
         if endQueue:
             break
         
-#start LCD thread
-LCDthread = threading.Thread(target = LCDdisplay, args=())
-LCDthread.start()
 
 def find_phi(fov, object_pixel, image_width):
     """
@@ -87,7 +67,6 @@ def load_calibration():
     try:
         with open("calibration.pkl", "rb") as f:
             camera_matrix,dist_coeffs,rvecs, tvecs = pickle.load(f)
-
         return camera_matrix, dist_coeffs, rvecs, tvecs
     except (FileNotFoundError, IOError, pickle.UnpicklingError) as e:
         print(f"Error loading calibration data: {e}")
@@ -97,14 +76,17 @@ def detect_aruco_live():
     """
     Continuously captures frames from the camera, detects ArUco markers, and calculates their angle.
     """
+    #start LCD thread
+    LCDthread = threading.Thread(target = LCDdisplay, args=())
+    LCDthread.start()
+
     oldAngle = 0
     camera = cv2.VideoCapture(0)
     if not camera.isOpened():
         print("Error: Could not open camera.")
         sys.exit(1)
     
-    fov = 68.5  # Field of view in degrees
-    camera_matrix, dist_coeffs = load_calibration()
+    camera_matrix, dist_coeffs, tvecs, rvecs = load_calibration()
     
     while True:
         ret, frame = camera.read()
@@ -115,12 +97,17 @@ def detect_aruco_live():
         image_width = frame.shape[1]  # Get image width dynamically
         
         # Apply camera calibration to the frame
+
         # Undistort with Remapping
         h,  w = frame.shape[:2]
         newCameraMatrix, roi = cv2.getOptimalNewCameraMatrix(camera_matrix, dist_coeffs, (w,h), 1, (w,h))
         mapx, mapy = cv2.initUndistortRectifyMap(camera_matrix, dist_coeffs, None, newCameraMatrix, (w,h), 5)
         dst = cv2.remap(frame, mapx, mapy, cv2.INTER_LINEAR)
 
+        # crop the image
+        x, y, w, h = roi
+        dst = dst[y:y+h, x:x+w]
+        
         grey = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
         my_dict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
         
