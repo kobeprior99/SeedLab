@@ -86,11 +86,9 @@ def load_calibration():
     Loads camera calibration data from pickle files, handling potential errors.
     """
     try:
-        with open("cameraMatrix.pkl", "rb") as f:
-            camera_matrix = pickle.load(f)
-        with open("dist.pkl", "rb") as f:
-            dist_coeffs = pickle.load(f)
-        return camera_matrix, dist_coeffs
+        with open("calibration.pkl", "rb") as f:
+            camera_matrix, dist_coeffs, rvecs, tvecs = pickle.load(f)
+        return camera_matrix, dist_coeffs, rvecs, tvecs
     except (FileNotFoundError, IOError, pickle.UnpicklingError) as e:
         print(f"Error loading calibration data: {e}")
         sys.exit(1)
@@ -105,7 +103,7 @@ def detect_aruco_live():
         print("Error: Could not open camera.")
         sys.exit(1)
     
-    fov = 68.5  # Field of view in degrees
+    # fov = 68  # Field of view in degrees
     camera_matrix, dist_coeffs, rvecs, tvecs = load_calibration()
     
     while True:
