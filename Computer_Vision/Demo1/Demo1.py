@@ -105,7 +105,7 @@ def detect_aruco_live():
     
     # fov = 68  # Field of view in degrees
     camera_matrix, dist_coeffs, rvecs, tvecs = load_calibration()
-    print(rvecs[0])
+    print(tvecs[0])
     # print(tvecs)
     while True:
         ret, frame = camera.read()
