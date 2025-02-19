@@ -167,8 +167,8 @@ def detect_marker_and_angle():
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
 
         # Convert the image to grayscale then apply adaptive threshold that helps exemplify contours for aruco detection
-        gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-
+        # gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
         # Detect ArUco markers
         corners, _, _ = aruco.detectMarkers(gray, myDict)
         
