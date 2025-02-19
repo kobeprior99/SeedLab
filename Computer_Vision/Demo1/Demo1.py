@@ -173,7 +173,6 @@ def detect_marker_and_angle():
                         [-1, 5,-1],  
                         [0, -1, 0]])
         gray = cv2.filter2D(gray, -1, kernel)
-        gray = cv2.equalizeHist(gray)
         corners, _, _ = aruco.detectMarkers(gray, myDict)
         
         if len(corners) > 0:
@@ -202,7 +201,7 @@ def detect_marker_and_angle():
             cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
-        cv2.imshow('ArUco Marker Detection', gray)
+        cv2.imshow('ArUco Marker Detection', frame_undistorted)
 
         # Break the loop on pressing 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
