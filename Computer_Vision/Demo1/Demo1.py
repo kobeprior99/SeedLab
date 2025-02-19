@@ -54,8 +54,6 @@ def findPhi(object_pixel, cx,fx):
     Returns:
         float: The calculated angle (phi) in degrees, rounded to two decimal places.
     """
-    cx = cameraMatrix[0,2]
-    fx = cameraMatrix[0,0]
     # Compute angle using arctan
     #return positive angle when marker is left of camera axis
     phi = np.degrees(np.arctan((cx - object_pixel) / fx))
