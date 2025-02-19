@@ -153,7 +153,7 @@ def detect_marker_and_angle():
 
 
     # ArUco dictionary and parameters
-    myDict = aruco.getPredefinedDictionary(aruco.DICT_5X5_50)
+    myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     #parameters = aruco.DetectorParameters_create()
 
     #start infinite loop press q to quit
