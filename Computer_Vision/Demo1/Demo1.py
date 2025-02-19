@@ -179,7 +179,7 @@ def detect_marker_and_angle():
             center = find_center(corners)
 
             # Mark the center of the marker on the frame (mostly for debuging purposes)
-            cv2.circle(frame_undistorted, int(center), 3, (0, 255, 0), -1)
+            cv2.circle(frame_undistorted, (int(center[0]), int(center[1])), 3, (0, 255, 0), -1)
 
             # Calculate the angle of the marker relative to the camera's center
             newAngle = findPhi(center[0], cameraMatrix[0,2], cameraMatrix[0,0])
