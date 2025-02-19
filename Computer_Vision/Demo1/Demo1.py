@@ -169,7 +169,10 @@ def detect_marker_and_angle():
         # Convert the image to grayscale then apply adaptive threshold that helps exemplify contours for aruco detection
         # gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
-        # Detect ArUco markers
+        kernel = np.array([[0, -1, 0],  
+                        [-1, 5,-1],  
+                        [0, -1, 0]])
+        gray = cv2.filter2D(gray, -1, kernel)
         corners, _, _ = aruco.detectMarkers(gray, myDict)
         
         if len(corners) > 0:
@@ -198,7 +201,7 @@ def detect_marker_and_angle():
             cv2.putText(frame_undistorted, f"{newAngle:.2f} degrees", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
         # Show the output frame with the detected marker and angle
-        cv2.imshow('ArUco Marker Detection', frame_undistorted)
+        cv2.imshow('ArUco Marker Detection', gray)
 
         # Break the loop on pressing 'q'
         if cv2.waitKey(1) & 0xFF == ord('q'):
