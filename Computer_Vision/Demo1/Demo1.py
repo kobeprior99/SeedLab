@@ -61,7 +61,7 @@ def findPhi(object_pixel, cx,fx):
     return phi
 
 
-#initialize LCD
+# LCD Dimensions and I2C
 lcd_columns = 16
 lcd_rows = 2 
 
@@ -85,6 +85,7 @@ def LCDdisplay():
         Prints error messages if LCD initialization or message update fails.
     """
     try:
+        # initialize LCD
         lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
         lcd.clear()
     except Exception as e:
@@ -95,10 +96,10 @@ def LCDdisplay():
         if not LCDqueue.empty():
             newAngle = LCDqueue.get_nowait()#get the latest angle without waiting
             while not LCDqueue.empty():
-                LCDqueue.get_nowait()#clear the queu of intermediate angles
+                LCDqueue.get_nowait()#clear the queue of intermediate angles
             try:
                 lcd.clear()
-                lcd.message = f"Angle:\n{newAngle:.2f}"
+                lcd.message = f"Angle:\n{newAngle:.2f}"#rounded to 2 decimal places
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
@@ -169,6 +170,7 @@ def detect_marker_and_angle():
         # Convert the image to grayscale then apply adaptive threshold that helps exemplify contours for aruco detection
         # gray = cv2.adaptiveThreshold(cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY), 255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
+        #sharpening filter
         kernel = np.array([[0, -1, 0],  
                         [-1, 5,-1],  
                         [0, -1, 0]])
