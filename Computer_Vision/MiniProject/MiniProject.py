@@ -13,9 +13,8 @@ and send the information about the quadrant to the arduino via I2C.
 * 02/03/2025	Kobe Prior and Blane Miller	Created File
 * 02/10/2025    Kobe Prior and Blane Miller Added documentation
 ******************************************************************
-Hardware Setup:  Place -connect pin 3 on Pi to pin A4 on Arduino (SDA)
--connect pin 5 on Pi to pin A5 on Arduino (SCL)
--connect pin 6 on Pi to GND on Arduino LCD header on Pi, connect following headers to arduino:
+Hardware Setup:
+-connect LCD header to Pi, connect following headers to arduino:
 -connect gnd to gnd, sda to sda, and scl to scl from pi to arduino.
 -connect pin 3 on Pi to pin A4 on Arduino (SDA)
 -connect pin 5 on Pi to pin A5 on Arduino (SCL)
