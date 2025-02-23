@@ -36,26 +36,26 @@ void receive(int numBytes){
       memcpy(instruction_array, buffer, BUFFER_SIZE);
 
       //debug:
-      float good_angle = instruction_array[0];
-      float angle = instruction_array[1];
-      float good_distance = instruction_array[2];
-      float distance = instruction_array[3];
-      float good_arrow = instruction_array[4];
-      float arrow = instruction_array[5];
-      Serial.println("Received instructions:");
-      Serial.print("Angle: ");
-      if(good_angle == 1.0) Serial.println(angle);
-      else Serial.println("N/A");
-      Serial.print("Distance: ");
-      if(good_distance == 1.0) Serial.println(distance);
-      else Serial.println("N/A");
-      Serial.print("Arrow: ");
-      if(good_arrow == 1.0) Serial.println(arrow);
-      else Serial.println("N/A");
+      // float good_angle = instruction_array[0];
+      // float angle = instruction_array[1];
+      // float good_distance = instruction_array[2];
+      // float distance = instruction_array[3];
+      // float good_arrow = instruction_array[4];
+      // float arrow = instruction_array[5];
+      // Serial.println("Received instructions:");
+      // Serial.print("Angle: ");
+      // if(good_angle == 1.0) Serial.println(angle);
+      // else Serial.println("N/A");
+      // Serial.print("Distance: ");
+      // if(good_distance == 1.0) Serial.println(distance);
+      // else Serial.println("N/A");
+      // Serial.print("Arrow: ");
+      // if(good_arrow == 1.0) Serial.println(arrow);
+      // else Serial.println("N/A");
+      // Serial.println("start == true");
 
       //start the rest of the code
       start = true;
-      Serial.println("start == true");
     }
 
     }
@@ -69,6 +69,6 @@ void loop() {
         delay(100);
     }
     // put your main code here, to run repeatedly:
-    Serial.println("hello every 2 seconds");
+    Serial.println("running main loop");
     delay(2000);
 }
