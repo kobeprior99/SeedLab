@@ -40,6 +40,8 @@ void receive(){
       Serial.print("Arrow: ");
       if(good_arrow == 1.0) Serial.println(arrow);
       else Serial.println("N/A");
+
+      //start the rest of the code
       start = true;
     }
 
@@ -61,8 +63,9 @@ void loop() {
         // wait for instruction
         //this loop will not be reentered until start is set to false (happnens at the beginning of the program
     }
-
     // put your main code here, to run repeatedly:
+    println("hello every 2 seconds");
+    delay(2000);
 }
 
 
