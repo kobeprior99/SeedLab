@@ -43,23 +43,6 @@ import queue
 with open('calibration.pkl', 'rb') as f:
     cameraMatrix,dist,_,_ = pickle.load(f)
 
-def findPhi(object_pixel, cx,fx):
-    """
-    Calculate the angle (phi) of an object relative to the camera's center.
-
-    Args:
-        object_pixel (int): The x-coordinate of the object's pixel position in the image.
-        cameraMatrix (numpy.ndarray): The camera matrix containing intrinsic parameters.
-
-    Returns:
-        float: The calculated angle (phi) in degrees, rounded to two decimal places.
-    """
-    # Compute angle using arctan
-    #return positive angle when marker is left of camera axis
-    phi = np.degrees(np.arctan((cx - object_pixel) / fx))
-    
-    return phi
-
 
 # LCD Dimensions and I2C
 lcd_columns = 16
@@ -126,6 +109,22 @@ def find_center(corners):
 
     return (center_x, center_y)
 
+def findPhi(object_pixel, cx,fx):
+    """
+    Calculate the angle (phi) of an object relative to the camera's center.
+
+    Args:
+        object_pixel (int): The x-coordinate of the object's pixel position in the image.
+        cameraMatrix (numpy.ndarray): The camera matrix containing intrinsic parameters.
+
+    Returns:
+        float: The calculated angle (phi) in degrees, rounded to two decimal places.
+    """
+    # Compute angle using arctan
+    #return positive angle when marker is left of camera axis
+    phi = np.degrees(np.arctan((cx - object_pixel) / fx))
+    
+    return phi
 
 def detect_marker_and_angle():
     """
