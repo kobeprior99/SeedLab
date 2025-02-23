@@ -28,11 +28,11 @@ void setup() {
   Wire.onReceive(receive);
 }
 void receive(int numBytes){
-    Serial.println(numBytes);
+
     if (numBytes == BUFFER_SIZE){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
-      memcpy(instruction_array, buffer, BUFFER_SIZE);
+      memcpy((void*)instruction_array, buffer, BUFFER_SIZE);
 
       //debug:
       float good_angle = instruction_array[0];
