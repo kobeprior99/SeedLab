@@ -29,7 +29,8 @@ void setup() {
 }
 void receive(int numBytes){
   
-    if (numBytes == BUFFER_SIZE){
+    if (numBytes == BUFFER_SIZE + 1){
+      Wire.read(); //discard first byte (offset)
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
