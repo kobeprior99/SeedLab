@@ -48,11 +48,7 @@ def send_instructions(angle, distance):
         # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow
         # 1.0 is valid, 0.0 is invalid
         instruction_array = [1.0, angle, 1.0, distance, 0.0, 1.1]
-        byte_array = bytearray()
-        #floats have to be sent a special way and decoded in a special way
-        for instruction in instruction_array:
-            byte_array.extend(struct.pack("f", instruction))
-
+        byte_array = struct.pack("6f", *instruction_array)
         #parameters are address of arduino, register to write to, and data to write
         i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
 
