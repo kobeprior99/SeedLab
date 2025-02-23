@@ -87,6 +87,7 @@ def LCDdisplay():
     try:
         # initialize LCD
         lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+        lcd.color = [100, 0, 0] #red
         lcd.clear()
     except Exception as e:
         print(f"LCD initialization failed: {e}")
