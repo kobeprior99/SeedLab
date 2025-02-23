@@ -17,7 +17,17 @@ volatile uint8_t offset = 0;
 const int BUFFER_SIZE = 24; //6 floats*4 bytes each
 volatile float instruction_array[6]; //array to store the instructions
 
-void receive(){
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  //address
+  Wire.begin(MY_ADDR);
+  //when receiving call reeceive function
+  Wire.onReceive(receive);
+}
+void receive(int numBytes){
     if (numBytes == BUFFER_SIZE){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
@@ -47,15 +57,6 @@ void receive(){
 
     }
 
-void setup() {
-  // put your setup code here, to run once:
-  //address
-  Wire.begin(MY_ADDR);
-  //when receiving call reeceive function
-  Wire.onReceive(receive);
-}
-
-
 
 // start main loop
 void loop() {
@@ -64,8 +65,6 @@ void loop() {
         //this loop will not be reentered until start is set to false (happnens at the beginning of the program
     }
     // put your main code here, to run repeatedly:
-    println("hello every 2 seconds");
+    Serial.println("hello every 2 seconds");
     delay(2000);
 }
-
-
