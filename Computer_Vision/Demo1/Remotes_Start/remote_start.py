@@ -13,7 +13,6 @@
 ******************************************************************
 Hardware Setup: 
 -connect gnd to gnd, sda to sda, and scl to scl from pi to arduino.
--connect pin 3 on Pi to pin A4 on Arduino (SDA)
 -connect pin 5 on Pi to pin A5 on Arduino (SCL)
 -connect pin 6 on Pi to GND on Arduino
 
@@ -41,14 +40,18 @@ def send_instructions(angle, distance):
 
     Raises:
     IOError: If the I2C write operation fails.
-    """
+   git  """
     #handle exception if i2c write fails
     try:
         #future proof for sending floats
         # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow
         # 1.0 is valid, 0.0 is invalid
         instruction_array = [1.0, angle, 1.0, distance, 0.0, 1.1]
-        byte_array = struct.pack("6f", *instruction_array)
+        byte_array = bytearray()
+        #floats have to be sent a special way and decoded in a special way
+        for instruction in instruction_array:
+            byte_array.extend(struct.pack("f", instruction))
+
         #parameters are address of arduino, register to write to, and data to write
         i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
 
