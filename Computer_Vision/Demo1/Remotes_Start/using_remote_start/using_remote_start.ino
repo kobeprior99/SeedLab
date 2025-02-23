@@ -55,6 +55,7 @@ void receive(int numBytes){
 
       //start the rest of the code
       start = true;
+      Serial.println("start == true");
     }
 
     }
@@ -65,6 +66,7 @@ void loop() {
     while (!start){
         // wait for instruction
         //this loop will not be reentered until start is set to false (happnens at the beginning of the program
+        delay(100);
     }
     // put your main code here, to run repeatedly:
     Serial.println("hello every 2 seconds");
