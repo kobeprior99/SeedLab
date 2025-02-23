@@ -28,6 +28,7 @@ void setup() {
   Wire.onReceive(receive);
 }
 void receive(int numBytes){
+    Serial.println(numBytes);
     if (numBytes == BUFFER_SIZE){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
