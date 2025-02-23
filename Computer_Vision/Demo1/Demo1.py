@@ -217,4 +217,3 @@ def detect_marker_and_angle():
 if __name__ == "__main__":
     detect_marker_and_angle()
     endQueue = True #after detect_marker_and_angle finishes end LCD thread
-    //empty push
