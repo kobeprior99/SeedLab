@@ -25,7 +25,7 @@ Hardware Setup:
 -print (ensure 2x2 inches): leftarrow.png, rightarrow.png
 
 Example Execution: 
-- Ensure calibration.pkl is available in the ComputerVision/Demo1 directory.
+- Ensure calibration.pkl is available in working directory.
 - Run the script using: python Demo2.py after navigating to the correct directory
 - print 2x2 inch aruco markers and leftarrow.png and rightarrow.png
 - Place an left or right 'beacon' 

@@ -20,7 +20,7 @@ Hardware Setup:
 -print (ensure 2x2 inches): leftarrow.png, rightarrow.png
 
 Example Execution: 
-- Ensure calibration.pkl is available in the ComputerVision/Demo1 directory.
+- Ensure calibration.pkl is available in working directory.
 - Place an beacon marker in front of the camera
 - Run the script using: python arrow.py after navigating to the correct directory
 PLEASE NOTE: this is draft code and some documentation is sparse because it will not be submitted for a deliverable, the goal of this file was to quickly develop.

@@ -19,7 +19,7 @@ Hardware Setup:
 - ArUco markers 2x2 inch per instructions on assignment
 
 Example Execution: 
-- Ensure calibration.pkl is available in the ComputerVision/Demo1 directory.
+- Ensure calibration.pkl is available in working directory.
 - Run the script using: python distance.py after navigating to the correct directory
 - Place an ArUco marker in front of the camera
 PLEASE NOTE: this is draft code and some documentation is sparse because it will not be submitted for a deliverable, the goal of this file was to quickly develop.
