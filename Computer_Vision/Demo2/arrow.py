@@ -33,9 +33,9 @@ from cv2 import aruco
 
 #constant bounds for red and green
 #note that the hue of red wraps around
-LOWER_RED1 = np.array([0, 100, 100 ])
-UPPER_RED1 = np.array([10, 255 ,255 ])
-LOWER_RED2 = np.array([170, 100, 100 ])
+LOWER_RED1 = np.array([0, 150, 100 ])
+UPPER_RED1 = np.array([5, 255 ,255 ])
+LOWER_RED2 = np.array([175, 150, 100 ])
 UPPER_RED2 = np.array([180, 255, 255 ])
 
 LOWER_GREEN = np.array([35, 100, 100])
