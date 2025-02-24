@@ -1,0 +1,19 @@
+/*
+ * Instructions for Mini Project:
+ * 
+ * 1. Ensure you have Simulink and the Control Design Toolbox installed.
+ * 
+ * 2. Initialize motor parameters:
+ *    - Run motorSim_stepTest.m to initialize K and sigma in the MATLAB workspace.
+ *    - For motor 1: K = 1.5, sigma = 14, Kp = 1.75.
+ *    - For motor 2: K = 1.75, sigma = 14, Kp = 2.
+ *    - Modify stepData1 and data1 to stepData2 and data2 for motor 2 in the stepTest file.
+ * 
+ * 3. Open PID_motor_controller.slx simulation:
+ *    - Double-click on the PI controller block.
+ *    - Click the "tune" button to open the steady-state response graph.
+ *    - Click "tune" and then "update block" to get MATLAB's suggested values.
+ *    - Switch values to the P and I values located in the PID Controller Charts pdf on whichever table corresponds to the motor you're using
+ *    - the values Simulink gives will be significantly off because it doesn't take into account that the motors cannot respond and rotate fully in 0.08 seconds
+ * Note: The files will not work without Simulink and the Control Design Toolbox.
+ */
