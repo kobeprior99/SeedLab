@@ -53,6 +53,9 @@ def find_mask(frame):
     red_mask = cv2.bitwise_or(red1_mask, red2_mask)
     red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, np.ones((5,5),np.uint8))
     red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, np.ones((5,5),np.uint8))
+    #debug to refine masks
+    cv2.imshow('red', red_mask)
+    cv2.imshow('green', green_mask)
     return (green_mask, red_mask)
 
 def check_arrow(masks, frame, aruco_center):
