@@ -15,6 +15,17 @@ Guidlines and Tips
 
 -if you want to pull the current codebase and know multiple people have been using the repo use git pull --rebase
 
+Steps to pushing to github
+- get the most current repo:
+    git pull or git pull --rebase
+- add all changes:
+    git add --all
+- commit  changes
+    git commit -m "commit message"
+- push all changes to the main branch:
+    git push
+- pray for no merge conflicts
+
 -When you've made changes stage the changes with the plus button and commit leaving a message about what you changed
 
 -Please produce well commented code for project implementation. 
