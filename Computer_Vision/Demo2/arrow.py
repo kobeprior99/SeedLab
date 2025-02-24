@@ -72,7 +72,7 @@ def check_arrow(masks, frame, aruco_center):
                 return 0
     #right red arrow
     for contour in red_contours:
-        if cv2.contourArea(contour) > 800:
+        if cv2.contourArea(contour) > 400:
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, 'RIGHT', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
