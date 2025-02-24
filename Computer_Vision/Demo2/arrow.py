@@ -64,7 +64,7 @@ def check_arrow(masks, frame, aruco_center):
     red_contours, _ = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     # left green arrow
     for contour in green_contours:
-        if cv2.contourArea(contour) > 400:
+        if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, 'LEFT', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
@@ -72,7 +72,7 @@ def check_arrow(masks, frame, aruco_center):
                 return 0
     #right red arrow
     for contour in red_contours:
-        if cv2.contourArea(contour) > 400:
+        if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, 'RIGHT', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
@@ -112,10 +112,6 @@ def main():
             break
         # Convert the image to grayscale then apply adaptive threshold that helps exemplify contours for aruco detection
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        kernel = np.array([[0, -1, 0],  
-                        [-1, 5,-1],  
-                        [0, -1, 0]])
-        gray = cv2.filter2D(gray, -1, kernel)
         corners, _, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
             frame = aruco.drawDetectedMarkers(frame, corners, borderColor=(0,255,255))
