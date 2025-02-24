@@ -259,5 +259,12 @@ void loop() {
 
 
 // ANAYSIS:
-// - desired endpoint being a 2 parameter coordinate list not a single hypotunuse length
+// desired endpoint being a 2 parameter coordinate list not a single hypotunuse length
+
+//  float desired_endpoint[2] = {x, y}; //xy-pos in feet
+//  //example of use in foward2
+//  ( abs(currentXPos - (desired_endpoint[0] / 12)) <= 0.75 ) && ( abs(currentYPos - (desired_endpoint[1] / 12)) <= 0.75 )
+
 // - using the the stop command after each task has been complete for a certain time increment
+
+
