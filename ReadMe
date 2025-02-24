@@ -5,13 +5,15 @@ Members: Kobe Prior, Blane Miller, Ron Gaines, Cooper Hammond
 
 ***
 Directory Navigation:
-Project Deliverables will be found in their respective category, for example the computer vision part of the Mini Project can be found in at Computer_Vision/MiniProject, the project file will then contain information about supplementary files and their locations
+Project Deliverables will be found in their respective category, for example if you want the MiniProject computer vision code navigate to the MiniProject/Computer_Vision. If you want Demo1 computer vision code, similarly: Demo1/Computer_Vision, etc.
 
 ***
 Guidlines and Tips
 -Using GitHub: Download GitHub Desktop as well as add github extension to VScode, need help ask Kobe
 
 -Enable AutoFetch so current repo is accessible locally: "file>Preferences>settings" then search "Git: Auto Fetch and toggle it on"
+
+-if you want to pull the current codebase and know multiple people have been using the repo use git pull --rebase
 
 -When you've made changes stage the changes with the plus button and commit leaving a message about what you changed
 
