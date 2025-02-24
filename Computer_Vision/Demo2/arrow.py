@@ -118,7 +118,7 @@ def main():
         gray = cv2.filter2D(gray, -1, kernel)
         corners, _, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
-            frame = aruco.drawDetectedMarkers(frame, corners, borderColor=(0,255,0))
+            frame = aruco.drawDetectedMarkers(frame, corners, borderColor=(0,255,255))
             center = find_center(corners)
             cv2.circle(frame, center, 3, (255, 255, 0), -1)
             masks = find_mask(frame)
