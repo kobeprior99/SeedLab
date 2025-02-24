@@ -11,6 +11,7 @@
 * ------------------------------------------------------------------
 * 
 * 02/22/2025    Kobe Prior and Blane Miller Created File
+* 02/24/2025    Blane Miller began adding distance calc fxn
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi

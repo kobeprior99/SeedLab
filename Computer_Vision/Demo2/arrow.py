@@ -12,7 +12,8 @@
 * ------------------------------------------------------------------
 * 
 * 02/22/2025    Kobe Prior and Blane Miller Created File
-* 02/23/2025    Kobe Prior tested on laptop camera
+* 02/23/2025    Kobe Prior wrote tested on laptop camera
+* 02/23/2025    Refined contours for arrow detection by changing upper and lower bounds and applying gaussian blur
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
@@ -100,6 +101,8 @@ def find_center(corners):
 
     return (center_x, center_y)
 
+
+#test without any camera calirbation for the moment.
 def main():
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -145,3 +148,5 @@ def main():
 #tested remotely using mac camera so didn't apply camera calibration
 if __name__ == "__main__":
     main()
+
+#key things to note when implementing for demo 2: change the boarder color and center dot to avoid interfeering with arrow detection

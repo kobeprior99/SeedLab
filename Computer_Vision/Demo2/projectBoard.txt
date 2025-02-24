@@ -1,0 +1,3 @@
+Blane Tasks: develope distance detection code
+Kobe Tasks: develop arrow detection code
+Joint Tasks: Co-program demo2 combining results from demo2 and individual tasks above
