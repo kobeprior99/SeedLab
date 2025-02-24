@@ -30,6 +30,7 @@ PLEASE NOTE: this is draft code and some documentation is sparse because it will
 import cv2
 import numpy as np
 from cv2 import aruco
+import time
 
 #constant bounds for red and green
 #note that the hue of red wraps around
@@ -104,6 +105,11 @@ def main():
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
+    #camera warm up
+    time.sleep(2)
+    for _ in range(5):
+        cap.read()
+
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     while True:
         ret, frame = cap.read()
