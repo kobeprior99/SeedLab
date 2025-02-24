@@ -1,0 +1,13 @@
+Deliverable Goals: 
+
+Computer Vision: 
+detect aruco marker and the quadrant that it is in. Report this data to Arduino via I2C
+top left quadrant (0,0)
+top right quadrant (1,0)
+bottom left quadrant (0,1)
+bottom right quadrant (0,0)
+
+Control:
+Two wheel positions 0 and 1 seperated by 180 degrees
+Turn the left wheel to x coordinate of the quadrant reported by raspberry pi
+Turn the right wheel to y coordinate of the quadrant reported by raspberry pi
