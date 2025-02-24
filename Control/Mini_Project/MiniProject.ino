@@ -77,8 +77,8 @@ const float sigma[2] = {14, 14};
 const float Kp[2] = {1.75, 2};
 //const float P[2] = {23.3173903205445, 26.9494689554926};
 //const float I[2] = {81.8636132310649, 117.453423846055};
-const float P[2] = {8, 2};
-const float I[2] = {0.5, .1};
+const float P[2] = {4.2, 4};
+const float I[2] = {0.1, 0.1};
 
 //Constants
 //const float desired_speed = 3.0;
