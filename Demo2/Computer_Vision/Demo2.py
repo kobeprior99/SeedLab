@@ -14,6 +14,7 @@
 * ------------------------------------------------------------------
 * 
 * 02/22/2025    Kobe Prior and Blane Miller Created File
+* 02/23/2025    Kobe Prior added necessary libraries and some initializations
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
@@ -31,3 +32,64 @@ Example Execution:
 - print 2x2 inch aruco markers and leftarrow.png and rightarrow.png
 - Place an left or right 'beacon' 
 '''
+
+#import necessary libraries
+import cv2
+import numpy as np
+import board
+import cv2.aruco as aruco
+import pickle
+import time
+import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+import threading
+import queue
+from smbus2 import SMBus
+
+
+
+#get camera intrisnic parameters
+with open('calibration.pkl', 'rb') as f:
+    cameraMatrix,dist,_,_ = pickle.load(f)
+
+#define constants
+#constant bounds for red and green
+#note that the hue of red wraps around
+LOWER_RED1 = np.array([0, 150, 100 ])
+UPPER_RED1 = np.array([5, 255 ,255 ])
+LOWER_RED2 = np.array([175, 150, 100 ])
+UPPER_RED2 = np.array([180, 255, 255 ])
+
+LOWER_GREEN = np.array([35, 100, 100])
+UPPER_GREEN = np.array([85, 255, 255])
+
+FX = cameraMatrix[0,0] # focal length in pixels
+CX = cameraMatrix[0,2] # camera center in pixels
+
+#aruco dictrionary
+MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
+
+
+#I2c to communicate with the arduino
+ARD_ADDR = 8 #set arduino address
+i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
+
+# constant width of aruco marker in inches
+X = 2.0 #inches
+
+# LCD Dimensions and I2C
+lcd_columns = 16
+lcd_rows = 2 
+
+i2c_lcd = board.I2C()
+
+LCDqueue = queue.Queue()
+endQueue = False #flag to end inf loop in LCD display
+
+
+def main():
+    # put all functionality here
+    return
+
+#run the code
+if __name__ == "__main__":
+    main()

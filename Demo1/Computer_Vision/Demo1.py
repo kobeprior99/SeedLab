@@ -33,7 +33,6 @@ import cv2
 from cv2 import aruco
 import numpy as np
 import pickle  # Using pickle to load the calibration data
-from time import sleep
 import board
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
