@@ -1,0 +1,7 @@
+Goals: 
+
+Computer Visions: 
+find the angle, distance, and arrow and relay this data to the controls system
+
+Controls and Localizaiton:
+Design an FSM that takes computer vision parameters as flags to switch between states. See Demo2/Control/FSM.jpg
