@@ -1,0 +1,10 @@
+Demo Goals: 
+
+Computer Vision: 
+-accurately determine the angle of the robot relative to the target
+
+
+
+Controls and Localization: 
+-Drive straight a specified distance
+-Turn a specified angle then drive a specified distance
