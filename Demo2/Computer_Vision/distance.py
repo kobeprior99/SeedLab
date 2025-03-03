@@ -64,6 +64,9 @@ while True:
                     [0, -1, 0]])
     gray = cv2.filter2D(gray, -1, kernel)
     corners, _, _ = aruco.detectMarkers(gray, myDict)
+    cv2.imshow("distance", frame_undistorted)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 def find_marker_width(corners):
     """
