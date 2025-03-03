@@ -38,6 +38,41 @@ with open('calibration.pkl', 'rb') as f:
 
 fx = cameraMatrix[0,0]
 
+def find_marker_width(corners):
+    """
+    Calculate the width of an ArUco marker by averaging the top and bottom edge widths.
+
+    Args:
+        corners (list): A list of corner points of the detected ArUco marker.
+
+    Returns:
+        float: The estimated width of the marker.
+    """
+    for outline in corners:
+        marker_corners = outline.reshape((4,2))
+        
+        # Extract the top-left, top-right, bottom-right, and bottom-left corners
+        top_left, top_right, bottom_right, bottom_left = marker_corners
+        
+        # Compute the width of the top and bottom edges
+        top_width = np.linalg.norm(top_right - top_left)
+        bottom_width = np.linalg.norm(bottom_right - bottom_left)
+        
+        # Compute the mean width
+        mean_width = (top_width + bottom_width) / 2
+        
+    return mean_width
+
+
+def distance(frame, width):
+    distance = (fx*2)/width
+    if ids is not None: 
+        ids = ids.flatten()
+    for (outline, id) in zip(corners, ids):
+            markerCorners = outline.reshape((4,2))
+    cv2.putText(frame, f"{distance:.2f} inches", (int(markerCorners[0,0]), int(markerCorners[0,1])-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    return distance
+
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open camera.")
@@ -64,44 +99,10 @@ while True:
                     [0, -1, 0]])
     gray = cv2.filter2D(gray, -1, kernel)
     corners, _, _ = aruco.detectMarkers(gray, myDict)
+    if len(corners) > 0:
+        width_actual = find_marker_width(corners)
+        distance_found = distance(frame_undistorted, width_actual)
+        print(distance_found)
     cv2.imshow("distance", frame_undistorted)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
-
-def find_marker_width(corners):
-    """
-    Calculate the width of an ArUco marker by averaging the top and bottom edge widths.
-
-    Args:
-        corners (list): A list of corner points of the detected ArUco marker.
-
-    Returns:
-        float: The estimated width of the marker.
-    """
-    for outline in corners:
-        marker_corners = outline.reshape((4,2))
-        
-        # Extract the top-left, top-right, bottom-right, and bottom-left corners
-        top_left, top_right, bottom_right, bottom_left = marker_corners
-        
-        # Compute the width of the top and bottom edges
-        top_width = np.linalg.norm(top_right - top_left)
-        bottom_width = np.linalg.norm(bottom_right - bottom_left)
-        
-        # Compute the mean width
-        mean_width = (top_width + bottom_width) / 2
-        
-    return mean_width
-
-width_actual = find_marker_width(corners)
-
-def distance(frame, width):
-    distance = (fx*2)/width
-    if ids is not None: 
-        ids = ids.flatten()
-    for (outline, id) in zip(corners, ids):
-            markerCorners = outline.reshape((4,2))
-    cv2.putText(frame, f"{distance:.2f} inches", (int(markerCorners[0,0]), int(markerCorners[0,1])-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
-    return distance
-
-distance_of_marker = distance(frame_undistorted, width_actual)
