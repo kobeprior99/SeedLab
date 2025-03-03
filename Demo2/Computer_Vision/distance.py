@@ -55,11 +55,11 @@ def find_marker_width(corners):
         top_left, top_right, bottom_right, bottom_left = marker_corners
         
         # Compute the width of the top and bottom edges
-        top_width = (top_right - top_left)
-        bottom_width = (bottom_right - bottom_left)
+        top_width = (top_right[0] - top_left[0])
+        bottom_width = (bottom_right[0] - bottom_left[0])
         
         # Compute the mean width
-        mean_width = top_width+bottom_width/2
+        mean_width = (top_width + bottom_width) / 2
         
     return mean_width
 
@@ -85,7 +85,7 @@ def find_center(corners):
     return (center_x, center_y)
 
 def distance(width):
-    distance = (fx*MARKER_WIDTH_IRL)/width
+    distance = (fx * MARKER_WIDTH_IRL) / width
     return distance
 
 cap = cv2.VideoCapture(0)
