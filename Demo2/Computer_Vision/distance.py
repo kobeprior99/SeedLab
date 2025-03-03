@@ -64,6 +64,7 @@ def find_marker_width(corners):
     return mean_width
 
 
+
 def distance(frame, width):
     distance = (fx*2)/width
     if ids is not None: 
@@ -77,8 +78,7 @@ cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open camera.")
 
-myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-    #parameters = aruco.DetectorParameters_create()
+
 
     #start infinite loop press q to quit
 while True:
