@@ -59,7 +59,7 @@ def find_marker_width(corners):
         bottom_width = (bottom_right - bottom_left)
         
         # Compute the mean width
-        mean_width = np.mean(top_width,bottom_width)
+        mean_width = top_width+bottom_width/2
         
     return mean_width
 
