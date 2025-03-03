@@ -115,9 +115,9 @@ while True:
         width_actual = find_marker_width(corners)
         distance_found = distance(width_actual)
         center = find_center(corners)
-        cv2.putText(frame_undistorted, f"{distance_found:.2f} degrees", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+        cv2.putText(frame_undistorted, f"{distance_found:.2f} inches", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
         print(distance_found)
-        
+
     cv2.imshow("distance", frame_undistorted)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
