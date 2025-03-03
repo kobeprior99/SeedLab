@@ -37,7 +37,7 @@ with open('calibration.pkl', 'rb') as f:
     cameraMatrix,dist,_,_ = pickle.load(f)
 
 fx = cameraMatrix[0,0]
-
+MARKER_WIDTH_IRL = 2 #inches
 def find_marker_width(corners):
     """
     Calculate the width of an ArUco marker by averaging the top and bottom edge widths.
@@ -55,11 +55,11 @@ def find_marker_width(corners):
         top_left, top_right, bottom_right, bottom_left = marker_corners
         
         # Compute the width of the top and bottom edges
-        top_width = np.linalg.norm(top_right - top_left)
-        bottom_width = np.linalg.norm(bottom_right - bottom_left)
+        top_width = (top_right - top_left)
+        bottom_width = (bottom_right - bottom_left)
         
         # Compute the mean width
-        mean_width = (top_width + bottom_width) / 2
+        mean_width = np.mean(top_width,bottom_width)
         
     return mean_width
 
@@ -85,7 +85,7 @@ def find_center(corners):
     return (center_x, center_y)
 
 def distance(width):
-    distance = (fx*2)/width
+    distance = (fx*MARKER_WIDTH_IRL)/width
     return distance
 
 cap = cv2.VideoCapture(0)
