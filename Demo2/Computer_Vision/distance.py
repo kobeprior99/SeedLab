@@ -63,22 +63,34 @@ def find_marker_width(corners):
         
     return mean_width
 
+myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
+    #parameters = aruco.DetectorParameters_create()
+def find_center(corners):
+    """
+    Calculate the center coordinates of an ArUco marker.
 
+    Args:
+        corners (list): A list of corner points of the detected ArUco marker.
 
-def distance(frame, width):
+    Returns:
+        tuple: The (x, y) coordinates of the marker's center.
+    """
+    for outline in corners:
+        marker_corners = outline.reshape((4,2))
+        
+        # Compute the center of the marker
+        center_x = int(np.mean(marker_corners[:, 0]))
+        center_y = int(np.mean(marker_corners[:, 1]))
+
+    return (center_x, center_y)
+
+def distance(width):
     distance = (fx*2)/width
-    if ids is not None: 
-        ids = ids.flatten()
-    for (outline, id) in zip(corners, ids):
-            markerCorners = outline.reshape((4,2))
-    cv2.putText(frame, f"{distance:.2f} inches", (int(markerCorners[0,0]), int(markerCorners[0,1])-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
     return distance
 
 cap = cv2.VideoCapture(0)
 if not cap.isOpened():
     print("Error: Could not open camera.")
-
-
 
     #start infinite loop press q to quit
 while True:
@@ -98,11 +110,14 @@ while True:
                     [-1, 5,-1],  
                     [0, -1, 0]])
     gray = cv2.filter2D(gray, -1, kernel)
-    corners, _, _ = aruco.detectMarkers(gray, myDict)
+    corners, ids, _ = aruco.detectMarkers(gray, myDict)
     if len(corners) > 0:
         width_actual = find_marker_width(corners)
-        distance_found = distance(frame_undistorted, width_actual)
+        distance_found = distance(width_actual)
+        center = find_center(corners)
+        cv2.putText(frame_undistorted, f"{distance_found:.2f} degrees", (center[0] + 10, center[1]-15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
         print(distance_found)
+        
     cv2.imshow("distance", frame_undistorted)
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
