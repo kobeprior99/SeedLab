@@ -3,8 +3,19 @@ Demo Goals:
 Computer Vision: 
 -accurately determine the angle of the robot relative to the target
 
+images folder contains the images from take_photo.py which will be used in cam_cal.py to get camera intrinsic parameters
+remote start folder contains sample code for controls team to take data from pi via i2c in float array format.
+    -using_remote_start.ino interprets float array sent from raspberry pi
+    -remote_start.py sends inches and angle to pi via i2c in float array
+blanetest.py is Demo1.py fork used to collab in parallel.
+calibration.pkl is a file for us to read calibration parameters that were generated from cam_cal.py
+cam_cal.py reads photos of checker board from images folder to generate camera intrinsic parameters and store them in calibration.pkl
+Demo1.py is the final code to detect angle of center of marker relative to camera and report it on LCD screen
+take_photo.py takes a photo every time you press S until you quit and stores it all into the images folder
 
 
 Controls and Localization: 
 -Drive straight a specified distance
 -Turn a specified angle then drive a specified distance
+
+Demo1 folder contains Demo1.ino code which drives the robot straight or rotates an angle then go straight

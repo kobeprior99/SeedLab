@@ -1,7 +1,25 @@
-Goals: 
-
 Computer Visions: 
 find the angle, distance, and arrow and relay this data to the controls system
 
+files and descriptions: 
+arrow.py a supplementary file for Demo2.py that performs arrow detection
+
+distance.py supplementary file for Demo2.py that calculates the distance using similar triangles
+
+chatdist.py supplementary file for Demo2.py that calculates distacne using tvecs, called chatdist.py because CHATGPT was used to write some of the code
+
+calibration.pkl file containing camera calibration data that was generated from cam_cal.py in Demo1
+
+Demo2.py a collection of all CV deliverables for Demo2: Interpret the angle of an Aruco marker, the distance to the marker, and the color of the arrow next to the marker. When this information is available send it to the LCD screen and arduino.
+
+leftarrow.png left becon to be printed (scale properly so marker exactly 2 inches width)
+
+projectBoard.txt gives deliverables for each cv teammate
+
+rightarrow.png right becon to be printed (scale properly so marker exactly 2 inches width)
+
 Controls and Localizaiton:
 Design an FSM that takes computer vision parameters as flags to switch between states. See Demo2/Control/FSM.jpg
+files and descriptions: 
+
+<TODO> enter file names and what they do
