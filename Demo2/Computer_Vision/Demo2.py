@@ -60,7 +60,7 @@ UPPER_RED1 = np.array([5, 255 ,255 ])
 LOWER_RED2 = np.array([175, 150, 100 ])
 UPPER_RED2 = np.array([180, 255, 255 ])
 
-LOWER_GREEN = np.array([35, 120, 120])
+LOWER_GREEN = np.array([35, 100, 120])
 UPPER_GREEN = np.array([85, 255, 255])
 
 FX = cameraMatrix[0,0] # focal length in pixels
@@ -170,7 +170,7 @@ def findPhi(center, frame):
     #return positive angle when marker is left of camera axis, negative when right
     object_pixel = center[0]
     phi = np.degrees(np.arctan((CX - object_pixel) / FX))
-    cv2.putText(frame, f'Angle {phi:.2f}', (center[0], center[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+    cv2.putText(frame, f'Angle {phi:.2f}', (center[0], center[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
     return phi
 
