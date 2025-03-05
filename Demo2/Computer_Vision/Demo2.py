@@ -157,6 +157,23 @@ def distance(corners, ids, frame, center):
                 print(f"Marker ID {ids[i][0]}: {distance_found:.2f} inches")
                 return distance_found
                 
+def findPhi(center, frame):
+    """
+    Calculate the angle (phi) of an object relative to the camera's center.
+
+    Args:
+        object_pixel (int): The x-coordinate of the object's pixel position in the image.
+    Returns:
+        float: The calculated angle (phi) in degrees, rounded to two decimal places.
+    """
+    # Compute angle using arctan
+    #return positive angle when marker is left of camera axis, negative when right
+    object_pixel = center[0]
+    phi = np.degrees(np.arctan((CX - object_pixel) / FX))
+    cv2.putText(frame, f'Angle{phi:.2f}', (center[0] + 10, center[1] +15), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+
+    return phi
+
 def main():
     # put all functionality here
     cap = cv2.VideoCapture(0)
@@ -180,10 +197,14 @@ def main():
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
-            frame = aruco.drawDetectedMarkers(frame, corners, borderColor=(0,255,255))
             center = find_center(corners)
-            cv2.circle(frame, center, 3, (255, 255, 0), -1)
-            masks = find_mask(frame)
+            angle = findPhi(center, frame_undistorted)
+            
+            #debug:
+            print(angle)
+
+            cv2.circle(frame_undistorted, center, 3, (255, 255, 0), -1)
+            masks = find_mask(frame_undistorted)
             arrow = check_arrow(masks, frame_undistorted, center)
             if arrow == 0:
                 #here we would modify instruction array
