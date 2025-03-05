@@ -15,6 +15,7 @@
 * 
 * 02/22/2025    Kobe Prior and Blane Miller Created File
 * 02/23/2025    Kobe Prior added necessary libraries and some initializations
+* 03/03/2025    Kobe Prior Blane added the main function
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
