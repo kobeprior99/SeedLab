@@ -193,7 +193,7 @@ def main():
             else:
                 #no arrow detected good_arrow ->0.0
                 print("NO ARROW DETECTED")
-            distance(corners, id, frame_undistorted, center)
+            distance(corners, ids, frame_undistorted, center)
         cv2.imshow('Demo2', frame_undistorted)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
