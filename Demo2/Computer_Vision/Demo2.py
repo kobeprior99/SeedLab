@@ -184,7 +184,7 @@ def main():
             center = find_center(corners)
             cv2.circle(frame, center, 3, (255, 255, 0), -1)
             masks = find_mask(frame)
-            arrow = check_arrow(masks, frame, center)
+            arrow = check_arrow(masks, frame_undistorted, center)
             if arrow == 0:
                 #here we would modify instruction array
                 print("LEFT")
