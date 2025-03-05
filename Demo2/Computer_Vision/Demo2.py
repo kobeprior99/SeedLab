@@ -60,7 +60,7 @@ UPPER_RED1 = np.array([5, 255 ,255 ])
 LOWER_RED2 = np.array([175, 150, 100 ])
 UPPER_RED2 = np.array([180, 255, 255 ])
 
-LOWER_GREEN = np.array([35, 100, 100])
+LOWER_GREEN = np.array([35, 150, 100])
 UPPER_GREEN = np.array([85, 255, 255])
 
 FX = cameraMatrix[0,0] # focal length in pixels
