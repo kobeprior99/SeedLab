@@ -111,7 +111,7 @@ def check_arrow(masks, frame, aruco_center):
     for contour in green_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
             if x < aruco_center[0]:
                 return 0
