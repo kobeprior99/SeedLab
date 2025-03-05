@@ -152,7 +152,7 @@ def distance(corners, ids, frame, center):
                 distance_found = tvecs[i][0][2]  # Z-distance from camera to marker
 
                 # Display distance on the image
-                cv2.putText(frame, f"{distance_found:.2f} inches", (center[0] + 10, center[1] - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+                cv2.putText(frame, f"{distance_found:.2f} inches", (center[0], center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
                 # debug
                 print(f"Marker ID {ids[i][0]}: {distance_found:.2f} inches")
                 return distance_found
@@ -170,7 +170,7 @@ def findPhi(center, frame):
     #return positive angle when marker is left of camera axis, negative when right
     object_pixel = center[0]
     phi = np.degrees(np.arctan((CX - object_pixel) / FX))
-    cv2.putText(frame, f'Angle {phi:.2f}', (center[0] + 10, center[1] + 15), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+    cv2.putText(frame, f'Angle {phi:.2f}', (center[0], center[1] + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
     return phi
 
