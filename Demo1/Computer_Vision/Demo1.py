@@ -125,7 +125,7 @@ def findPhi(object_pixel):
     
     return phi
 
-def detect_marker_and_angle():
+def main():
     """
     Detects ArUco markers in the camera feed, calculates their angle relative to the camera's center, and updates the LCD display.
 
@@ -214,5 +214,5 @@ def detect_marker_and_angle():
 
 #run the program
 if __name__ == "__main__":
-    detect_marker_and_angle()
+    main()
     endQueue = True #after detect_marker_and_angle finishes end LCD thread
