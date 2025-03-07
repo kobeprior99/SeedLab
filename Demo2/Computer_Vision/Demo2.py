@@ -126,7 +126,10 @@ def lcd_thread():
     """
     while True:
         if endThread:
-            lcd.clear()
+            try:
+                lcd.clear()
+            except Exception as e:
+                print(f"Failed to clear LCD: {e}")
             break
         with data_lock: #lock while reading shared data
             data_copy = latest_data.copy() #copy the data
