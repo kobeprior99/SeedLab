@@ -134,7 +134,9 @@ def lcd_thread():
             lcd.clear()
             #example print ø: 18.00 →:L
             #               D:12.00
-            lcd.message = f"\x00:{data_copy['angle']:.2f} \x01:{data_copy['arrow']}\ndist:{data_copy['dist']:.2f}"
+            angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
+            distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
+            lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
             time.sleep(.5)
         except Exception as e:
             print(f"Failed to update LCD: {e}")
@@ -366,8 +368,14 @@ def main():
         #send instructions to arduino
         send_instructions()
         with data_lock:
-            latest_data["angle"] = instructions[1]
-            latest_data["dist"] = instructions[3]
+            if instructions[0] == 1.0:
+                latest_data["angle"] = instructions[1]
+            else:
+                latest_data["angle"] = None
+            if instructions[2] == 1.0:
+                latest_data["dist"] = instructions[3]
+            else:
+                latest_data["dist"] = None
             if instructions[4] == 1.0 and instructions[5] == 0.0:
                 latest_data["arrow"] = "L"
             if instructions[4] == 1.0 and instructions[5] == 1.0:
