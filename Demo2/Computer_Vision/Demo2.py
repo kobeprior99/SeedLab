@@ -45,7 +45,6 @@ import time
 from time import sleep
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
-import queue
 from smbus2 import SMBus
 import struct
 
@@ -72,9 +71,6 @@ MARKER_WIDTH_IRL = 2 #inches
 #aruco dictrionary
 MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
-#I2c to communicate with the arduino
-ARD_ADDR = 8 #set arduino address
-i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # LCD setup
 lcd_columns = 16
@@ -144,7 +140,6 @@ def lcd_thread():
         except Exception as e:
             print(f"Failed to update LCD: {e}")
     return
-
 
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
