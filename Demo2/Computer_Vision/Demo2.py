@@ -94,12 +94,12 @@ except Exception as e:
 #theta symbol
 theta_char = [
     0b00000,
-    0b00100,
-    0b01010,
-    0b01010,
-    0b01010,
-    0b00100,
-    0b00000,
+    0b01110,
+    0b10001,
+    0b10001,
+    0b10101,
+    0b10001,
+    0b01110,
     0b00000
 ]
 lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
