@@ -276,7 +276,7 @@ def distance(corners, ids, frame, center):
                 # Display distance on the image
                 cv2.putText(frame, f"{distance_found:.2f} inches", (center[0], center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
                 # debug
-                print(f"Marker ID {ids[i][0]}: {distance_found:.2f} inches")
+                #print(f"Marker ID {ids[i][0]}: {distance_found:.2f} inches")
                 return distance_found
                 
 def findPhi(center, frame):
@@ -343,16 +343,16 @@ def main():
             arrow = check_arrow(masks, frame_undistorted, center)
             if arrow == 0:
                 #here we would modify instruction array
-                print("LEFT")
+                #print("LEFT")
                 instructions[4] = 1.0 #good_arrow ->1.0
                 instructions[5] = 0.0 #arrow ->0.0
             elif arrow == 1:
-                print("RIGHT")
+                #print("RIGHT")
                 instructions[4] = 1.0 #good_arrow ->1.0
                 instructions[5] = 1.0 #arrow ->0.0
             else:
                 #no arrow detected good_arrow ->0.0
-                print("NO ARROW DETECTED")
+                #print("NO ARROW DETECTED")
                 instructions[4] = 0.0 #good_arrow ->0.0
             instructions[2] = 1.0 #good_distance ->1.0
             instructions[3] = distance(corners, ids, frame_undistorted, center) #distance ->distance
