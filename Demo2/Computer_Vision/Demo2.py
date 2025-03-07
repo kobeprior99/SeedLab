@@ -133,7 +133,7 @@ def lcd_thread():
             lcd.clear()
             #example print ø: 18.00 →:L
             #               D:12.00
-            lcd.print(f"\x00:{data_copy['angle']:.2f} \x01:{data_copy['arrow']}\ndist:{data_copy['dist']:.2f}")
+            lcd.message = f"\x00:{data_copy['angle']:.2f} \x01:{data_copy['arrow']}\ndist:{data_copy['dist']:.2f}"
             time.sleep(.5)
         except Exception as e:
             print(f"Failed to update LCD: {e}")
