@@ -12,10 +12,6 @@ const int BUFFER_SIZE = 24; //6 floats*4 bytes each
 volatile float instruction_array[6]; //array to store the instructions
 
 
-
-const float instructionDegFt[] = {0, 2}; //{angle in degrees, distance in feet
-const float instruction[] = {(instructionDegFt[0] * (PI/180)), instructionDegFt[1]};
-
 // Pin Definitions
 const int enablePin = 4;       // Pin 4 to enable the motor driver
 const int pwmPin[] = {9, 10};  // Pin 9 for motor 1, pin 10 for motor 2
@@ -57,7 +53,7 @@ float vBar = 0;
 float deltaV = 0;
   // Angular Controller
 float currentPhi = 0;
-float desiredPhi = instruction[0];   // use to set turn
+volatile float desiredPhi  // use to set turn
 float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
