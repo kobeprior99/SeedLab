@@ -61,7 +61,7 @@ def send_instructions(angle, distance):
 
 #get distance and angle from user
 angle = float(input("enter an angle in degrees: "))
-distance =float(input("enter a distance in inches: "))
+distance =float(input("enter a distance in feet: "))
 #send the instructions
 send_instructions(angle, distance)
 
