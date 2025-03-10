@@ -33,7 +33,6 @@ import cv2
 from cv2 import aruco
 import numpy as np
 import pickle  # Using pickle to load the calibration data
-from time import sleep
 import board
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
@@ -42,6 +41,8 @@ import queue
 # Load the camera calibration results
 with open('calibration.pkl', 'rb') as f:
     cameraMatrix,dist,_,_ = pickle.load(f)
+FX = cameraMatrix[0,0]
+CX = cameraMatrix[0,2]
 
 
 # LCD Dimensions and I2C
@@ -109,24 +110,22 @@ def find_center(corners):
 
     return (center_x, center_y)
 
-def findPhi(object_pixel, cx,fx):
+def findPhi(object_pixel):
     """
     Calculate the angle (phi) of an object relative to the camera's center.
 
     Args:
         object_pixel (int): The x-coordinate of the object's pixel position in the image.
-        cameraMatrix (numpy.ndarray): The camera matrix containing intrinsic parameters.
-
     Returns:
         float: The calculated angle (phi) in degrees, rounded to two decimal places.
     """
     # Compute angle using arctan
-    #return positive angle when marker is left of camera axis
-    phi = np.degrees(np.arctan((cx - object_pixel) / fx))
+    #return positive angle when marker is left of camera axis, negative when right
+    phi = np.degrees(np.arctan((CX - object_pixel) / FX))
     
     return phi
 
-def detect_marker_and_angle():
+def main():
     """
     Detects ArUco markers in the camera feed, calculates their angle relative to the camera's center, and updates the LCD display.
 
@@ -187,7 +186,7 @@ def detect_marker_and_angle():
             cv2.circle(frame_undistorted, center, 3, (0, 255, 0), -1)
 
             # Calculate the angle of the marker relative to the camera's center
-            newAngle = findPhi(center[0], cameraMatrix[0,2], cameraMatrix[0,0])
+            newAngle = findPhi(center[0])
 
             ANGLE_THRESHOLD = 0.01
             if(abs(newAngle-oldAngle) >= ANGLE_THRESHOLD):
@@ -215,5 +214,5 @@ def detect_marker_and_angle():
 
 #run the program
 if __name__ == "__main__":
-    detect_marker_and_angle()
+    main()
     endQueue = True #after detect_marker_and_angle finishes end LCD thread
