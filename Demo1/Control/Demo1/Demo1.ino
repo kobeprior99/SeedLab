@@ -1,7 +1,7 @@
 // SEED DEMO #1 
 // Implemented with a PID Controller, Final Version
 // Localization and Controls
-// Ron Gaines and Cooper Hammond
+// Ron Gaines and Cooper Hammond 
 
 const float instructionDegFt[] = {-4, 4.0}; //{angle in degrees, distance in feet
 const float instruction[] = {(instructionDegFt[0] * (PI/180)), instructionDegFt[1]};
