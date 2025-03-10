@@ -88,6 +88,7 @@ def LCDdisplay():
             except Exception as e:
                 print(f"Failed to update LCD: {e}")
         if endQueue:
+            lcd.clear()
             break
 
 
