@@ -1,10 +1,23 @@
 // SEED DEMO #1 
 // Implemented with a PID Controller, Final Version
 // Localization and Controls
-// Ron Gaines and Cooper Hammond 
+// Ron Gaines and Cooper Hammond
 
-const float instructionDegFt[] = {-4, 4.0}; //{angle in degrees, distance in feet
-const float instruction[] = {(instructionDegFt[0] * (PI/180)), instructionDegFt[1]};
+const float enteredInstruction[] = {45.0, 5.0}; //{angle in degrees, distance in feet
+
+
+const float instruction[] = {((enteredInstruction[0] - angleOffset) * (PI/180)), enteredInstruction[1]}; //-5 is the motor 2 correction for its jumpy initial accelaration
+//dist:ang:pwm
+//1ft: 0, 75
+//2ft: 0, 75
+//3ft: 3, 100
+//4ft: 3, 100
+//5ft: 4, 100
+//6ft: 5, 125
+//7ft: 5, 125
+//8ft: 5,150
+//9ft: 5, 150
+//10ft: 5, 175
 
 // Pin Definitions
 const int enablePin = 4;       // Pin 4 to enable the motor driver
@@ -61,14 +74,14 @@ float angularVelError = 0.0;
 float kpAngVel = 1;
   // Driving Controller
 float currentRho = 0.0;
-float desiredRho = 6.0;   // use to set distance
+float desiredRho = 0.0;
 float rhoError = 0.0;
 float prevRhoError = 0.0;
 float dRho = 0.0;
 float iRho = 0.0;
 float kpRho = 10; 
 float kdRho = 1; 
-float kiRho = 0.3;  
+float kiRho = 0.28;  
 float velocity = 0.0;
 float desiredVel = 0.0;
 float velocityError = 0.0;
@@ -84,8 +97,8 @@ const float I[] = {0.1, 0.1};
 // Constants/Physical Parameters
 const float battery_voltage = 7.8;
 const float b = 1;         // wheel base 12inches
-const float d = 5.93 / 12;  // wheel diameter (feet)
-const float r = d / 2;      // wheel radius (feet)
+const float d = 5.93 / 12;  // wheel diameter (inches)
+const float r = d / 2;      // wheel radius (inches)
 
 // Position initialized (from 2b localization code)
 float currentXPox = 0.0;
@@ -95,10 +108,6 @@ float lastYPos = 0.0;
 float currentAngle = 0.0;
 float lastAngle = 0.0;
 float currentPos = 0.0;
-
-
-const float maxAcceleration = 0.5;
-const float maxPWMChange = 10;
 
 
 // FSM
@@ -119,6 +128,8 @@ void setup() {
   // Set encoder pins as inputs
   pinMode(encPin1A, INPUT);
   pinMode(encPin2A, INPUT);
+  pinMode(encPin1B, INPUT);
+  pinMode(encPin2B, INPUT);
  
   // Enable the motor driver by setting the enable pin HIGH
   digitalWrite(enablePin, HIGH);
@@ -179,21 +190,16 @@ void loop() {
         analogWrite( pwmPin[1], 0);
         delay(1000);
         desiredPhi = currentPhi;
-//        digitalWrite( dirPin[0], HIGH );
-//        digitalWrite( dirPin[1], HIGH );
-//        analogWrite( pwmPin[0], 80);
-//        analogWrite( pwmPin[1], 56);
-//        delay(500);
         state = DRIVE;
       }
       break;
       
     case DRIVE: // drive to the rho we want
-      desiredRho = instruction[1] + 0.5;
+      desiredRho = instruction[1] + 0.2;
       kdPhi = 14.0;  
 
         
-      if ( (currentRho - (desiredRho - 0.05)) <= 0.01 && (currentRho - (desiredRho - 0.5)) >= 0  ) {
+      if ( (currentRho - (desiredRho - 0.2)) <= 0.05 && (currentRho - (desiredRho - 0.2)) >= 0  ) {
         state = STOP;
       }
       break;
@@ -243,7 +249,7 @@ void loop() {
       }
 
       PWM[i] = 255 * (abs( voltage[i] ) / battery_voltage);
-      analogWrite( pwmPin[i], min( PWM[i], 150 ) );
+      analogWrite( pwmPin[i], min( PWM[i], 125 ) );
     }
   } 
   Serial.print("Time: ");
@@ -264,7 +270,7 @@ void loop() {
   // Update Values
   prevPhiError = phiError;
   prevRhoError = rhoError;
-  for ( int i = 0; i < 1; i++ ) {
+  for ( int i = 0; i < 2; i++ ) {
     prev_counts[i] = pos_counts[i];
     prev_actual_pos[i] = actual_pos[i];
 }
