@@ -1,14 +1,15 @@
-// SEED DEMO #1  *no PI communication
+// SEED DEMO #1 
+// Implemented with a PID Controller, Final Version
 // Localization and Controls
-// Cooper Hammond and Ron Gaines
+// Ron Gaines and Cooper Hammond
 
-// Demo 1 Instructions
-const float instructions[3] = {2, 45, 3}; // distance in feet, angle to turn in degrees, distance in feet
+const float instructionDegFt[] = {-4, 4.0}; //{angle in degrees, distance in feet
+const float instruction[] = {(instructionDegFt[0] * (PI/180)), instructionDegFt[1]};
 
-// Pin definitions
-const int enablePin = 4;    // Pin 4 to enable the motor driver
-const int pwmPin[2] = {9, 10};      // Pin 9 for PWM control (Motor 1), Pin 10 for PWM control (Motor 2)
-const int dirPin[2] = {7, 8};      // Pin 7 for direction control (Motor 1), Pin 8 for direction control (Motor 2)
+// Pin Definitions
+const int enablePin = 4;       // Pin 4 to enable the motor driver
+const int pwmPin[] = {9, 10};  // Pin 9 for motor 1, pin 10 for motor 2
+const int dirPin[] = {7, 8};   // Pin 7 for motor 1, pin 8 for motor 2
 
 // Encoder pins (one per motor)
 const int encPin1A = 2; // Encoder pin A for motor 1
@@ -17,74 +18,97 @@ const int encPin1B = 5; // Encoder pin B for motor 1
 const int encPin2B = 6; // Encoder pin B for motor 2
 
 // Timing variables
-unsigned long desired_Ts_ms = 10;  // Desired sample time in milliseconds
-unsigned long last_time_ms;
-unsigned long start_time_ms;
+float desired_Ts_ms = 10;  // Desired sample time in milliseconds
+float last_time_ms;
+float start_time_ms;
 float current_time;
 
-// Array variables [motor1, motor2]
+// Array variables [motor1, motor2] (mostly for mini project)
   //volatile
-volatile int pos_counts[2] = {0, 0};
-volatile int prev_counts[2] = {0, 0};
+volatile int pos_counts[] = {0, 0};
+volatile int prev_counts[] = {0, 0};
   //set in error correction
-float pos_error[2] = {0, 0};
-float integral_error[2] = {0, 0};
-float desired_speed[2] = {0, 0};
-float error[2] = {0, 0};
-float Voltage[2] = {0, 0};
+float pos_error[] = {0, 0};
+float integral_error[] = {0, 0};
+float desired_speed[] = {0, 0};
+float error[] = {0, 0};
   //calculations
-float desired_pos[2] = {0, 0}; //need to write code for
-float actual_pos[2] = {0, 0}; //is pos_counts in radians
-float prev_actual_pos[2] = {0, 0}; //is prev_counts in radians
-float delta_pos[2] = {0, 0};
-float actual_speed[2] = {0, 0};
-float PWM[2] = {0, 0};
+float desired_pos[] = {0, 0};     // in radians
+float actual_pos[] = {0, 0};      // is pos_counts in radians
+float prev_actual_pos[] = {0, 0}; // is prev_counts in radians
+float delta_pos[] = {0, 0};
+float actual_speed[] = {0, 0};
 
-// Array Constants [motor1, motor2]
-const float K[2] = {1.5, 1.75};
-const float sigma[2] = {14, 14};
-const float Kp[2] = {1.75, 2};
-const float P[2] = {4.2, 4};
-const float I[2] = {0.1, 0.1};
+// Movement [motor1, motor2]
+float PWM[] = {0, 0};
+float motorVel[] = {0, 0};
+float voltage[] = {0, 0};
+float vBar = 0;
+float deltaV = 0;
+  // Angular Controller
+float currentPhi = 0;
+float desiredPhi = instruction[0];   // use to set turn
+float phiError = 0;
+float prevPhiError = 0.0;
+float dPhi = 0.0;
+float iPhi = 0.0;
+float kpPhi = 3500; 
+float kdPhi = 500;
+float kiPhi = 10; 
+float angularVel = 0.0;
+float desiredAngVel = 0;
+float angularVelError = 0.0;
+float kpAngVel = 1;
+  // Driving Controller
+float currentRho = 0.0;
+float desiredRho = 6.0;   // use to set distance
+float rhoError = 0.0;
+float prevRhoError = 0.0;
+float dRho = 0.0;
+float iRho = 0.0;
+float kpRho = 10; 
+float kdRho = 1; 
+float kiRho = 0.3;  
+float velocity = 0.0;
+float desiredVel = 0.0;
+float velocityError = 0.0;
+float kpVel = 4;    
 
-// Constants
-const float Battery_Voltage = 7.8;
-const float circumference = 2 * PI * (5.93/2); //distance: Measured 5.93in diameter -> c=2(pi)r -> 18.63
-const float b = 12; //wheel base 12inches
+// Controller Constants [motor1, motor2]
+const float K[] = {1.5, 1.75};
+const float sigma[] = {14, 14};
+const float Kp[] = {1.75, 2};
+const float P[] = {4.2, 4};
+const float I[] = {0.1, 0.1};
 
-// Position initialized
-float lastXPos = 0.0, lastYPos = 0.0, lastAngle = 0.0;
+// Constants/Physical Parameters
+const float battery_voltage = 7.8;
+const float b = 1;         // wheel base 12inches
+const float d = 5.93 / 12;  // wheel diameter (feet)
+const float r = d / 2;      // wheel radius (feet)
+
+// Position initialized (from 2b localization code)
+float currentXPox = 0.0;
+float lastXPos = 0.0;
+float currentYPos = 0.0;
+float lastYPos = 0.0;
+float currentAngle = 0.0;
+float lastAngle = 0.0;
 float currentPos = 0.0;
 
-// Timing variable for data reading incrementation
-unsigned long last_read_time = 0;
-const unsigned long read_interval = 100; 
 
-//Boolean Tasks
-bool task_1_done = false;
-bool task_2_done = false;
-bool task_3_done = false;
+const float maxAcceleration = 0.5;
+const float maxPWMChange = 10;
 
-//FSM 
-enum State {FOWARD1, TURN, FOWARD2, STOP};
-State state = FOWARD1; //starting in state 1
 
-//Calculate Desired Endpoint For Demo 1
-float instruct1Radians = instructions[1] * (PI /180); //degress to radians
-float x = instructions[0] + ( instructions[2] * cos(instruct1Radians) );
-float y = ( instructions[2] * sin(instruct1Radians) );
-float desired_endpoint[2] = {x, y};
+// FSM
+enum State { TURN, DRIVE, STOP };  // three states
+State state = TURN;                 // initialize
 
 void setup() {
   // Initialize Serial communication
   Serial.begin(115200); // Set baud rate to 115200 for fast data output
-  Serial.println("This sexy ass robot is ready to fuck some shit up!!!");
-
-  Serial.print("Desired endpoint on xy-grid: ");
-  Serial.print(x);
-  Serial.print(", ");
-  Serial.println(y);
-  
+ 
   // Set motor control pins as outputs
   pinMode(enablePin, OUTPUT);
   pinMode(pwmPin[0], OUTPUT);
@@ -95,7 +119,7 @@ void setup() {
   // Set encoder pins as inputs
   pinMode(encPin1A, INPUT);
   pinMode(encPin2A, INPUT);
-  
+ 
   // Enable the motor driver by setting the enable pin HIGH
   digitalWrite(enablePin, HIGH);
 
@@ -128,135 +152,126 @@ void encoder2_ISR() {
 }
 
 void loop() {
-  
-  // Calculate how far each wheel has traveled linearly in inches
-  float wheel1Dist = ((float)pos_counts[0] / 3200) * circumference;
-  float wheel2Dist = ((float)pos_counts[1] / 3200) * circumference;
+  // Find Current Time
+  current_time = (float)( millis() - start_time_ms ) / 1000;
 
-  // Check if movement occurred
-  bool isMoving = (abs(wheel1Dist) > 0.001 || abs(wheel2Dist) > 0.001);
-
-  // Variables to store the updated position and angle
-  float currentXPos = lastXPos;
-  float currentYPos = lastYPos;
-  float currentAngle = lastAngle;
-
-  // If movement detected, update position and angle
-  if (isMoving) {
-    currentAngle = lastAngle + ((wheel1Dist - wheel2Dist) / b);
-    currentXPos = lastXPos + cos(lastAngle) * ( (wheel1Dist + wheel2Dist) / 2 );
-    currentYPos = lastYPos + sin(lastAngle) * ( (wheel1Dist + wheel2Dist) / 2 );
-
-    // Update last known values
-    lastXPos = currentXPos;
-    lastYPos = currentYPos;
-    lastAngle = currentAngle;
-  }
-
-  // Convert angle to degrees for display
-  float currentAngleDeg = currentAngle * (180 / PI);
-
-  // Calculate elapsed time in seconds
-  current_time = (float)(millis() - start_time_ms) / 1000.0;
-
-  // Loops through calculations for each motor
-  for (int i = 0; i < 2; i++) {
-    // Positional and velocity calculations
-    actual_pos[i] = 2 * PI * (float)pos_counts[i] / 3200;
-    prev_actual_pos[i] = 2 * PI * (float)prev_counts[i] / 3200;
-    delta_pos[i] = actual_pos[i] - prev_actual_pos[i];
-    actual_speed[i] = delta_pos[i] / ((float)desired_Ts_ms / 1000);
-    pos_error[i] = desired_pos[i] - actual_pos[i];
-    integral_error[i] = integral_error[i] + pos_error[i] * ((float)desired_Ts_ms / 1000);
-    desired_speed[i] = (P[i] * pos_error[i]) + (I[i] * integral_error[i]);
-    error[i] = desired_speed[i] - actual_speed[i];
-    Voltage[i] = Kp[i] * error[i];
-
-    PWM[i] = 255 * abs(Voltage[i]) / Battery_Voltage;
-
-    if (pos_error[i] > 0) {
-      digitalWrite(dirPin[i], HIGH);
-    } else {
-      digitalWrite(dirPin[i], LOW);
+  // Turn Encoder Counts to Radians then find velocity
+  for ( int i = 0; i < 2; i++ ) {
+    actual_pos[i] = 2 * PI * (float)( pos_counts[i]) / 3200;
+    if( current_time > 0 ) {
+      motorVel[i] = ( actual_pos[i] - prev_actual_pos[i] ) / current_time;
     }
+  }
+  
+  // Calculate Current Phi and Current Rho
+  currentPhi = ( r / b ) * ( actual_pos[1] - actual_pos[0] );
+  currentRho = ( r / 2 ) * ( actual_pos[1] + actual_pos[0] );
 
-    analogWrite(pwmPin[i], min(PWM[i], 255));
+  // FSM for robot actions
+  switch ( state ) {
+    case TURN: // turn to the phi we want
+      desiredVel = 0;    // we want to be stationary
+      desiredRho = 0;
+
+      // Check if we are within desired bounds
+      if ( (currentPhi <= desiredPhi + 0.03) && (currentPhi >= desiredPhi - 0.03) ) {
+        analogWrite( pwmPin[0], 0);
+        analogWrite( pwmPin[1], 0);
+        delay(1000);
+        desiredPhi = currentPhi;
+//        digitalWrite( dirPin[0], HIGH );
+//        digitalWrite( dirPin[1], HIGH );
+//        analogWrite( pwmPin[0], 80);
+//        analogWrite( pwmPin[1], 56);
+//        delay(500);
+        state = DRIVE;
+      }
+      break;
+      
+    case DRIVE: // drive to the rho we want
+      desiredRho = instruction[1] + 0.5;
+      kdPhi = 14.0;  
+
+        
+      if ( (currentRho - (desiredRho - 0.05)) <= 0.01 && (currentRho - (desiredRho - 0.5)) >= 0  ) {
+        state = STOP;
+      }
+      break;
+    
+    case STOP: // stop and stay where you are
+      desiredPhi = currentPhi;
+      desiredRho = currentRho;
+      analogWrite( pwmPin[0], 0);
+      analogWrite( pwmPin[1], 0);
+
+      break;
   }
 
-  // Reset Values
-  prev_counts[0] = pos_counts[0];
-  prev_counts[1] = pos_counts[1];
+  // Controler Logic
+  if ( state == TURN || state == DRIVE ) {
+    // Rotational Controller (Phi)
+    phiError = desiredPhi - currentPhi;
+    dPhi = ( phiError - prevPhiError ) / ((float)( desired_Ts_ms / 1000 ));
+    iPhi += phiError * ((float)( desired_Ts_ms / 1000 ));
+    desiredAngVel = ( kpPhi * phiError ) + ( kdPhi * dPhi ) + ( kiPhi * iPhi );
+    angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
+    angularVelError = desiredAngVel - angularVel;
 
-  // DEMO1 CODE HERE
+    // Driving Controller (Rho)
+    rhoError = desiredRho - currentRho;
+    dRho = ( rhoError - prevRhoError ) / ((float)( desired_Ts_ms / 1000 ));
+    iPhi += rhoError * ((float)( desired_Ts_ms / 1000 ));
+    desiredVel = ( kpRho * rhoError ) + ( kdRho * dRho ) + ( kiRho * iRho );
+    velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
+    velocityError = desiredVel - velocity;
 
-//    Serial.print("Current State: ");
-//    Serial.print(state);  // Print the current state
-//
-//    Serial.print("  Current Position (inches): ");
-//    Serial.print(currentPos);  // Print how far it has traveled
-//
-//    Serial.print("  Current Angle (degrees): ");
-//    Serial.println(currentAngle * (180 / PI));  // Print the current orientation
+    // Calculate vBar and deltaV
+    vBar = velocityError * kpVel;;
+    deltaV = angularVelError * kpAngVel;
 
-    // Finite State Machine (FSM)
-    switch (state) { 
-        case FORWARD1: // Move forward  
-            if (task_1_done == false) {  
-                desired_pos[0] = (instructions[0] / circumference) * 3200;  
-                desired_pos[1] = (instructions[0] / circumference) * 3200;  
-                if (abs(currentXPos - (instructions[0] / 12)) <= 0.75) {  
-                    Serial.println("Task 1 Complete: Forward movement done!");  
-                    task_1_done = true;
-                    state = TURN;  // Move to turning state  
-                }  
-            }  
-            break;  
+    // Use vBar and deltaV to find motor voltages
+    voltage[0] = ( vBar - deltaV ) / 2;
+    voltage[1] = ( vBar + deltaV ) / 2;
 
-        case TURN: // Turn  
-            if (task_2_done == false && task_1_done == true) {  
-                if (abs(currentAngleDeg - instructions[1]) > 0.5) {  //if angle not within halg degree margin error
-                    digitalWrite(dirPin[0], HIGH);  
-                    digitalWrite(dirPin[1], LOW);  
-                    analogWrite(pwmPin[0], 50);  
-                    analogWrite(pwmPin[1], 50);  
-                    Serial.println("Turning...");  
-                } else {  
-                    Serial.println("Task 2 Complete: Turning done!");  
-                    task_2_done = true;  
-                    state = FOWARD2;  // Move to next state  
-                }  
-            }  
-            break;  
+    // Check voltage sign to give motors directions (fwd/bkwd) then send PWM signals
+    for ( int i = 0; i < 2; i++ ) {
+      if ( voltage[i] > 0 ) {
+        digitalWrite( dirPin[i], HIGH );
+      }
+      else {
+        digitalWrite( dirPin[i], LOW );
+      }
 
-        case FOWARD2: // Move forward again  
-            if (task_3_done == false && task_2_done == true && task_1_done == true) {  
-                desired_pos[0] += (instructions[2] / circumference) * 3200;  
-                desired_pos[1] += (instructions[2] / circumference) * 3200;  
-                if (( abs(currentXPos - (desired_endpoint[0] / 12)) <= 0.75 ) && ( abs(currentYPos - (desired_endpoint[1] / 12)) <= 0.75 )) {  
-                    Serial.println("Task 3 Complete: Final movement done!");  
-                    task_3_done = true;  
-                    state = STOP;  // Move to stop state  
-                }  
-            }  
-            break;  
+      PWM[i] = 255 * (abs( voltage[i] ) / battery_voltage);
+      analogWrite( pwmPin[i], min( PWM[i], 150 ) );
+    }
+  } 
+  Serial.print("Time: ");
+  Serial.print(current_time);
+  Serial.print("Rho: ");
+  Serial.print(currentRho);
+  Serial.print(" Rho Error: ");
+  Serial.print(rhoError);
+  Serial.print(" Phi: ");
+  Serial.print(currentPhi);
+  Serial.print(" Phi Error: ");
+  Serial.print(phiError);
+  Serial.print(" angVel: ");
+  Serial.print(angularVel);
+  Serial.print(" State: ");
+  Serial.println(state);
+    
+  // Update Values
+  prevPhiError = phiError;
+  prevRhoError = rhoError;
+  for ( int i = 0; i < 1; i++ ) {
+    prev_counts[i] = pos_counts[i];
+    prev_actual_pos[i] = actual_pos[i];
+}
 
-        case STOP: // Stop  
-            Serial.println("Demo Complete!");  
-            analogWrite(pwmPin[0], 0);  
-            analogWrite(pwmPin[1], 0);  
-            break;  
-    }  
-
-
-  // Wait until the next sample period
-  while (millis() < last_time_ms + desired_Ts_ms) {
-    // Idle loop to maintain timing
+  //start_time_ms = millis();
+  while( millis() < last_time_ms + desired_Ts_ms ) {
+    // wait
   }
-
-  last_time_ms = millis(); // Update last timestamp
-} // end void loop
-
-
-// ANAYSIS:
-
-// - using the the stop command after each task has been complete for a certain time increment
+  last_time_ms = millis();
+}
