@@ -53,12 +53,12 @@ float vBar = 0;
 float deltaV = 0;
   // Angular Controller
 float currentPhi = 0;
-volatile float desiredPhi  // use to set turn
+float desiredPhi;   // use to set turn
 float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
 float iPhi = 0.0;
-float kpPhi = 3500; 
+float kpPhi = 3900; 
 float kdPhi = 500;
 float kiPhi = 5; 
 float angularVel = 0.0;
@@ -73,7 +73,7 @@ float prevRhoError = 0.0;
 float dRho = 0.0;
 float iRho = 0.0;
 float kpRho = 13; 
-float kdRho = 1.5; 
+float kdRho = 3; 
 float kiRho = 0.25;  
 float velocity = 0.0;
 float desiredVel = 0.0;
@@ -239,7 +239,7 @@ void loop() {
       
     case DRIVE: // drive to the rho we want
       desiredRho = instruction_array[3];
-      kdPhi = 60.0;  
+      kdPhi = 65.0;  
 
         
       if(fabs(currentRho-desiredRho)< 0.02) {
