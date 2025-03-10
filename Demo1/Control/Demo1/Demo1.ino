@@ -3,6 +3,16 @@
 // Localization and Controls
 // Ron Gaines and Cooper Hammond
 
+
+
+boolean start = false;
+#include <Wire.h>
+#define MY_ADDR 8
+volatile uint8_t offset = 0;
+// instruction[0] = distance, instruction[1] = angle
+const int BUFFER_SIZE = 24; //6 floats*4 bytes each
+volatile float instruction_array[6]; //array to store the instructions
+
 const float enteredInstruction[] = {45.0, 5.0}; //{angle in degrees, distance in feet
 
 
@@ -117,7 +127,8 @@ State state = TURN;                 // initialize
 void setup() {
   // Initialize Serial communication
   Serial.begin(115200); // Set baud rate to 115200 for fast data output
- 
+  Wire.begin(MY_ADDR);
+  Wire.onReceive(receive);
   // Set motor control pins as outputs
   pinMode(enablePin, OUTPUT);
   pinMode(pwmPin[0], OUTPUT);
@@ -144,6 +155,41 @@ void setup() {
 }
 
 // Functions
+//recieve function:
+
+void receive(int numBytes){
+  
+  if (numBytes == BUFFER_SIZE + 1){
+    Wire.read(); //discard first byte (offset)
+    byte buffer[BUFFER_SIZE];
+    Wire.readBytes(buffer, BUFFER_SIZE);
+    memcpy(instruction_array, buffer, BUFFER_SIZE);
+    desiredPhi = instruction_array[1]*(PI/180)-angle_offset;   // use to set turn
+
+    //debug:
+    // float good_angle = instruction_array[0];
+    // float angle = instruction_array[1];
+    // float good_distance = instruction_array[2];
+    // float distance = instruction_array[3];
+    // float good_arrow = instruction_array[4];
+    // float arrow = instruction_array[5];
+    // Serial.println("Received instructions:");
+    // Serial.print("Angle: ");
+    // if(good_angle == 1.0) Serial.println(angle);
+    // else Serial.println("N/A");
+    // Serial.print("Distance: ");
+    // if(good_distance == 1.0) Serial.println(distance);
+    // else Serial.println("N/A");
+    // Serial.print("Arrow: ");
+    // if(good_arrow == 1.0) Serial.println(arrow);
+    // else Serial.println("N/A");
+    // Serial.println("start == true");
+
+    //start the rest of the code
+    start = true;
+  }
+
+  }
 
 // Interrupt service routines (ISR) for counting encoder pulses
 void encoder1_ISR() {
@@ -163,6 +209,9 @@ void encoder2_ISR() {
 }
 
 void loop() {
+  while(!start){
+    delay(100);
+  }
   // Find Current Time
   current_time = (float)( millis() - start_time_ms ) / 1000;
 
@@ -195,7 +244,7 @@ void loop() {
       break;
       
     case DRIVE: // drive to the rho we want
-      desiredRho = instruction[1] + 0.2;
+      desiredRho = instruction_array[3] + 0.2;
       kdPhi = 14.0;  
 
         
