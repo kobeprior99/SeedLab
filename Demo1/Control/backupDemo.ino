@@ -4,6 +4,7 @@
 // Ron Gaines and Cooper Hammond 
 
 boolean start = false;
+
 #include <Wire.h>
 #define MY_ADDR 8
 volatile uint8_t offset = 0;
@@ -31,8 +32,8 @@ float current_time;
 
 // Array variables [motor1, motor2] (mostly for mini project)
   //volatile
-volatile int pos_counts[] = {0, 0};
-volatile int prev_counts[] = {0, 0};
+volatile long int pos_counts[] = {0, 0};
+volatile long int prev_counts[] = {0, 0};
   //set in error correction
 float pos_error[] = {0, 0};
 float integral_error[] = {0, 0};
@@ -53,7 +54,7 @@ float vBar = 0;
 float deltaV = 0;
   // Angular Controller
 float currentPhi = 0;
-float desiredPhi;   // use to set turn
+float desiredPhi;   // set on recieve
 float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
@@ -67,7 +68,7 @@ float angularVelError = 0.0;
 float kpAngVel = 1;
   // Driving Controller
 float currentRho = 0.0;
-float desiredRho = 0.0;   // use to set distance
+float desiredRho;   // set on receive
 float rhoError = 0.0;
 float prevRhoError = 0.0;
 float dRho = 0.0;
@@ -151,26 +152,7 @@ void receive(int numBytes){
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
       desiredPhi = instruction_array[1]*(PI/180);   // use to set turn
-
-      //debug:
-      // float good_angle = instruction_array[0];
-      // float angle = instruction_array[1];
-      // float good_distance = instruction_array[2];
-      // float distance = instruction_array[3];
-      // float good_arrow = instruction_array[4];
-      // float arrow = instruction_array[5];
-      // Serial.println("Received instructions:");
-      // Serial.print("Angle: ");
-      // if(good_angle == 1.0) Serial.println(angle);
-      // else Serial.println("N/A");
-      // Serial.print("Distance: ");
-      // if(good_distance == 1.0) Serial.println(distance);
-      // else Serial.println("N/A");
-      // Serial.print("Arrow: ");
-      // if(good_arrow == 1.0) Serial.println(arrow);
-      // else Serial.println("N/A");
-      // Serial.println("start == true");
-
+      desiredRho = instruction_array[3];
       //start the rest of the code
       start = true;
     }
