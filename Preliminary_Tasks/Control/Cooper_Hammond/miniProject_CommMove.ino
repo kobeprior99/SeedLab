@@ -2,6 +2,9 @@
 //Localization and Controls
 //Cooper Hammond
 
+// Precursor to final MiniProject.ino code
+
+
 // 0,0 | 1,0
 // ----|----
 // 0,1 | 1,1
