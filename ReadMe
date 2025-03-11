@@ -1,54 +1,67 @@
-Purpose: EENG 350: System, Exploration, Engineering, and Design Lab
-Project Goal: Produce an atonomous robot that moves according to arrows and ArUco markers 
-Group: 14
-Members: Kobe Prior, Blane Miller, Ron Gaines, Cooper Hammond
+# EENG 350: System, Exploration, Engineering, and Design Lab
 
-***
-Directory Navigation:
-Project Deliverables will be found in their respective category, for example if you want the MiniProject computer vision code navigate to the MiniProject/Computer_Vision. If you want Demo1 computer vision code, similarly: Demo1/Computer_Vision, etc.
+## Project Goal
+Produce an autonomous robot that moves according to arrows and ArUco markers.
 
-***
-Guidlines and Tips
--Using GitHub: Download GitHub Desktop as well as add github extension to VScode, need help ask Kobe
+## Group 14 Members
+- Kobe Prior
+- Blane Miller
+- Ron Gaines
+- Cooper Hammond
 
--Enable AutoFetch so current repo is accessible locally: "file>Preferences>settings" then search "Git: Auto Fetch and toggle it on"
+---
 
--if you want to pull the current codebase and know multiple people have been using the repo use git pull --rebase
+## Directory Navigation
+Project deliverables will be found in their respective category. For example:
 
-Steps to pushing to github
-- get the most current repo:
-    git pull or git pull --rebase
-- add all changes:
+There are directories for each deliverable including `Preliminary_Tasks`, `MiniProject`, `Demo1`, `Demo2`, and `Final_Demo`. Each folder contains a README file that will explain goals and subsystem files produced.
+
+---
+
+## Guidelines and Tips
+
+### Using GitHub
+- Download GitHub Desktop and add the GitHub extension to VS Code. Need help? Ask Kobe.
+- Enable AutoFetch so the current repo is accessible locally: `File > Preferences > Settings`, then search for "Git: Auto Fetch" and toggle it on.
+- If you want to pull the current codebase and know multiple people have been using the repo, use `git pull --rebase`.
+
+### Steps to Pushing to GitHub
+1. Get the most current repo:
+    ```sh
+    git pull
+    # or
+    git pull --rebase
+    ```
+2. Add all changes:
+    ```sh
     git add --all
-- commit  changes
+    ```
+3. Commit changes:
+    ```sh
     git commit -m "commit message"
-- push all changes to the main branch:
+    ```
+4. Push all changes to the main branch:
+    ```sh
     git push
-- pray for no merge conflicts
+    ```
+5. Pray for no merge conflicts.
 
--When you've made changes stage the changes with the plus button and commit leaving a message about what you changed
+- When you've made changes, stage the changes with the plus button and commit, leaving a message about what you changed.
+- Please produce well-commented code for project implementation.
+- Develop code however you want, but ensure it is well-commented when it will be used by the group.
+- Try to have as much fun as possible.
+- Need new eyes on your code? Ask on Snap if anyone is willing to help, but give it a good college try first.
+- Important deliverable deadlines will be filled in on the TEAMS calendar. We can explore using Gantt charts with dependencies if you guys want to as well.
+- The use of generative AI is only banned for reflection logs and discussions. Use GenAI to speed up coding and research. VS Code has free Copilot available, and you can tab lines and lines of code to save a bunch of time. ChatGPT is also an option.
 
--Please produce well commented code for project implementation. 
+### Using Git on Pi
+- Cloning the repository: In the command line, type `git clone <repo>` where `<repo>` is the web URL for the repository. This will bring up a menu that asks for authentication (e.g., GitHub username and password).
+- Password authentication was disabled by GitHub a while back, so you need to set up an access token. Go to `GitHub > Settings > Developer Settings > Personal Access Tokens > Tokens (classic)`, then follow the prompts to create an access token.
+- Use this token where you would type your password when cloning the repo. This will give you access to the repository.
+- To avoid re-entering the authentication token every time you push and pull from the repository, use the following fix:
 
--Develop code however you want but be sure it is commented well when it will be used by the group
+    ```sh
+    git remote set-url origin https://<token>@github.com/<username>/<repo>
+    ```
 
--Try to have as much fun as possible
-
--Need new eyes on your code ask on snap if anyone is willing to help but give a good college try first
-
--Important deliverables deadlines will be filled in on TEAMS calendar -> we can explore with using gannt charts with dependencies if you guys want to as well
-
--The use of generative AI is only banned for reflection logs and discussions. Use GenAI to speed up coding and research. VS code as free copilot available and you can tab lines and lines of code to save a bunch of time. ChatGPT also an option
-
--using git on pi: 
-cloning the repository, in the command line I typed "git clone <repo>" where <repo> is the web url for the repository. This brought up a menu that asked for authentication, e.g., github username and password
-The password authentication was disabled by github a while back so I had to look up YouTube videos on how to get around this 
-You need to set up an access token. While in GitHub >settings>developer settings>personal access tokens>Tokens classic> then following the prompts you can create an access token which is a really long string of characters including numbers and letters and special characters. 
-using this token where you would type your password when cloning the Repo worked and I had access to the repository
-I then noticed that you had to enter this authentication token every time you pushed and pulled from the repository which was super annoying. 
-
-5. The fix for having to re-enter is the following: 
-
-in the terminal in the directory of the repository you cloned type: "git remote set-url origin https://<token>@github.com/<username>/<repo>"
-
-where you enter the token in the <token spot>, your username in the <username>, and so on. This allowed me to push and pull without re-authenticating every time. 
+    Replace `<token>` with your access token, `<username>` with your GitHub username, and `<repo>` with your repository name. This will allow you to push and pull without re-authenticating every time.
