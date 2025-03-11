@@ -1,2 +1,3 @@
-This is a failed attempt to create a turn controller. It is capable of turning to a desired angle, but fails to keep the robot on a straight path.
-Because of this, it was scrapped and we started over with Demo1.ino.
+# Demo1_TurnController
+
+This arduino project was an attempt to create a turn controller. It can turn to a desired angle but fails to keep the robot on a straight path. Due to this issue, the project was scrapped, and we started over with `Demo1.ino`.

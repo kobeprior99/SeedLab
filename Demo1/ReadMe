@@ -39,13 +39,13 @@ Computer Vision Directory:
 Control Directory:
 
     ### Demo1 Directory
-    - **Description**: Directory containing Demo1 code
-    - **TODO**: Add more details
+    - **Description**: Directory containing Demo1.ino code
+    -  This was the final code used for demonstration of going straigt and turning, and going straight
 
     ### BackupDemo Directory
     - **Description**: Directory containing backup code for Demo1
-    - **TODO**: Add more details
+    -  this code was a side attempt that modifies rho controller
 
     ### Demo1_TurnController Directory
-    - **Description**: Directory containing calibration code for Demo1
-    - **TODO**: Add more details
+    - **Description**: Contains failed iteration of turn controller
+    -  This arduino project was an attempt to create a turn controller. It can turn to a desired angle but fails to keep the robot on a straight path. Due to this issue, the project was scrapped, and we started over with `Demo1.ino`.
