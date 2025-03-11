@@ -1,0 +1,5 @@
+This is the code used to run Demo 1. To properly set up the robot, plug in the battery pack and place it near the front of the robot near the camera. After
+this, use the battery that is taped to the robot to activate the PI, and flip the switch to activate the Arduino. Upload Demo1.ino to the Arduino, 
+remote_start.py to the PI. From here place the robot slightly behind the place you want it to start and push it forward until it is where you want it to be. 
+Hit the reset button on the Arduino, and then use the PI terminal to input the turn angle first, and the distance to travel second. The robot will automatically
+begin moving after some time has passed and will end up close to where you want it to.
