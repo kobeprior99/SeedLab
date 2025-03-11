@@ -1,5 +1,28 @@
-This is the code used to run Demo 1. To properly set up the robot, plug in the battery pack and place it near the front of the robot near the camera. After
-this, use the battery that is taped to the robot to activate the PI, and flip the switch to activate the Arduino. Upload Demo1.ino to the Arduino, 
-remote_start.py to the PI. From here place the robot slightly behind the place you want it to start and push it forward until it is where you want it to be. 
-Hit the reset button on the Arduino, and then use the PI terminal to input the turn angle first, and the distance to travel second. The robot will automatically
-begin moving after some time has passed and will end up close to where you want it to.
+# Demo 1 Setup Instructions
+
+Follow these steps to set up and run Demo 1:
+
+1. **Connect:**
+    - I2C Pi -> Arduino
+        - Connect pin 3 on Pi to pin A4 on Arduino (SDA)
+        - Connect pin 5 on Pi to pin A5 on Arduino (SCL)
+        - Connect pin 6 on Pi to GND on Arduino
+
+2. **Power Up the Robot:**
+    - Plug in the battery pack and place it near the front of the robot, close to the camera.
+    - Use the battery taped to the robot to activate the Raspberry Pi (PI).
+    - Flip the switch to activate the Arduino.
+
+3. **Upload Code:**
+    - Upload `Demo1.ino` to the Arduino.
+    - Upload `remote_start.py` to the PI.
+
+4. **Position the Robot:**
+    - Place the robot slightly behind the desired starting position.
+    - Push the robot forward to the exact starting position.
+
+5. **Initialize the Robot:**
+    - Press the reset button on the Arduino.
+    - Use the PI terminal to input the turn angle first, followed by the distance to travel.
+
+The robot will begin moving after a short delay and should reach the intended destination.

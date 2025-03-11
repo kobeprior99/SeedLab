@@ -1,0 +1,17 @@
+# backupDemo.ino
+
+## Description
+This file modifies the Rho controller of `Demo1.ino` and implements remote start code proposed in `Demo1/Computer_Vision/Remote_Start/using_remote_start.ino`. The control constants must be modified to produce a more stable controller.
+
+## Example Execution
+
+### Connect:
+- I2C Pi -> Arduino
+    - Connect pin 3 on Pi to pin A4 on Arduino (SDA)
+    - Connect pin 5 on Pi to pin A5 on Arduino (SCL)
+    - Connect pin 6 on Pi to GND on Arduino
+
+### Steps:
+1. Turn the power switch to the on position.
+2. Run `remote_start.py` found in `Demo1/Computer_Vision/Remote_Start`.
+3. Type angle and distance.
