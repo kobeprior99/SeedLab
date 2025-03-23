@@ -179,7 +179,7 @@ def find_mask(frame):
     def find_mask(frame):
         """
         Generate masks for detecting red and green colors in the given frame.
-
+        Helper function for check_arrow.
         Args:
             frame (ndarray): The image frame in which to detect colors.
 
