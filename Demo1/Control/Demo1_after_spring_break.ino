@@ -30,7 +30,7 @@ const int encPin1B = 5; // Encoder pin B for motor 1
 const int encPin2B = 6; // Encoder pin B for motor 2
 
 // Timing variables
-float desired_Ts_ms = 5;  // Desired sample time in milliseconds
+float desired_Ts_ms = 10;  // Desired sample time in milliseconds
 long last_time_ms = 0;
 long current_time_ms;
 
