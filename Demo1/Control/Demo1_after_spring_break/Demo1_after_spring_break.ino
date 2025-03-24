@@ -47,8 +47,8 @@ float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
 float iPhi = 0.0;
-float kpPhi = 200; 
-float kdPhi = 30;
+float kpPhi = 400; 
+float kdPhi = 70;
 float kiPhi = 3; 
 float angularVel = 0.0;
 float desiredAngVel = 0;
@@ -183,7 +183,7 @@ void loop() {
       
     case DRIVE: // drive to the rho we want
       desiredRho = instruction_array[3];
-      kdPhi = 14;
+      //kdPhi = 14;
       kiPhi = 15;
       //check that rho and phi are within reasonable error
       if(fabs(currentRho - desiredRho) < 0.02 && fabs(currentPhi - desiredPhi) < 0.01) {
@@ -205,11 +205,11 @@ void loop() {
   iPhi += phiError * delta_t;
   desiredAngVel = ( kpPhi * phiError ) + (kiPhi * iPhi) + (kdPhi * dPhi);
   angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
-  filteredAngularVel = alpha_ang * angularVel + (1-alpha_ang) * filteredAngularVel;
+  // filteredAngularVel = alpha_ang * angularVel + (1-alpha_ang) * filteredAngularVel;
   //debug serial plot to see what filtered angular velocity looks like
-  Serial.print(filteredAngularVel);
-  Serial.print(angularVel);
-  angularVelError = desiredAngVel - filteredAngularVel;
+  // Serial.print(filteredAngularVel);
+  // Serial.print(angularVel);
+  angularVelError = desiredAngVel - angularVel;
 
 
   // Driving Controller (Rho)
@@ -220,11 +220,11 @@ void loop() {
   desiredVel = ( kpRho * rhoError ) + (kiRho * iRho) + (kdRho * dRho);
   velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
   //IIR filter from ISS2
-  filteredVelocity = alpha * velocity +(1 - alpha) * filteredVelocity;
+  // filteredVelocity = alpha * velocity +(1 - alpha) * filteredVelocity;
   //debug serial plot to see what filtered velocity looks like
   // Serial.print(filteredVelocity);
   // Serial.print(velocity);
-  velocityError = desiredVel - filteredVelocity;
+  velocityError = desiredVel - velocity;
 
   // Calculate vBar and deltaV
   vBar = velocityError * kpVel;
@@ -254,7 +254,7 @@ void loop() {
     //note when voltage is greater than battery_voltage there is saturation and pwm gets capped, this causes motor 1 to fall behind
     //what is the fix: maybe if statement if i = 0 then saturation pwm is 110 instead of 100? so that motor has more power during saturation. Fine tune as needed
     if (i == 0){
-      analogWrite( pwmPin[i], min( PWM[i], 110 ) );//caps pwm at 110
+      analogWrite( pwmPin[i], min( PWM[i], 104 ) );//caps pwm at 110
     }
     else{
     analogWrite( pwmPin[i], min( PWM[i], 100 ) );//caps pwm at 120
@@ -262,20 +262,20 @@ void loop() {
   }
   
   //debug: print out all the values note state 0 = turn, 1 = drive, 2 = stop
-  // Serial.print("Time: ");
-  // Serial.print(current_time_ms);
-  // Serial.print("Rho: ");
-  // Serial.print(currentRho);
-  // Serial.print(" Rho Error: ");
-  // Serial.print(rhoError);
-  // Serial.print(" Phi: ");
-  // Serial.print(currentPhi);
-  // Serial.print(" Phi Error: ");
-  // Serial.print(phiError);
-  // Serial.print(" angVel: ");
-  // Serial.print(angularVel);
-  // Serial.print(" State: ");
-  // Serial.println(state);
+  Serial.print("Time: ");
+  Serial.print(current_time_ms);
+  Serial.print("Rho: ");
+  Serial.print(currentRho);
+  Serial.print(" Rho Error: ");
+  Serial.print(rhoError);
+  Serial.print(" Phi: ");
+  Serial.print(currentPhi);
+  Serial.print(" Phi Error: ");
+  Serial.print(phiError);
+  Serial.print(" angVel: ");
+  Serial.print(angularVel);
+  Serial.print(" State: ");
+  Serial.println(state);
     
   // Update Values
   prevPhiError = phiError;
