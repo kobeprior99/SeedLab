@@ -30,10 +30,9 @@ const int encPin1B = 5; // Encoder pin B for motor 1
 const int encPin2B = 6; // Encoder pin B for motor 2
 
 // Timing variables
-float desired_Ts_ms = 15;  // Desired sample time in milliseconds
+float desired_Ts_ms = 5;  // Desired sample time in milliseconds
 long last_time_ms = 0;
 long current_time_ms;
-float start_drive_ms;
 
 // Array variables [motor1, motor2] (mostly for mini project)
 long int pos_counts[] = {0, 0};
@@ -87,14 +86,14 @@ float filteredVelocity = 0.0;
 float filteredAngularVel = 0.0;
 
 // Constants/Physical Parameters
-const float battery_voltage = 8;
+const float battery_voltage = 7.8;
 const float b = 1;         // wheel base 12 inches 1 foot
 const float d = 5.93 / 12;  // wheel diameter (feet)
 const float r = d / 2;      // wheel radius (feet)
 
 // FSM
 enum State { TURN, DRIVE, STOP };  // three states
-State state = TURN;                 // initialize
+State state = TURN;                // initialize
 
 void setup() {
   //i2c communication
@@ -166,7 +165,7 @@ void loop() {
   // Turn Encoder Counts to Radians then find velocity
   for ( int i = 0; i < 2; i++ ) {
     actual_pos[i] = 2 * PI * (float)( pos_counts[i]) / 3200;
-    if( current_time_ms > 5 ) {
+    if( delta_t > 0 ) {
       motorVel[i] = ( actual_pos[i] - prev_actual_pos[i] ) / (delta_t); // (delta x)/(delta t) -> pos/s
     }
   }
@@ -192,10 +191,10 @@ void loop() {
       break;
       
     case DRIVE: // drive to the rho we want
-      start_drive_ms = millis();
       desiredRho = instruction_array[3];
       kdPhi = 14;
       kiPhi = 15;
+      //check that rho and phi are within reasonable error
       if(fabs(currentRho - desiredRho) < 0.02 && fabs(currentPhi - desiredPhi) < 0.01) {
         state = STOP;
       }
@@ -216,7 +215,11 @@ void loop() {
   desiredAngVel = ( kpPhi * phiError ) + (kiPhi * iPhi) + (kdPhi * dPhi);
   angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
   filteredAngularVel = alpha_ang * angularVel + (1-alpha_ang) * filteredAngularVel;
+  //debug serial plot to see what filtered angular velocity looks like
+  Serial.print(filteredAngularVel);
+  Serial.print(angularVel);
   angularVelError = desiredAngVel - filteredAngularVel;
+
 
   // Driving Controller (Rho)
   rhoError = desiredRho - currentRho;
@@ -225,7 +228,11 @@ void loop() {
   iRho = constrain(iRho, -4, 4);
   desiredVel = ( kpRho * rhoError ) + (kiRho * iRho) + (kdRho * dRho);
   velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
+  //IIR filter from ISS2
   filteredVelocity = alpha * velocity +(1 - alpha) * filteredVelocity;
+  //debug serial plot to see what filtered velocity looks like
+  // Serial.print(filteredVelocity);
+  // Serial.print(velocity);
   velocityError = desiredVel - filteredVelocity;
 
   // Calculate vBar and deltaV
@@ -247,18 +254,23 @@ void loop() {
     }
     //get pwm based on battery voltage
     PWM[i] = 255 * (abs( voltage[i] ) / battery_voltage);
-    //debug:
-    Serial.print("voltage");
-    Serial.print(i);
-    Serial.print(": ");
-    Serial.println(abs(voltage[i]));
+    //debug: the voltage getting supplied to each motor
+    // Serial.print("voltage");
+    // Serial.print(i);
+    // Serial.print(": ");
+    // Serial.println(abs(voltage[i]));
+
+    //note when voltage is greater than battery_voltage there is saturation and pwm gets capped, this causes motor 1 to fall behind
+    //what is the fix: maybe if statement if i = 0 then saturation pwm is 110 instead of 100? so that motor has more power during saturation. Fine tune as needed
+    if (i == 0){
+      analogWrite( pwmPin[i], min( PWM[i], 110 ) );//caps pwm at 110
+    }
+    else{
     analogWrite( pwmPin[i], min( PWM[i], 100 ) );//caps pwm at 120
   }
-
   }
   
-  //debug:
-
+  //debug: print out all the values note state 0 = turn, 1 = drive, 2 = stop
   // Serial.print("Time: ");
   // Serial.print(current_time_ms);
   // Serial.print("Rho: ");
