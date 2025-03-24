@@ -73,9 +73,6 @@ float kpVel = 1;
 const float alpha = 0.4;   // Smoothing factor for velocity
 const float alpha_ang = 0.4;  // Smoothing factor for angular velocity
 
-float filteredVelocity = 0.0;
-float filteredAngularVel = 0.0;
-
 // Constants/Physical Parameters
 const float battery_voltage = 7.8;
 const float b = 1;         // wheel base 12 inches 1 foot

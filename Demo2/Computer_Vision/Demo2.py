@@ -365,6 +365,7 @@ def main():
         
         #send instructions to arduino
         send_instructions()
+        #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
                 latest_data["angle"] = instructions[1]
