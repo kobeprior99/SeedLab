@@ -254,10 +254,10 @@ void loop() {
     //note when voltage is greater than battery_voltage there is saturation and pwm gets capped, this causes motor 1 to fall behind
     //what is the fix: maybe if statement if i = 0 then saturation pwm is 110 instead of 100? so that motor has more power during saturation. Fine tune as needed
     if (i == 0){
-      analogWrite( pwmPin[i], min( PWM[i], 104 ) );//caps pwm at 110
+      analogWrite( pwmPin[i], min( PWM[i], 128 ) );//caps pwm at 110
     }
     else{
-    analogWrite( pwmPin[i], min( PWM[i], 100 ) );//caps pwm at 120
+    analogWrite( pwmPin[i], min( PWM[i], 125 ) );//caps pwm at 120
   }
   }
   
