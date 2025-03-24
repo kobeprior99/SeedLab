@@ -30,10 +30,10 @@ const int encPin1B = 5; // Encoder pin B for motor 1
 const int encPin2B = 6; // Encoder pin B for motor 2
 
 // Timing variables
-float desired_Ts_ms = 10;  // Desired sample time in milliseconds
+float desired_Ts_ms = 15;  // Desired sample time in milliseconds
 long last_time_ms = 0;
 long current_time_ms;
-float start_time_ms;
+float start_drive_ms;
 
 // Array variables [motor1, motor2] (mostly for mini project)
 long int pos_counts[] = {0, 0};
@@ -51,38 +51,43 @@ float motorVel[] = {0, 0};
 float voltage[] = {0, 0};
 float vBar = 0;
 float deltaV = 0;
-  // Angular Controller
 float currentPhi = 0;
-float desiredPhi;   // set on recieve
+float desiredPhi;   // use to set turn
 float phiError = 0;
 float prevPhiError = 0.0;
-// float dPhi = 0.0;
+float dPhi = 0.0;
 float iPhi = 0.0;
-float kpPhi = 30; 
-// float kdPhi = 500;
-float kiPhi = 4; 
+float kpPhi = 200; 
+float kdPhi = 30;
+float kiPhi = 3; 
 float angularVel = 0.0;
 float desiredAngVel = 0;
 float angularVelError = 0.0;
-float kpAngVel = 1;
+float kpAngVel = 0.5;
   // Driving Controller
 float currentRho = 0.0;
-float desiredRho;   // set on receive
+float desiredRho = 0.0;
 float rhoError = 0.0;
 float prevRhoError = 0.0;
-// float dRho = 0.0;
+float dRho = 0.0;
 float iRho = 0.0;
-float kpRho = 13; 
-// float kdRho = 3; 
-float kiRho = 1;  
+float kpRho = 18; 
+float kdRho = 1; 
+float kiRho = 0.5;  
 float velocity = 0.0;
 float desiredVel = 0.0;
 float velocityError = 0.0;
-float kpVel = 2;    
+float kpVel = 1; 
 
+//filter velocities
+const float alpha = 0.4;   // Smoothing factor for velocity
+const float alpha_ang = 0.4;  // Smoothing factor for angular velocity
+
+float filteredVelocity = 0.0;
+float filteredAngularVel = 0.0;
 
 // Constants/Physical Parameters
-const float battery_voltage = 7.8;
+const float battery_voltage = 8;
 const float b = 1;         // wheel base 12 inches 1 foot
 const float d = 5.93 / 12;  // wheel diameter (feet)
 const float r = d / 2;      // wheel radius (feet)
@@ -126,12 +131,10 @@ void receive(int numBytes){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
-      desiredPhi = instruction_array[1]*(PI/180);   // use to set turn in radians
+      desiredPhi = instruction_array[1] * (PI/180);   // use to set turn in radians
       desiredRho = instruction_array[3];
       //start the rest of the code
       start = true;
-      //set start time
-      start_time_ms = millis();
     }
   }
 
@@ -140,12 +143,12 @@ void receive(int numBytes){
 
 // Interrupt service routines (ISR) for counting encoder pulses
 void encoder1_ISR() {
-  //code to spend less time in isr
+  //code to spend less time in isr and increments as before
   pos_counts[0] += (digitalRead(encPin1A) == digitalRead(encPin1B)) ? -2 : 2;
 }
 
 void encoder2_ISR() {
-  //code to spend less time in isr
+  //code to spend less time in isr and increments as before
   pos_counts[1] += (digitalRead(encPin2A) == digitalRead(encPin2B)) ? 2 : -2;
 }
 
@@ -157,14 +160,14 @@ void loop() {
   // Find Current Time in miliseconds
   current_time_ms = millis();
   //find delta time in seconds
-  float delta_t = (float)(( current_time_ms - last_time_ms) / 1000);
+  float delta_t = ((float)(current_time_ms - last_time_ms)) / 1000; //should be about 0.01 seconds each loop
   last_time_ms = current_time_ms;
 
   // Turn Encoder Counts to Radians then find velocity
   for ( int i = 0; i < 2; i++ ) {
     actual_pos[i] = 2 * PI * (float)( pos_counts[i]) / 3200;
-    if( current_time_ms > 0 ) {
-      motorVel[i] = ( actual_pos[i] - prev_actual_pos[i] ) / (delta_t); // (delta x)/(delta t) -> m/s
+    if( current_time_ms > 10 ) {
+      motorVel[i] = ( actual_pos[i] - prev_actual_pos[i] ) / (delta_t); // (delta x)/(delta t) -> pos/s
     }
   }
   
@@ -179,62 +182,58 @@ void loop() {
       desiredRho = 0;
 
       // Check if we are within desired bounds
-      if ( fabs(currentPhi - desiredPhi) <= 0.02 ) {
+      if ( fabs(currentPhi - desiredPhi) <= 0.01 ) {
         analogWrite( pwmPin[0], 0);
         analogWrite( pwmPin[1], 0);
         delay(1000);
         desiredPhi = currentPhi;
         state = DRIVE;
-
       }
       break;
       
     case DRIVE: // drive to the rho we want
+      start_drive_ms = millis();
       desiredRho = instruction_array[3];
-
-      if(fabs(currentRho - desiredRho)< 0.02) {
+      kdPhi = 14;
+      kiPhi = 15;
+      if(fabs(currentRho - desiredRho) < 0.02 && fabs(currentPhi - desiredPhi) < 0.01) {
         state = STOP;
       }
       break;
     
     case STOP: // stop and stay where you are
-      desiredPhi = currentPhi;
-      desiredRho = currentRho;
+      analogWrite( pwmPin[0], 0);
+      analogWrite(pwmPin[1], 0);
       break;
   }
 
   // Controler Logic
-
+  if(state == TURN || state == DRIVE){
   // Rotational Controller (Phi)
   phiError = desiredPhi - currentPhi;
-  //dPhi = ( phiError - prevPhiError ) / ((float)( desired_Ts_ms / 1000 ));
+  dPhi = ( phiError - prevPhiError ) / delta_t;
   iPhi += phiError * delta_t;
-  desiredAngVel = ( kpPhi * phiError ) + ( kiPhi * iPhi );
+  desiredAngVel = ( kpPhi * phiError ) + (kiPhi * iPhi) + (kdPhi * dPhi);
   angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
-  angularVelError = desiredAngVel - angularVel;
+  filteredAngularVel = alpha_ang * angularVel + (1-alpha_ang) * filteredAngularVel;
+  angularVelError = desiredAngVel - filteredAngularVel;
 
   // Driving Controller (Rho)
   rhoError = desiredRho - currentRho;
-  // dRho = ( rhoError - prevRhoError ) / ((float)( desired_Ts_ms / 1000 ));
-  iRho += rhoError * ((float)( desired_Ts_ms / 1000 ));
+  dRho = ( rhoError - prevRhoError ) / delta_t;
+  iRho += rhoError * delta_t;
   iRho = constrain(iRho, -4, 4);
-  desiredVel = ( kpRho * rhoError ) + ( kiRho * iRho );
+  desiredVel = ( kpRho * rhoError ) + (kiRho * iRho) + (kdRho * dRho);
   velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
-  velocityError = desiredVel - velocity;
+  filteredVelocity = alpha * velocity +(1 - alpha) * filteredVelocity;
+  velocityError = desiredVel - filteredVelocity;
 
   // Calculate vBar and deltaV
   vBar = velocityError * kpVel;
   deltaV = angularVelError * kpAngVel;
-
   // Use vBar and deltaV to find motor voltages
-  //increase starting voltage at the start
-  if (current_time_ms - start_time_ms < 30){
-    voltage[0] = 1.1 * ( vBar - deltaV ) / 2; //10 percent increase in voltage because of lower quality motor
-  }
-  else{
-    voltage[0] = ( vBar - deltaV ) / 2;
-  }
-  voltage[1] = ( vBar + deltaV ) / 2;
+  voltage[0] = (vBar - deltaV) / 2;
+  voltage[1] = (vBar + deltaV ) / 2;
 
   // Check voltage sign to give motors directions (fwd/bkwd) then send PWM signals
   for ( int i = 0; i < 2; i++ ) {
@@ -248,13 +247,20 @@ void loop() {
     }
     //get pwm based on battery voltage
     PWM[i] = 255 * (abs( voltage[i] ) / battery_voltage);
-    analogWrite( pwmPin[i], min( PWM[i], 150 ) );//caps pwm at 150
+    //debug:
+    Serial.print("voltage");
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(abs(voltage[i]));
+    analogWrite( pwmPin[i], min( PWM[i], 100 ) );//caps pwm at 120
   }
 
+  }
+  
   //debug:
 
   // Serial.print("Time: ");
-  // Serial.print(current_time);
+  // Serial.print(current_time_ms);
   // Serial.print("Rho: ");
   // Serial.print(currentRho);
   // Serial.print(" Rho Error: ");
