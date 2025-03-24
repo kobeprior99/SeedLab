@@ -49,3 +49,7 @@ Control Directory:
     ### Demo1_TurnController Directory
     - **Description**: Contains failed iteration of turn controller
     -  This arduino project was an attempt to create a turn controller. It can turn to a desired angle but fails to keep the robot on a straight path. Due to this issue, the project was scrapped, and we started over with `Demo1.ino`.
+   
+    ### Demo1_after_spring_break Directory
+    - **Description**: Contains code that modifies `BackupDemo` by changing the delta calculation and adjusting the saturation PWM for motor 1.
+    - **Purpose**: To improve motor control and enhance the robot's performance during turns and straight-line movement.
