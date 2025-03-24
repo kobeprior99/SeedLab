@@ -166,7 +166,7 @@ void loop() {
   // Turn Encoder Counts to Radians then find velocity
   for ( int i = 0; i < 2; i++ ) {
     actual_pos[i] = 2 * PI * (float)( pos_counts[i]) / 3200;
-    if( current_time_ms > 10 ) {
+    if( current_time_ms > 5 ) {
       motorVel[i] = ( actual_pos[i] - prev_actual_pos[i] ) / (delta_t); // (delta x)/(delta t) -> pos/s
     }
   }
