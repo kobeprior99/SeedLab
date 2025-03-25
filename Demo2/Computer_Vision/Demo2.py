@@ -98,7 +98,10 @@ theta_char = [
     0b00100,    
     0b11111   
 ]
-lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
+try:
+    lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
+except Exception as e:
+    print(f"Failed to create theta symbol: {e}")
 #arrow symbol
 arrow_char = [
     0b00000,
@@ -110,7 +113,10 @@ arrow_char = [
     0b00000,
     0b00000
 ]
-lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
+try:
+    lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
+except Exception as e:
+    print(f"Failed to create arrow symbol: {e}")
 
 def lcd_thread():
     """
@@ -148,6 +154,7 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 # global float array for data to send to arduino
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
+
 def send_instructions():
     """
     Sends instructions to an Arduino via I2C communication.
