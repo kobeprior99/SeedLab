@@ -22,7 +22,6 @@ void receive(int numBytes){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
-      delay(100);
     }
     // put your main code here, to run repeatedly:
     float good_angle = instruction_array[0];
