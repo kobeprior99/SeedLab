@@ -73,50 +73,50 @@ MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
 
 # LCD setup
-lcd_columns = 16
-lcd_rows = 2 
-i2c_lcd = board.I2C()
-data_lock = threading.Lock()
-latest_data = {"angle": 0.0, "dist": 0.0, "arrow": -1}
-endThread = False #flag to end inf loop in LCD display
-try:
-    # initialize LCD
-    lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
-    lcd.color = [100, 0, 0] #red
-    lcd.clear()
-except Exception as e:
-    print(f"LCD initialization failed: {e}")
-#set up special characters for LCD
-#theta symbol
-theta_char = [
-    0b11111,  
-    0b00100,   
-    0b01110,  
-    0b10101,  
-    0b10101,  
-    0b01110,  
-    0b00100,    
-    0b11111   
-]
-try:
-    lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
-except Exception as e:
-    print(f"Failed to create theta symbol: {e}")
-#arrow symbol
-arrow_char = [
-    0b00000,
-    0b00100,
-    0b00010,
-    0b11111,
-    0b00010,
-    0b00100,
-    0b00000,
-    0b00000
-]
-try:
-    lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
-except Exception as e:
-    print(f"Failed to create arrow symbol: {e}")
+# lcd_columns = 16
+# lcd_rows = 2 
+# i2c_lcd = board.I2C()
+# data_lock = threading.Lock()
+# latest_data = {"angle": 0.0, "dist": 0.0, "arrow": -1}
+# endThread = False #flag to end inf loop in LCD display
+# try:
+#     # initialize LCD
+#     lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+#     lcd.color = [100, 0, 0] #red
+#     lcd.clear()
+# except Exception as e:
+#     print(f"LCD initialization failed: {e}")
+# #set up special characters for LCD
+# #theta symbol
+# theta_char = [
+#     0b11111,  
+#     0b00100,   
+#     0b01110,  
+#     0b10101,  
+#     0b10101,  
+#     0b01110,  
+#     0b00100,    
+#     0b11111   
+# ]
+# try:
+#     lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
+# except Exception as e:
+#     print(f"Failed to create theta symbol: {e}")
+# #arrow symbol
+# arrow_char = [
+#     0b00000,
+#     0b00100,
+#     0b00010,
+#     0b11111,
+#     0b00010,
+#     0b00100,
+#     0b00000,
+#     0b00000
+# ]
+# try:
+#     lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
+# except Exception as e:
+#     print(f"Failed to create arrow symbol: {e}")
 
 def lcd_thread():
     """
@@ -317,8 +317,8 @@ def main():
     global endThread
     old_instructions = instructions.copy()
     #queue to store data to be sent to LCD
-    LCDthread = threading.Thread(target = lcd_thread, args=())
-    LCDthread.start()
+    # LCDthread = threading.Thread(target = lcd_thread, args=())
+    # LCDthread.start()
     # put all functionality here
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -377,21 +377,21 @@ def main():
             old_instructions = instructions.copy()
             send_instructions()
         #send instructions to LCD
-        with data_lock:
-            if instructions[0] == 1.0:
-                latest_data["angle"] = instructions[1]
-            else:
-                latest_data["angle"] = None
-            if instructions[2] == 1.0:
-                latest_data["dist"] = instructions[3]
-            else:
-                latest_data["dist"] = None
-            if instructions[4] == 1.0 and instructions[5] == 0.0:
-                latest_data["arrow"] = "L"
-            if instructions[4] == 1.0 and instructions[5] == 1.0:
-                latest_data["arrow"] = "R"
-            if instructions[4] == 0.0:
-                latest_data["arrow"] = "N"
+        # with data_lock:
+        #     if instructions[0] == 1.0:
+        #         latest_data["angle"] = instructions[1]
+        #     else:
+        #         latest_data["angle"] = None
+        #     if instructions[2] == 1.0:
+        #         latest_data["dist"] = instructions[3]
+        #     else:
+        #         latest_data["dist"] = None
+        #     if instructions[4] == 1.0 and instructions[5] == 0.0:
+        #         latest_data["arrow"] = "L"
+        #     if instructions[4] == 1.0 and instructions[5] == 1.0:
+        #         latest_data["arrow"] = "R"
+        #     if instructions[4] == 0.0:
+        #         latest_data["arrow"] = "N"
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -404,4 +404,4 @@ def main():
 #run the code
 if __name__ == "__main__":
     main()
-    endThread = True
+    # endThread = True
