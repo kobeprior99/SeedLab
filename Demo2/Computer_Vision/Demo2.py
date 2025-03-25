@@ -118,34 +118,34 @@ MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 # except Exception as e:
 #     print(f"Failed to create arrow symbol: {e}")
 
-def lcd_thread():
-    """
-    Thread function to update the LCD display with the latest data.
+# def lcd_thread():
+#     """
+#     Thread function to update the LCD display with the latest data.
 
-    This function runs in a separate thread and continuously updates the LCD display
-    with the latest angle, distance, and arrow direction data. The thread terminates
-    when the endThread flag is set to True.
-    """
-    while True:
-        if endThread:
-            try:
-                lcd.clear()
-            except Exception as e:
-                print(f"Failed to clear LCD: {e}")
-            break
-        with data_lock: #lock while reading shared data
-            data_copy = latest_data.copy() #copy the data
-        try:
-            lcd.clear()
-            #example print ø: 18.00 →:L
-            #               D:12.00
-            angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
-            distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
-            lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
-            time.sleep(.5)
-        except Exception as e:
-            print(f"Failed to update LCD: {e}")
-    return
+#     This function runs in a separate thread and continuously updates the LCD display
+#     with the latest angle, distance, and arrow direction data. The thread terminates
+#     when the endThread flag is set to True.
+#     """
+#     while True:
+#         if endThread:
+#             try:
+#                 lcd.clear()
+#             except Exception as e:
+#                 print(f"Failed to clear LCD: {e}")
+#             break
+#         with data_lock: #lock while reading shared data
+#             data_copy = latest_data.copy() #copy the data
+#         try:
+#             lcd.clear()
+#             #example print ø: 18.00 →:L
+#             #               D:12.00
+#             angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
+#             distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
+#             lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
+#             time.sleep(.5)
+#         except Exception as e:
+#             print(f"Failed to update LCD: {e}")
+#     return
 
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
