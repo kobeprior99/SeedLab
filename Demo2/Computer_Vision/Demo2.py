@@ -148,7 +148,7 @@ def lcd_thread():
     return
 
 #I2c to communicate with the arduino
-ARD_ADDR = 33 #set arduino address
+ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino

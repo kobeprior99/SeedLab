@@ -1,5 +1,5 @@
 #include <Wire.h>
-#define MY_ADDR 33
+#define MY_ADDR 8
 
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
@@ -23,7 +23,7 @@ void receive(int numBytes){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
-      
+      delay(100);
 
     }
 
