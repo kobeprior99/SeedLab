@@ -72,80 +72,80 @@ MARKER_WIDTH_IRL = 2 #inches
 MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
 
-# LCD setup
-# lcd_columns = 16
-# lcd_rows = 2 
-# i2c_lcd = board.I2C()
-# data_lock = threading.Lock()
-# latest_data = {"angle": 0.0, "dist": 0.0, "arrow": -1}
-# endThread = False #flag to end inf loop in LCD display
-# try:
-#     # initialize LCD
-#     lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
-#     lcd.color = [100, 0, 0] #red
-#     lcd.clear()
-# except Exception as e:
-#     print(f"LCD initialization failed: {e}")
-# #set up special characters for LCD
-# #theta symbol
-# theta_char = [
-#     0b11111,  
-#     0b00100,   
-#     0b01110,  
-#     0b10101,  
-#     0b10101,  
-#     0b01110,  
-#     0b00100,    
-#     0b11111   
-# ]
-# try:
-#     lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
-# except Exception as e:
-#     print(f"Failed to create theta symbol: {e}")
-# #arrow symbol
-# arrow_char = [
-#     0b00000,
-#     0b00100,
-#     0b00010,
-#     0b11111,
-#     0b00010,
-#     0b00100,
-#     0b00000,
-#     0b00000
-# ]
-# try:
-#     lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
-# except Exception as e:
-#     print(f"Failed to create arrow symbol: {e}")
+#LCD setup
+lcd_columns = 16
+lcd_rows = 2 
+i2c_lcd = board.I2C()
+data_lock = threading.Lock()
+latest_data = {"angle": 0.0, "dist": 0.0, "arrow": -1}
+endThread = False #flag to end inf loop in LCD display
+try:
+    # initialize LCD
+    lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
+    lcd.color = [100, 0, 0] #red
+    lcd.clear()
+except Exception as e:
+    print(f"LCD initialization failed: {e}")
+#set up special characters for LCD
+#theta symbol
+theta_char = [
+    0b11111,  
+    0b00100,   
+    0b01110,  
+    0b10101,  
+    0b10101,  
+    0b01110,  
+    0b00100,    
+    0b11111   
+]
+try:
+    lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
+except Exception as e:
+    print(f"Failed to create theta symbol: {e}")
+#arrow symbol
+arrow_char = [
+    0b00000,
+    0b00100,
+    0b00010,
+    0b11111,
+    0b00010,
+    0b00100,
+    0b00000,
+    0b00000
+]
+try:
+    lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
+except Exception as e:
+    print(f"Failed to create arrow symbol: {e}")
 
-# def lcd_thread():
-#     """
-#     Thread function to update the LCD display with the latest data.
+def lcd_thread():
+    """
+    Thread function to update the LCD display with the latest data.
 
-#     This function runs in a separate thread and continuously updates the LCD display
-#     with the latest angle, distance, and arrow direction data. The thread terminates
-#     when the endThread flag is set to True.
-#     """
-#     while True:
-#         if endThread:
-#             try:
-#                 lcd.clear()
-#             except Exception as e:
-#                 print(f"Failed to clear LCD: {e}")
-#             break
-#         with data_lock: #lock while reading shared data
-#             data_copy = latest_data.copy() #copy the data
-#         try:
-#             lcd.clear()
-#             #example print ø: 18.00 →:L
-#             #               D:12.00
-#             angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
-#             distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
-#             lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
-#             time.sleep(.5)
-#         except Exception as e:
-#             print(f"Failed to update LCD: {e}")
-#     return
+    This function runs in a separate thread and continuously updates the LCD display
+    with the latest angle, distance, and arrow direction data. The thread terminates
+    when the endThread flag is set to True.
+    """
+    while True:
+        if endThread:
+            try:
+                lcd.clear()
+            except Exception as e:
+                print(f"Failed to clear LCD: {e}")
+            break
+        with data_lock: #lock while reading shared data
+            data_copy = latest_data.copy() #copy the data
+        try:
+            lcd.clear()
+            #example print ø: 18.00 →:L
+            #               D:12.00
+            angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
+            distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
+            lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
+            time.sleep(.5)
+        except Exception as e:
+            print(f"Failed to update LCD: {e}")
+    return
 
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
@@ -167,7 +167,7 @@ def send_instructions():
     """
     #handle exception if i2c write fails
     try:
-        # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow
+        # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
         # 1.0 is valid, 0.0 is invalid
         byte_array = bytearray()
         #floats have to be sent a special way and decoded in a special way
@@ -315,7 +315,6 @@ def main():
     """
     global instructions
     global endThread
-    old_instructions = instructions.copy()
     #queue to store data to be sent to LCD
     # LCDthread = threading.Thread(target = lcd_thread, args=())
     # LCDthread.start()
@@ -371,27 +370,24 @@ def main():
             instructions[2] = 0.0 #good_distance ->0.0
             instructions[4] = 0.0 #good_arrow ->0.0
         
-        #send instructions to arduino if aruco marker detected
-        # don't send the same data twice and only send every 10 frames
-        if instructions != old_instructions:
-            old_instructions = instructions.copy()
-            send_instructions()
-        #send instructions to LCD
-        # with data_lock:
-        #     if instructions[0] == 1.0:
-        #         latest_data["angle"] = instructions[1]
-        #     else:
-        #         latest_data["angle"] = None
-        #     if instructions[2] == 1.0:
-        #         latest_data["dist"] = instructions[3]
-        #     else:
-        #         latest_data["dist"] = None
-        #     if instructions[4] == 1.0 and instructions[5] == 0.0:
-        #         latest_data["arrow"] = "L"
-        #     if instructions[4] == 1.0 and instructions[5] == 1.0:
-        #         latest_data["arrow"] = "R"
-        #     if instructions[4] == 0.0:
-        #         latest_data["arrow"] = "N"
+        #send instructions to arduino
+        send_instructions()
+        #send only the most recent instructions to LCD
+        with data_lock:
+            if instructions[0] == 1.0:
+                latest_data["angle"] = instructions[1]
+            else:
+                latest_data["angle"] = None
+            if instructions[2] == 1.0:
+                latest_data["dist"] = instructions[3]
+            else:
+                latest_data["dist"] = None
+            if instructions[4] == 1.0 and instructions[5] == 0.0:
+                latest_data["arrow"] = "L"
+            if instructions[4] == 1.0 and instructions[5] == 1.0:
+                latest_data["arrow"] = "R"
+            if instructions[4] == 0.0:
+                latest_data["arrow"] = "N"
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
         if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -404,4 +400,4 @@ def main():
 #run the code
 if __name__ == "__main__":
     main()
-    # endThread = True
+    endThread = True

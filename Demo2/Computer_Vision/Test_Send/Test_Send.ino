@@ -4,10 +4,11 @@
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
 // instruction[0] = distance, instruction[1] = angle
-const int BUFFER_SIZE = 24; //6 floats*4 bytes each
+const int BUFFER_SIZE = 25; //6 floats*4 bytes each 24 bytes + 1 byte offset
 volatile float instruction_array[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; //array to store the instructions
 volatile bool newData = false;
-
+//declared gloabaly to avoid reallocating memory each time receive is called
+volatile byte buffer[BUFFER_SIZE];
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
@@ -17,9 +18,8 @@ void setup() {
   Wire.onReceive(receive);
 }
 void receive(int numBytes){
-    if (numBytes == BUFFER_SIZE + 1 ){
+    if (numBytes == BUFFER_SIZE){
       Wire.read(); //discard first byte (offset)
-      byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
       newData = true;
