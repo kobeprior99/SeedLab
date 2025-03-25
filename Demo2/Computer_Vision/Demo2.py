@@ -153,7 +153,7 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-last_instruction = instructions.copy()
+last_instruction = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
 def send_instructions():
