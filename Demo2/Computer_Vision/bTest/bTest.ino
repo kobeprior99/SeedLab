@@ -4,8 +4,8 @@
 float receivedData[6];  // Store received float values
 
 void receiveData(int byteCount) {
-    if (byteCount < 24) return;  // Ensure we receive exactly 6 floats (6 * 4 bytes)
-
+    if (byteCount < 24+ 1 ) return;  // Ensure we receive exactly 6 floats (6 * 4 bytes)
+    Wire.read();
     byte floatBytes[4];
     for (int i = 0; i < 6; i++) {
         for (int j = 0; j < 4; j++) {
