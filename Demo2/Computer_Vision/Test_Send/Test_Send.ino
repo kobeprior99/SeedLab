@@ -1,5 +1,5 @@
 #include <Wire.h>
-#define MY_ADDR 15
+#define MY_ADDR 33
 
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
