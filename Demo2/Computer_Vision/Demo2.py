@@ -315,6 +315,7 @@ def main():
     """
     global instructions
     global endThread
+    old_instructions = instructions
     #queue to store data to be sent to LCD
     LCDthread = threading.Thread(target = lcd_thread, args=())
     LCDthread.start()
@@ -364,15 +365,16 @@ def main():
                 instructions[4] = 0.0 #good_arrow ->0.0
             instructions[2] = 1.0 #good_distance ->1.0
             instructions[3] = distance(corners, ids, frame_undistorted, center) #distance ->distance
-            #send instructions to arduino if aruco marker detected
-            send_instructions()
         else:
             #no aruco marker detected flag good_angle, good_distance, good arrow as 0.0
             instructions[0] = 0.0 #good_angle ->0.0
             instructions[2] = 0.0 #good_distance ->0.0
             instructions[4] = 0.0 #good_arrow ->0.0
         
-
+        #send instructions to arduino if aruco marker detected
+        if instructions != old_instructions:
+            old_instructions = instructions
+            send_instructions()
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
