@@ -314,6 +314,9 @@ def main():
     Raises:
     IOError: If the camera cannot be opened or a frame cannot be captured.
     """
+    global last_instruction
+    global instructions
+    global endThread
     #queue to store data to be sent to LCD
     LCDthread = threading.Thread(target = lcd_thread, args=())
     LCDthread.start()
