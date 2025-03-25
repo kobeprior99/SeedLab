@@ -6,7 +6,7 @@ volatile uint8_t offset = 0;
 // instruction[0] = distance, instruction[1] = angle
 const int BUFFER_SIZE = 24; //6 floats*4 bytes each
 volatile float instruction_array[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}; //array to store the instructions
-
+volatile bool newData = false;
 
 void setup() {
   // put your setup code here, to run once:
@@ -22,7 +22,13 @@ void receive(int numBytes){
       byte buffer[BUFFER_SIZE];
       Wire.readBytes(buffer, BUFFER_SIZE);
       memcpy(instruction_array, buffer, BUFFER_SIZE);
+      newData = true;
     }
+    }
+
+void loop() {
+  if (newData){
+    newData = false;
     // put your main code here, to run repeatedly:
     float good_angle = instruction_array[0];
     float angle = instruction_array[1];
@@ -41,10 +47,7 @@ void receive(int numBytes){
     Serial.print("Arrow: ");
     if(good_arrow == 1.0) Serial.println(arrow);
     else Serial.println("N/A");
-
-    }
-
-void loop() {
+    delay(10);
+  }
   
-    delay(1000);
 }
