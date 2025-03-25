@@ -14,8 +14,10 @@ void setup() {
   // Serial.begin(9600);
   //address
   Wire.begin(MY_ADDR);
+  Wire.setClock(1000000);
   //when receiving call reeceive function
   Wire.onReceive(receive);
+
 }
 void receive(int numBytes){
     if (numBytes == BUFFER_SIZE + 1){

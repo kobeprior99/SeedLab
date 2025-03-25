@@ -155,7 +155,9 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
+count = 0 #counter to send instructions only every 3rd call of send_instructions
 def send_instructions():
+    global count
     """
     Sends instructions to an Arduino via I2C communication.
 
@@ -166,20 +168,25 @@ def send_instructions():
     IOError: If the I2C write operation fails.
     """
     #handle exception if i2c write fails
-    try:
-        # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
-        # 1.0 is valid, 0.0 is invalid
-        byte_array = bytearray()
-        #floats have to be sent a special way and decoded in a special way
-        for instruction in instructions:
-            byte_array.extend(struct.pack("f", instruction))
-        #debug
-        #print(len(byte_array))
-        #parameters are address of arduino, register to write to, and data to write
-        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
-    except IOError:
-        print("Could not write data to the Arduino.")
-        return 
+
+    #force to send only every 3rd call of this function
+    count+=1
+    if count == 3:
+        count = 0
+        try:
+            # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
+            # 1.0 is valid, 0.0 is invalid
+            byte_array = bytearray()
+            #floats have to be sent a special way and decoded in a special way
+            for instruction in instructions:
+                byte_array.extend(struct.pack("f", instruction))
+            #debug
+            #print(len(byte_array))
+            #parameters are address of arduino, register to write to, and data to write
+            i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
+        except IOError:
+            print("Could not write data to the Arduino.")
+            return 
     
 def find_mask(frame):
     """
@@ -323,6 +330,7 @@ def main():
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
+    
     #camera warm up
     time.sleep(2)
     for _ in range(5):
@@ -371,7 +379,6 @@ def main():
         #send instructions to arduino if they are not all 0.0
         if instructions != [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
             send_instructions()
-            time.sleep(0.3) #delay to prevent overloading arduino
         #send only the most recent instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
