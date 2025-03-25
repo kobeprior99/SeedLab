@@ -1,3 +1,22 @@
+
+/**
+ * @file Test_Send.ino
+ * @author Kobe Prior
+ * @date March 24, 2025
+ * @brief Demonstrates functionality of I2C communication.
+ *
+ * This program sets up an Arduino device to act as an I2C slave with a specific address.
+ * It listens for data sent from an I2C master device and processes the received data.
+ * The received data includes a flag for valid angle and distance, an arrow indicator, 
+ * and two floating-point values representing angle and distance. The processed data 
+ * is then printed to the Serial Monitor for debugging or further use.
+ *
+ * Features:
+ * - Configures the device as an I2C slave with a clock speed of 400 kHz.
+ * - Receives and processes data sent by an I2C master.
+ * - Stores byte data into 5 variables.
+ * - Outputs the processed data to the Serial Monitor.
+ */
 #include <Wire.h>
 #define MY_ADDR 8
 

@@ -17,6 +17,7 @@
 * 02/23/2025    Kobe Prior added necessary libraries and some initializations
 * 03/03/2025    Kobe Prior Blane added the main function
 * 03/06/2025    Kobe Prior Blane added the LCD display function
+* 03/24/2025    Kobe Prior Blane added Revised LCD program to send 11 bytes instead of 24 at a time
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
