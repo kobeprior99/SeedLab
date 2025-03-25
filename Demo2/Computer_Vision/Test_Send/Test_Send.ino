@@ -48,20 +48,13 @@ void receive(int numBytes){
 void loop() {
   if (newData){
     newData = false;
-    Serial.println("Received instructions:");
-    Serial.print("Angle: ");
-    if(good_angle == 1) Serial.print(angle);
-    else Serial.print("N/A");
-    Serial.print(" ");
-    Serial.print("Distance: ");
-    if(good_distance == 1) Serial.print(distance);
-    else Serial.print("N/A");
-    Serial.print(" ");
-    Serial.print("Arrow: ");
-    if(arrow == 0) {Serial.println("left");}
-    else if(arrow == 1) {Serial.println("right");}
-    else{Serial.println("N/A");}
-    delay(1000);
+    if (good_angle == 1 && fabs(angle) <= 1)
+    {
+      Serial.println("angle within a degree");
+    }
+    if (good_distance == 1 && distance <= 12){
+      Serial.println("Within a foot");
+    }
   }
-  
+  delay(1000);
 }
