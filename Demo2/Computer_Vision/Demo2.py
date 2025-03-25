@@ -374,7 +374,10 @@ def main():
         #send instructions to arduino if aruco marker detected
         if instructions != old_instructions:
             old_instructions = instructions.copy()
-            send_instructions()
+            if count % 10 == 0:
+                send_instructions()
+                count = 0
+            count += 1
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
