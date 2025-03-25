@@ -18,6 +18,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
   //address
+  Wire.setClock(400000); // 400 kHz clock speed
   Wire.begin(MY_ADDR);
   //when receiving call reeceive function
   Wire.onReceive(receive);
@@ -47,14 +48,13 @@ void receive(int numBytes){
 
 void loop() {
   if (newData){
-    newData = false;
-    if (good_angle == 1 && fabs(angle) <= 1)
-    {
-      Serial.println("angle within a degree");
-    }
-    if (good_distance == 1 && distance <= 12){
-      Serial.println("Within a foot");
-    }
-  }
+  newData = false;
+  Serial.print(good_angle); Serial.print(", ");
+  Serial.print(good_distance); Serial.print(", ");
+  Serial.print(arrow); Serial.print(", ");
+  Serial.print(angle); Serial.print(", ");
+  Serial.println(distance);;
+
   delay(1000);
+}
 }
