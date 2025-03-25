@@ -330,6 +330,7 @@ def main():
         cap.read()
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
+    count =0
     while True:
         ret, frame = cap.read()
         if not ret:
