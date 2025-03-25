@@ -1,36 +1,31 @@
 #include <Wire.h>
+#define MY_ADDR 8
 
-#define I2C_ADDR 0x08
-float receivedData[6];  // Store received float values
-
-void receiveData(int byteCount) {
-    if (byteCount < 24+ 1 ) return;  // Ensure we receive exactly 6 floats (6 * 4 bytes)
-    Wire.read();
-    byte floatBytes[4];
-    for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 4; j++) {
-            if (Wire.available()) {
-                floatBytes[j] = Wire.read();  // Read 4 bytes per float
-            }
-        }
-        memcpy(&receivedData[i], floatBytes, sizeof(float));  // Convert bytes to float
-    }
-
-    // Debug: Print received data
-    Serial.print("Received: ");
-    for (int i = 0; i < 6; i++) {
-        Serial.print(receivedData[i]);
-        Serial.print(" ");
-    }
-    Serial.println();
-}
+const int BUFFER_SIZE = 24; 
+volatile float instruction_array[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
 void setup() {
-    Wire.begin(I2C_ADDR);
-    Wire.onReceive(receiveData);
     Serial.begin(115200);
+    Wire.begin(MY_ADDR);
+    Wire.onReceive(receive);
+}
+
+void receive(int numBytes) {
+    if (numBytes == BUFFER_SIZE + 1) {
+        Wire.read();  
+        byte buffer[BUFFER_SIZE];
+        if (Wire.available() >= BUFFER_SIZE) {
+            Wire.readBytes(buffer, BUFFER_SIZE);
+            memcpy((void*)instruction_array, buffer, BUFFER_SIZE);
+        }
+    }
+    
+    Serial.println("Received instructions:");
+    Serial.print("Angle: "); Serial.println(instruction_array[0] ? instruction_array[1] : "N/A");
+    Serial.print("Distance: "); Serial.println(instruction_array[2] ? instruction_array[3] : "N/A");
+    Serial.print("Arrow: "); Serial.println(instruction_array[4] ? instruction_array[5] : "N/A");
 }
 
 void loop() {
-    // Waiting for I2C data
+    delay(500);
 }
