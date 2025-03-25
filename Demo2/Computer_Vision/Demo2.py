@@ -148,7 +148,7 @@ def lcd_thread():
     return
 
 #I2c to communicate with the arduino
-ARD_ADDR = 8 #set arduino address
+ARD_ADDR = 21 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
@@ -177,7 +177,6 @@ def send_instructions():
         #print(len(byte_array))
         #parameters are address of arduino, register to write to, and data to write
         i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
-
     except IOError:
         print("Could not write data to the Arduino.")
         return 

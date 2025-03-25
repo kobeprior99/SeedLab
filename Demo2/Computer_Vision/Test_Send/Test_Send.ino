@@ -1,5 +1,5 @@
 #include <Wire.h>
-#define MY_ADDR 8
+#define MY_ADDR 21
 
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
@@ -43,7 +43,7 @@ void receive(int numBytes){
       Serial.print("Arrow: ");
       if(good_arrow == 1.0) Serial.println(arrow);
       else Serial.println("N/A");
-      Serial.println("start == true");
+      //Serial.println("start == true");
       //start the rest of the code
     }
 
