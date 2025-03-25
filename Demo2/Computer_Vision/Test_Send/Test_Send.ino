@@ -16,9 +16,8 @@ volatile bool newData = false;
 //declared gloabaly to avoid reallocating memory each time receive is called
 void setup() {
   // put your setup code here, to run once:
-  // Serial.begin(9600);
+  Serial.begin(9600);
   //address
-  Wire.setClock(400000); 
   Wire.begin(MY_ADDR);
   //when receiving call reeceive function
   Wire.onReceive(receive);
@@ -51,16 +50,18 @@ void loop() {
     newData = false;
     Serial.println("Received instructions:");
     Serial.print("Angle: ");
-    if(good_angle == 1) Serial.println(angle);
-    else Serial.println("N/A");
+    if(good_angle == 1) Serial.print(angle);
+    else Serial.print("N/A");
+    Serial.print(" ");
     Serial.print("Distance: ");
-    if(good_distance == 1) Serial.println(distance);
-    else Serial.println("N/A");
+    if(good_distance == 1) Serial.print(distance);
+    else Serial.print("N/A");
+    Serial.print(" ");
     Serial.print("Arrow: ");
     if(arrow == 0) {Serial.println("left");}
     else if(arrow == 1) {Serial.println("right");}
     else{Serial.println("N/A");}
-
+    delay(1000);
   }
   
 }
