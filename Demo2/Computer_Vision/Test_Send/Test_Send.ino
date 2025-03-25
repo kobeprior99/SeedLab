@@ -17,7 +17,6 @@ void setup() {
   Wire.onReceive(receive);
 }
 void receive(int numBytes){
-  
     if (numBytes == BUFFER_SIZE + 1 ){
       Wire.read(); //discard first byte (offset)
       byte buffer[BUFFER_SIZE];
@@ -26,11 +25,7 @@ void receive(int numBytes){
       delay(100);
 
     }
-
-    }
-
-void loop() {
-  // put your main code here, to run repeatedly:
+    // put your main code here, to run repeatedly:
     float good_angle = instruction_array[0];
     float angle = instruction_array[1];
     float good_distance = instruction_array[2];
@@ -48,5 +43,10 @@ void loop() {
     Serial.print("Arrow: ");
     if(good_arrow == 1.0) Serial.println(arrow);
     else Serial.println("N/A");
+
+    }
+
+void loop() {
+  
     delay(1000);
 }
