@@ -40,7 +40,7 @@ void receive(){
     coordinates[i] = Wire.read();
   }
   Serial.print(coordinates[0]);
-  Serial.print(coordinates[1]);
+  Serial.println(coordinates[1]);
   }
 
 void loop(){}

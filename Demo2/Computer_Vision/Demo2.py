@@ -142,17 +142,18 @@ def lcd_thread():
             angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
             distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
             lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
-            time.sleep(.5)
+            time.sleep(1)
         except Exception as e:
             print(f"Failed to update LCD: {e}")
     return
 
 #I2c to communicate with the arduino
-ARD_ADDR = 33 #set arduino address
+ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+last_instructions = instructions
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
 def send_instructions(instructions):
@@ -374,7 +375,9 @@ def main():
             instructions[4] = 0.0 #good_arrow ->0.0
         
         #send instructions to arduino
-        send_instructions()
+        if instructions != last_instructions:
+            send_instructions()
+        last_instruction = instructions
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
