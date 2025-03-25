@@ -49,25 +49,18 @@ void receive(int numBytes){
 void loop() {
   if (newData){
     newData = false;
-    // put your main code here, to run repeatedly:
-    // float good_angle = instruction_array[0];
-    // float angle = instruction_array[1];
-    // float good_distance = instruction_array[2];
-    // float distance = instruction_array[3];
-    // float good_arrow = instruction_array[4];
-    // float arrow = instruction_array[5];
+    Serial.println("Received instructions:");
+    Serial.print("Angle: ");
+    if(good_angle == 1) Serial.println(angle);
+    else Serial.println("N/A");
+    Serial.print("Distance: ");
+    if(good_distance == 1) Serial.println(distance);
+    else Serial.println("N/A");
+    Serial.print("Arrow: ");
+    if(arrow == 0) {Serial.println("left");}
+    else if(arrow == 1) {Serial.println("right");}
+    else{Serial.println("N/A");}
 
-    // Serial.println("Received instructions:");
-    // Serial.print("Angle: ");
-    // if(good_angle == 1.0) Serial.println(angle);
-    // else Serial.println("N/A");
-    // Serial.print("Distance: ");
-    // if(good_distance == 1.0) Serial.println(distance);
-    // else Serial.println("N/A");
-    // Serial.print("Arrow: ");
-    // if(good_arrow == 1.0) Serial.println(arrow);
-    // else Serial.println("N/A");
-    // delay(10);
   }
   
 }
