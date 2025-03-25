@@ -370,8 +370,7 @@ def main():
             instructions[4] = 0.0 #good_arrow ->0.0
         
         #send instructions to arduino
-        if instructions != [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
-            send_instructions()
+        send_instructions()
 
         #send instructions to LCD
         with data_lock:
