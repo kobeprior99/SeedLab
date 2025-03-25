@@ -26,6 +26,7 @@ void setup() {
   Wire.begin(MY_ADDR);
   //when receiving call reeceive function
   Wire.onReceive(receive);
+  Serial.begin(115200);
  
 }
 
@@ -38,4 +39,8 @@ void receive(){
   for(int i = 0; i < 2 && Wire.available(); i++){
     coordinates[i] = Wire.read();
   }
+  Serial.print(coordinates[0]);
+  Serial.print(coordinates[1]);
   }
+
+void loop(){}
