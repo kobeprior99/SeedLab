@@ -315,7 +315,7 @@ def main():
     """
     global instructions
     global endThread
-    old_instructions = instructions
+    old_instructions = instructions.copy()
     #queue to store data to be sent to LCD
     LCDthread = threading.Thread(target = lcd_thread, args=())
     LCDthread.start()
