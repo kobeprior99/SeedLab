@@ -153,7 +153,6 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-last_instructions = instructions
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
 def send_instructions(instructions):
@@ -375,9 +374,7 @@ def main():
             instructions[4] = 0.0 #good_arrow ->0.0
         
         #send instructions to arduino
-        if instructions != last_instructions:
-            send_instructions()
-        last_instruction = instructions
+        send_instructions()
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
