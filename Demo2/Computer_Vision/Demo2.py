@@ -155,31 +155,35 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
-def send_instructions():
+def send_instructions(instructions):
     """
-    Sends instructions to an Arduino via I2C communication.
+    Sends a list of 6 float instructions to the Arduino via I2C.
 
-    This function sends a list of float instructions to the Arduino. The instructions
-    include information about the angle, distance, and arrow detection status.
-
+    Args:
+        instructions (list): A list of exactly 6 floats.
+    
     Raises:
-    IOError: If the I2C write operation fails.
+        IOError: If the I2C write operation fails.
     """
-    #handle exception if i2c write fails
     try:
-        # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow
-        # 1.0 is valid, 0.0 is invalid
+        if len(instructions) != 6:
+            print("Error: instructions list must have exactly 6 floats.")
+            return
+
+        # Convert floats to bytes
         byte_array = bytearray()
-        #floats have to be sent a special way and decoded in a special way
         for instruction in instructions:
-            byte_array.extend(struct.pack("f", instruction))
-        #debug
-        #print(len(byte_array))
-        #parameters are address of arduino, register to write to, and data to write
-        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
+            byte_array.extend(struct.pack("f", instruction))  # Convert float to 4 bytes
+        
+        # Send data in chunks (if needed)
+        for i in range(0, len(byte_array), 4):  # Send 4 bytes at a time
+            i2c_arduino.write_i2c_block_data(I2C_ADDR, 0, list(byte_array[i:i+4]))
+            time.sleep(0.05)  # Short delay to prevent I2C overflow
+        
+        print("Sent:", instructions)
+
     except IOError:
         print("Could not write data to the Arduino.")
-        return 
     
 def find_mask(frame):
     def find_mask(frame):
