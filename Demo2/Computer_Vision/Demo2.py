@@ -142,7 +142,7 @@ def lcd_thread():
             angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
             distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
             lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
-            time.sleep(1)
+            time.sleep(.5)
         except Exception as e:
             print(f"Failed to update LCD: {e}")
     return
@@ -182,16 +182,15 @@ def send_instructions():
         return 
     
 def find_mask(frame):
-    def find_mask(frame):
-        """
-        Generate masks for detecting red and green colors in the given frame.
-        Helper function for check_arrow.
-        Args:
-            frame (ndarray): The image frame in which to detect colors.
+    """
+    Generate masks for detecting red and green colors in the given frame.
+    Helper function for check_arrow.
+    Args:
+        frame (ndarray): The image frame in which to detect colors.
 
-        Returns:
-            tuple: A tuple containing the green mask and red mask.
-        """
+    Returns:
+        tuple: A tuple containing the green mask and red mask.
+    """
     #convert to frame to hsv
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     green_mask = cv2.inRange(hsv, LOWER_GREEN, UPPER_GREEN)
