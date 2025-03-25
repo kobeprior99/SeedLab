@@ -371,7 +371,7 @@ def main():
         #send instructions to arduino if they are not all 0.0
         if instructions != [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
             send_instructions()
-            time.sleep(0.1) #delay to prevent overloading arduino
+            time.sleep(0.3) #delay to prevent overloading arduino
         #send only the most recent instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
