@@ -376,6 +376,7 @@ def main():
         if instructions != last_instruction:
             last_instruction = instructions
             send_instructions()
+            print("data sent")
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
