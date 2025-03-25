@@ -152,12 +152,9 @@ ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
-instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-#  [good_angle, angle, good_distance, distance, good_arrow, arrow]
-
-count = 0 #counter to send instructions only every 3rd call of send_instructions
+instructions = {"good_angle": 0, "good_distance": 0, "arrow": 2, "angle": 0.0, "distance": 0.0}
+# arrow = -1 means no arrow detected, 0 means left arrow, 1 means right arrow
 def send_instructions():
-    global count
     """
     Sends instructions to an Arduino via I2C communication.
 
@@ -168,25 +165,22 @@ def send_instructions():
     IOError: If the I2C write operation fails.
     """
     #handle exception if i2c write fails
-
-    #force to send only every 3rd call of this function
-    count+=1
-    if count == 3:
-        count = 0
-        try:
-            # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
-            # 1.0 is valid, 0.0 is invalid
-            byte_array = bytearray()
-            #floats have to be sent a special way and decoded in a special way
-            for instruction in instructions:
-                byte_array.extend(struct.pack("f", instruction))
-            #debug
-            #print(len(byte_array))
-            #parameters are address of arduino, register to write to, and data to write
-            i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, list(byte_array))
-        except IOError:
-            print("Could not write data to the Arduino.")
-            return 
+    global instructions
+    try:
+       # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
+       #just three bytes
+       instruction_array = [instructions["good_angle"], instructions["good_distance"], instructions["arrow"]]
+       #special handling for floats which will require an extra 8 bytes 4 bytes for each float
+       angle_in_bytes = list(struct.pack('f', instructions["angle"]))
+       instruction_array.append(angle_in_bytes)
+       distance_in_bytes = list(struct.pack('f', instructions["distance"]))
+       instruction_array.append(distance_in_bytes)
+       #total send is 3 + 8 bytes = 11 bytes, much better than the 24 from the previous implementation
+       i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
+       print("Instructions sent to Arduino.")
+    except IOError:
+        print("Could not write data to the Arduino.")
+        return 
     
 def find_mask(frame):
     """
@@ -350,8 +344,8 @@ def main():
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
             center = find_center(corners, frame_undistorted)
-            instructions[0] = 1.0 #good_angle ->1.0
-            instructions[1] = findPhi(center, frame_undistorted) #angle ->angle
+            instructions["good_angle"] = 1 #good_angle ->1
+            instructions["angle"] = findPhi(center, frame_undistorted) #angle ->angle
             #debug:
             #print(angle)
 
@@ -360,40 +354,37 @@ def main():
             if arrow == 0:
                 #here we would modify instruction array
                 #print("LEFT")
-                instructions[4] = 1.0 #good_arrow ->1.0
-                instructions[5] = 0.0 #arrow ->0.0
+                instructions["arrow"] = 0 #->arrow is now left
             elif arrow == 1:
                 #print("RIGHT")
-                instructions[4] = 1.0 #good_arrow ->1.0
-                instructions[5] = 1.0 #arrow ->0.0
+                instructions["arrow"] = 1 #-> arrow is now right
             else:
                 #no arrow detected good_arrow ->0.0
                 #print("NO ARROW DETECTED")
-                instructions[4] = 0.0 #good_arrow ->0.0
-            instructions[2] = 1.0 #good_distance ->1.0
-            instructions[3] = distance(corners, ids, frame_undistorted, center) #distance ->distance
+                instructions["arrow"] = 2 #good_arrow ->0.0
+            instructions["good_distance"] = 1 #good_distance ->1.0
+            instructions["distance"] = distance(corners, ids, frame_undistorted, center) #distance ->distance
         else:
-            #no aruco marker detected set all instructions to 0.0
-            instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-        
-        #send instructions to arduino if they are not all 0.0
-        if instructions != [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
-            send_instructions()
+            instructions["good_angle"] = 0
+            instructions["good_distance"] = 0
+            instructions["arrow"] = 0
+        #send instructions to arduino
+        send_instructions()
         #send only the most recent instructions to LCD
         with data_lock:
-            if instructions[0] == 1.0:
-                latest_data["angle"] = instructions[1]
+            if instructions["good_angle"] == 1.0:
+                latest_data["angle"] = instructions["angle"]
             else:
                 latest_data["angle"] = None
-            if instructions[2] == 1.0:
-                latest_data["dist"] = instructions[3]
+            if instructions["good_distance"] == 1:
+                latest_data["dist"] = instructions["distance"]
             else:
                 latest_data["dist"] = None
-            if instructions[4] == 1.0 and instructions[5] == 0.0:
+            if instructions["arrow"] == 0:
                 latest_data["arrow"] = "L"
-            if instructions[4] == 1.0 and instructions[5] == 1.0:
+            if instructions["arrow"] == 1:
                 latest_data["arrow"] = "R"
-            if instructions[4] == 0.0:
+            if instructions["arrow"] == 2:
                 latest_data["arrow"] = "N"
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
