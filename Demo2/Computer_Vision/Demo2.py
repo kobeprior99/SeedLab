@@ -330,7 +330,6 @@ def main():
         cap.read()
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-    count =0
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -376,10 +375,7 @@ def main():
         # don't send the same data twice and only send every 10 frames
         if instructions != old_instructions:
             old_instructions = instructions.copy()
-            if count % 10 == 0:
-                send_instructions()
-                count = 0
-            count += 1
+            send_instructions()
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
