@@ -372,6 +372,7 @@ def main():
             instructions[4] = 0.0 #good_arrow ->0.0
         
         #send instructions to arduino if aruco marker detected
+        # don't send the same data twice and only send every 10 frames
         if instructions != old_instructions:
             old_instructions = instructions.copy()
             if count % 10 == 0:
