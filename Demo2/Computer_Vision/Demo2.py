@@ -370,8 +370,9 @@ def main():
             instructions[2] = 0.0 #good_distance ->0.0
             instructions[4] = 0.0 #good_arrow ->0.0
         
-        #send instructions to arduino
-        send_instructions()
+        #send instructions to arduino if they are not all 0.0
+        if instructions != [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]:
+            send_instructions()
         #send only the most recent instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
