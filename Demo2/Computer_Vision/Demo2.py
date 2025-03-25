@@ -175,6 +175,7 @@ def send_instructions():
        instruction_array.append(angle_in_bytes)
        distance_in_bytes = list(struct.pack('f', instructions["distance"]))
        instruction_array.append(distance_in_bytes)
+       print(instruction_array)
        #total send is 3 + 8 bytes = 11 bytes, much better than the 24 from the previous implementation
        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
        print("Instructions sent to Arduino.")
