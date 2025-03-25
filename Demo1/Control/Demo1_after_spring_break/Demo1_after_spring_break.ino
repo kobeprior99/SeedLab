@@ -46,24 +46,24 @@ float desiredPhi;   // use to set turn
 float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
-float iPhi = 0.0;
-float kpPhi = 400; 
-float kdPhi = 70;
-float kiPhi = 3; 
+// float iPhi = 0.0;
+float kpPhi = 1000; 
+float kdPhi = 50;
+// float kiPhi = 3; 
 float angularVel = 0.0;
 float desiredAngVel = 0;
 float angularVelError = 0.0;
-float kpAngVel = 0.5;
+float kpAngVel = 1;
   // Driving Controller
 float currentRho = 0.0;
 float desiredRho = 0.0;
 float rhoError = 0.0;
 float prevRhoError = 0.0;
 float dRho = 0.0;
-float iRho = 0.0;
-float kpRho = 18; 
-float kdRho = 1; 
-float kiRho = 0.5;  
+// float iRho = 0.0;
+float kpRho = 17; 
+float kdRho = 4; 
+// float kiRho = 0.5;  
 float velocity = 0.0;
 float desiredVel = 0.0;
 float velocityError = 0.0;
@@ -180,10 +180,8 @@ void loop() {
       
     case DRIVE: // drive to the rho we want
       desiredRho = instruction_array[3];
-      //kdPhi = 14;
-      kiPhi = 15;
       //check that rho and phi are within reasonable error
-      if(fabs(currentRho - desiredRho) < 0.02 && fabs(currentPhi - desiredPhi) < 0.01) {
+      if(fabs(currentRho - desiredRho) < 0.02 && fabs(currentPhi - desiredPhi) < 0.02) {
         state = STOP;
       }
       break;
@@ -202,30 +200,21 @@ void loop() {
   iPhi += phiError * delta_t;
   desiredAngVel = ( kpPhi * phiError ) + (kiPhi * iPhi) + (kdPhi * dPhi);
   angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
-  // filteredAngularVel = alpha_ang * angularVel + (1-alpha_ang) * filteredAngularVel;
-  //debug serial plot to see what filtered angular velocity looks like
-  // Serial.print(filteredAngularVel);
-  // Serial.print(angularVel);
   angularVelError = desiredAngVel - angularVel;
 
 
   // Driving Controller (Rho)
   rhoError = desiredRho - currentRho;
   dRho = ( rhoError - prevRhoError ) / delta_t;
-  iRho += rhoError * delta_t;
-  iRho = constrain(iRho, -4, 4);
-  desiredVel = ( kpRho * rhoError ) + (kiRho * iRho) + (kdRho * dRho);
+  desiredVel = ( kpRho * rhoError ) + (kdRho * dRho);
   velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
-  //IIR filter from ISS2
-  // filteredVelocity = alpha * velocity +(1 - alpha) * filteredVelocity;
-  //debug serial plot to see what filtered velocity looks like
-  // Serial.print(filteredVelocity);
-  // Serial.print(velocity);
+
   velocityError = desiredVel - velocity;
 
   // Calculate vBar and deltaV
   vBar = velocityError * kpVel;
   deltaV = angularVelError * kpAngVel;
+
   // Use vBar and deltaV to find motor voltages
   voltage[0] = (vBar - deltaV) / 2;
   voltage[1] = (vBar + deltaV ) / 2;
