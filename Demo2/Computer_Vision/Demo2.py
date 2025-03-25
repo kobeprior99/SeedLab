@@ -153,7 +153,6 @@ i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 
 # global float array for data to send to arduino
 instructions = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-last_instruction = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 #  [good_angle, angle, good_distance, distance, good_arrow, arrow]
 
 def send_instructions():
@@ -314,7 +313,6 @@ def main():
     Raises:
     IOError: If the camera cannot be opened or a frame cannot be captured.
     """
-    global last_instruction
     global instructions
     global endThread
     #queue to store data to be sent to LCD
@@ -373,10 +371,7 @@ def main():
             instructions[4] = 0.0 #good_arrow ->0.0
         
         #send instructions to arduino
-        if instructions != last_instruction:
-            last_instruction = instructions
-            send_instructions()
-            print("data sent")
+        send_instructions()
         #send instructions to LCD
         with data_lock:
             if instructions[0] == 1.0:
