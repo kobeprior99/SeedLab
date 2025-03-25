@@ -1,6 +1,8 @@
-Computer Visions: 
-find the angle, distance, and arrow and relay this data to the controls system
-## Directory: Computer_Vision
+## Directory: Test_Send
+
+### Files and Descriptions
+
+- **Test_Send.ino**: Tests the functionality of sending data via I2C from Raspberry Pi to Arduino.
 
 ### Files and Descriptions
 - **arrow.py**: Development of angle detection to be utilized in Demo 2.
@@ -12,16 +14,3 @@ find the angle, distance, and arrow and relay this data to the controls system
 - **projectBoard.txt**: Description of individual and joint tasks.
 - **rightarrow.png**: Beacon image to be printed.
 - **test_float_pack**: Supplementary file for Demo 2 to ensure proper packing of floats for I2C communication.
-## Directory: Test_Send
-### Files and Descriptions
-- **Test_Send.ino**: Tests the functionality of sending data via I2C from Raspberry Pi to Arduino.
-
-Controls and Localizaiton:
-Design an FSM that takes computer vision parameters as flags to switch between states. See Demo2/Control/FSM.jpg
-files and descriptions: 
-## Directory: Control
-### Files
-- **FSM.JPG** shows ideation for FSM
-## Directory: Demo2
-### Files
-- **Demo2.ino** Implements a finite state machine to turn until arrow identified then approach within a foot then turn the direction of the arrow

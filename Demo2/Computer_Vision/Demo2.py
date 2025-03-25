@@ -7,8 +7,9 @@
 * When this information is available send it to the LCD screen and arduino.
 *
 * Supplementary File(s): Computer_Vision/Demo1/cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file 
-* distance.py used to experiment with distance calculation function
-* arrow.py used to experiment with arrow detection function  
+* distance.py and chatdist.py used to experiment with distance calculation function
+* arrow.py used to experiment with arrow detection function
+* test_float_pack.py file used to experiment with sending floats to arduino
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
