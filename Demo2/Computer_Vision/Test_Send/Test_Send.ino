@@ -35,16 +35,16 @@ volatile bool newData = false;
 //declared gloabaly to avoid reallocating memory each time receive is called
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
+  Serial.begin( 9600 );
   //address
-  Wire.setClock(400000); // 400 kHz clock speed
+  Wire.setClock( 400000 ); // 400 kHz clock speed
   Wire.begin(MY_ADDR);
   //when receiving call reeceive function
   Wire.onReceive(receive);
 
 }
 void receive(int numBytes){
-    if (Wire.available() ){
+    while ( Wire.available() ){
       Wire.read(); //discard first byte (offset)
       good_angle = Wire.read();
       good_distance = Wire.read();
@@ -53,7 +53,7 @@ void receive(int numBytes){
       for (int i = 0; i < BUFFER_SIZE; i++){
         buffer[i] = Wire.read();
       }
-      memcpy(&angle, buffer, sizeof(angle));
+      memcpy( &angle, buffer, sizeof(angle) );
       
       for (int i = 0; i < BUFFER_SIZE; i++){
         buffer[i] = Wire.read();
@@ -72,7 +72,7 @@ void loop() {
   Serial.print(good_distance); Serial.print(", ");
   Serial.print(arrow); Serial.print(", ");
   Serial.print(angle); Serial.print(", ");
-  Serial.println(distance);;
+  Serial.println(distance);
 
   delay(1000);
 }

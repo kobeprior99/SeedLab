@@ -47,7 +47,7 @@ float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
 // float iPhi = 0.0;
-float kpPhi = 600; 
+float kpPhi = 620; 
 float kdPhi = 45;
 // float kiPhi = 3; 
 float angularVel = 0.0;
@@ -61,8 +61,8 @@ float rhoError = 0.0;
 float prevRhoError = 0.0;
 float dRho = 0.0;
 // float iRho = 0.0;
-float kpRho = 45; 
-float kdRho = 2; 
+float kpRho = 57; 
+float kdRho = 2.5; 
 // float kiRho = 0.5;  
 float velocity = 0.0;
 float desiredVel = 0.0;
@@ -167,7 +167,7 @@ void loop() {
       desiredRho = 0;
       desiredPhi = instruction_array[1]* (PI/180);
       // Check if we are within desired bounds
-      if ( fabs(currentPhi - desiredPhi) <= 0.01 ) {
+      if ( fabs(currentPhi - desiredPhi) <= 0.005 ) {
         analogWrite( pwmPin[0], 0);
         analogWrite( pwmPin[1], 0);
         delay(1000);
@@ -178,9 +178,9 @@ void loop() {
       
     case DRIVE: // drive to the rho we want
       desiredRho = instruction_array[3];
-      kdPhi = 18;
+      kdPhi = 5;
       //check that rho and phi are within reasonable error
-      if(fabs(currentRho - desiredRho) < 0.01 && fabs(currentPhi - desiredPhi) < 0.1) {
+      if(fabs(currentRho - desiredRho) < 0.01 && fabs(currentPhi - desiredPhi) < 0.01) {
         state = STOP;
       }
       break;
@@ -188,6 +188,7 @@ void loop() {
     case STOP: // stop and stay where you are
       analogWrite( pwmPin[0], 0);
       analogWrite(pwmPin[1], 0);
+      delay(1000);
       break;
   }
 
@@ -201,8 +202,8 @@ void loop() {
   angularVel = ( r / b ) * ( motorVel[1] - motorVel[0] );
   
   angularVelError = desiredAngVel - angularVel;
-  Serial.println(phiError);
-  Serial.print(" ");
+  // Serial.println(phiError);
+  // Serial.print(" ");
   // Driving Controller (Rho)
   rhoError = desiredRho - currentRho;
   dRho = ( rhoError - prevRhoError ) / delta_t;
@@ -210,7 +211,7 @@ void loop() {
   velocity = ( r / 2 ) * ( motorVel[1] + motorVel[0] );
 
   velocityError = desiredVel - velocity;
-  Serial.println(rhoError);
+  // Serial.println(rhoError);
   // Calculate vBar and deltaV
   vBar = velocityError * kpVel;
   deltaV = angularVelError * kpAngVel;
@@ -248,25 +249,25 @@ void loop() {
 
     //note when voltage is greater than battery_voltage there is saturation and pwm gets capped, this causes motor 1 to fall behind
     //what is the fix: maybe if statement if i = 0 then saturation pwm is 110 instead of 100? so that motor has more power during saturation. Fine tune as needed
-    analogWrite( pwmPin[i], PWM[i] );//caps pwm at 170
+    analogWrite( pwmPin[i], PWM[i] );
 
   }
   
   //debug: print out all the values note state 0 = turn, 1 = drive, 2 = stop
-  // Serial.print("Time: ");
-  // Serial.print(current_time_ms);
-  // Serial.print("Rho: ");
-  // Serial.print(currentRho);
-  // Serial.print(" Rho Error: ");
-  // Serial.print(rhoError);
-  // Serial.print(" Phi: ");
-  // Serial.print(currentPhi);
-  // Serial.print(" Phi Error: ");
-  // Serial.print(phiError);
-  // Serial.print(" angVel: ");
-  // Serial.print(angularVel);
-  // Serial.print(" State: ");
-  // Serial.println(state);
+  Serial.print("Time: ");
+  Serial.print(current_time_ms);
+  Serial.print("Rho: ");
+  Serial.print(currentRho);
+  Serial.print(" Rho Error: ");
+  Serial.print(rhoError);
+  Serial.print(" Phi: ");
+  Serial.print(currentPhi);
+  Serial.print(" Phi Error: ");
+  Serial.print(phiError);
+  Serial.print(" angVel: ");
+  Serial.print(angularVel);
+  Serial.print(" State: ");
+  Serial.println(state);
     
   // Update Values
   prevPhiError = phiError;
