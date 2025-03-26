@@ -175,7 +175,7 @@ def send_instructions():
        #special handling for floats which will require an extra 8 bytes 4 bytes for each float
        angle_in_bytes = list(struct.pack('f', instructions["angle"]))
        instruction_array += angle_in_bytes
-       distance_in_bytes = list(struct.pack('f',instructions["distance"]))
+       distance_in_bytes = list(struct.pack('f',(instructions["distance"] + 6.0))) #add 6 to distance to
        instruction_array += distance_in_bytes
        #print(instruction_array)
        #total send is 3 + 8 bytes = 11 bytes, much better than the 24 from the previous implementation
