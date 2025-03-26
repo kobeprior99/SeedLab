@@ -370,7 +370,7 @@ def main():
         else:
             instructions["good_angle"] = 0
             instructions["good_distance"] = 0
-            instructions["arrow"] = 0
+            instructions["arrow"] = 2
         #send instructions to arduino
         send_instructions()
         #send only the most recent instructions to LCD
