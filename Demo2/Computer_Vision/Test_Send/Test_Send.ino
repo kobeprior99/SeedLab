@@ -23,10 +23,10 @@
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
 // instruction[0] = distance, instruction[1] = angle
-const int BUFFER_SIZE = 4; //four bytes for float
+const int BUFFER_SIZE = 2; //four bytes for float
 byte buffer[BUFFER_SIZE];
-volatile float angle = 0.0; //array to store the instructions
-volatile float distance = 0.0;
+volatile short float angle = 0.0; //array to store the instructions
+volatile short float distance = 0.0;
 volatile int good_angle = 0;
 volatile int good_distance = 0;
 volatile int arrow = 2;
