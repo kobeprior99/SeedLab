@@ -35,7 +35,7 @@ volatile bool newData = false;
 //declared gloabaly to avoid reallocating memory each time receive is called
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin( 9600 );
+  Serial.begin( 115200 );
   //address
   Wire.setClock( 400000 ); // 400 kHz clock speed
   Wire.begin(MY_ADDR);
@@ -44,7 +44,7 @@ void setup() {
 
 }
 void receive(int numBytes){
-    while ( Wire.available() ){
+    while ( Wire.available()){
       Wire.read(); //discard first byte (offset)
       good_angle = Wire.read();
       good_distance = Wire.read();
