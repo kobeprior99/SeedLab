@@ -210,14 +210,13 @@ def find_mask(frame):
     # cv2.imshow('green', green_mask)
     return (green_mask, red_mask)
 
-def check_arrow(masks, frame, aruco_center):
+def check_arrow(masks, frame):
     """
     Check for the presence of left or right arrows in the frame.
 
     Args:
         masks (tuple): A tuple containing the green mask and red mask.
         frame (ndarray): The image frame in which to detect arrows.
-        aruco_center (tuple): The (x, y) coordinates of the ArUco marker's center.
 
     Returns:
         int: 0 if a left arrow is detected, 1 if a right arrow is detected, -1 if no arrow is detected.
@@ -231,16 +230,14 @@ def check_arrow(masks, frame, aruco_center):
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
-            if x < aruco_center[0]:
-                return 0
+            return 0
     #right red arrow
     for contour in red_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
             cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
-            if x > aruco_center[0]:
-                return 1
+            return 1
     return -1
 
 def find_center(corners, frame):
@@ -318,7 +315,6 @@ def main():
     IOError: If the camera cannot be opened or a frame cannot be captured.
     """
     global instructions
-    global endThread
     #queue to store data to be sent to LCD
     # LCDthread = threading.Thread(target = lcd_thread, args=())
     # LCDthread.start()
@@ -360,7 +356,7 @@ def main():
 
         # check if there is an arrow and change instructions, if there is an arrow and no marker we still want to turn 
         masks = find_mask(frame_undistorted)
-        arrow = check_arrow(masks, frame_undistorted, center)
+        arrow = check_arrow(masks, frame_undistorted)
         if arrow == 0:
             #here we would modify instruction array
             #print("LEFT")
@@ -402,4 +398,3 @@ def main():
 #run the code
 if __name__ == "__main__":
     main()
-    endThread = True
