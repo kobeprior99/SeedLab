@@ -211,7 +211,7 @@ void loop()
 
   case DRIVE:                          // drive to the rho we want
     desiredRho = instruction_array[3]; // is distance in feet to travel
-    kdPhi = 4.7;                       // reduce derivative term for angular controller so small adjustments aren't faught to hard
+    kdPhi = 4.83;                       // reduce derivative term for angular controller so small adjustments aren't faught to hard
 
     // check that rho and phi are within reasonable error
     if (fabs(currentRho - desiredRho) < 0.01 && fabs(currentPhi - desiredPhi) < 0.01)
