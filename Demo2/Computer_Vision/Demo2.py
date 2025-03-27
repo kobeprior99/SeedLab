@@ -320,8 +320,8 @@ def main():
     global instructions
     global endThread
     #queue to store data to be sent to LCD
-    LCDthread = threading.Thread(target = lcd_thread, args=())
-    LCDthread.start()
+    # LCDthread = threading.Thread(target = lcd_thread, args=())
+    # LCDthread.start()
     # put all functionality here
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
