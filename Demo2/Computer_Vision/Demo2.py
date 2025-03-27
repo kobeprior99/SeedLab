@@ -252,7 +252,7 @@ def main():
         return
     
     #camera warm up
-    time.sleep(0.5)
+    time.sleep(1)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     while True:
@@ -298,7 +298,7 @@ def main():
 
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
-        if cv2.waitKey(5) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     #turn off the camera and destroy all windows
     cap.release()
