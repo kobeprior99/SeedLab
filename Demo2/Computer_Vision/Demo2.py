@@ -252,7 +252,7 @@ def main():
         return
     
     #camera warm up
-    time.sleep(1)
+    time.sleep(0.5)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     while True:
