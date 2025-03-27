@@ -74,81 +74,6 @@ MARKER_WIDTH_IRL = 2 #inches
 MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
 
-#LCD setup
-# lcd_columns = 16
-# lcd_rows = 2 
-# i2c_lcd = board.I2C()
-# data_lock = threading.Lock()
-# latest_data = {"angle": 0.0, "dist": 0.0, "arrow": -1}
-# endThread = False #flag to end inf loop in LCD display
-# try:
-#     # initialize LCD
-#     lcd = character_lcd.Character_LCD_RGB_I2C(i2c_lcd, lcd_columns, lcd_rows)
-#     lcd.color = [100, 0, 0] #red
-#     lcd.clear()
-# except Exception as e:
-#     print(f"LCD initialization failed: {e}")
-# #set up special characters for LCD
-# #theta symbol
-# theta_char = [
-#     0b11111,  
-#     0b00100,   
-#     0b01110,  
-#     0b10101,  
-#     0b10101,  
-#     0b01110,  
-#     0b00100,    
-#     0b11111   
-# ]
-# try:
-#     lcd.create_char(0, theta_char)  # Store the theta symbol at position 0
-# except Exception as e:
-#     print(f"Failed to create theta symbol: {e}")
-# #arrow symbol
-# arrow_char = [
-#     0b00000,
-#     0b00100,
-#     0b00010,
-#     0b11111,
-#     0b00010,
-#     0b00100,
-#     0b00000,
-#     0b00000
-# ]
-# try:
-#     lcd.create_char(1, arrow_char)  # Store the theta symbol at position 1
-# except Exception as e:
-#     print(f"Failed to create arrow symbol: {e}")
-
-# def lcd_thread():
-#     """
-#     Thread function to update the LCD display with the latest data.
-
-#     This function runs in a separate thread and continuously updates the LCD display
-#     with the latest angle, distance, and arrow direction data. The thread terminates
-#     when the endThread flag is set to True.
-#     """
-#     while True:
-#         if endThread:
-#             try:
-#                 lcd.clear()
-#             except Exception as e:
-#                 print(f"Failed to clear LCD: {e}")
-#             break
-#         with data_lock: #lock while reading shared data
-#             data_copy = latest_data.copy() #copy the data
-#         try:
-#             lcd.clear()
-#             #example print ø: 18.00 →:L
-#             #               D:12.00
-#             angle_display = f"{data_copy['angle']:.2f}" if data_copy['angle'] is not None else "N/A"
-#             distance_display = f"{data_copy['dist']:.2f}" if data_copy['dist'] is not None else "N/A"
-#             lcd.message = f"\x00:{angle_display} \x01:{data_copy['arrow']}\ndist:{distance_display}"
-#             time.sleep(.5)
-#         except Exception as e:
-#             print(f"Failed to update LCD: {e}")
-#     return
-
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
@@ -160,8 +85,8 @@ def send_instructions():
     """
     Sends instructions to an Arduino via I2C communication.
 
-    This function sends a list of float instructions to the Arduino. The instructions
-    include information about the angle, distance, and arrow detection status.
+    This function sends 11 bytes: good angle, good distance, arrow, angle, distance
+    Angle and distance are floats so are packaged as 4 bytes each.
 
     Raises:
     IOError: If the I2C write operation fails.
@@ -182,7 +107,7 @@ def send_instructions():
        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
     #    print("Instructions sent to Arduino.")
     except IOError:
-        print("failed to send instructions to Arduino.\n")
+        print("Write fail.\n")
         return 
     
 def find_mask(frame):
@@ -224,6 +149,7 @@ def check_arrow(masks, frame):
     green_mask, red_mask = masks
     green_contours, _ = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     red_contours, _ = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
     # left green arrow
     for contour in green_contours:
         if cv2.contourArea(contour) > 500:
@@ -231,6 +157,7 @@ def check_arrow(masks, frame):
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
             return 0
+        
     #right red arrow
     for contour in red_contours:
         if cv2.contourArea(contour) > 500:
@@ -325,9 +252,7 @@ def main():
         return
     
     #camera warm up
-    time.sleep(2)
-    for _ in range(5):
-        cap.read()
+    time.sleep(1)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     while True:
@@ -370,25 +295,10 @@ def main():
             instructions["arrow"] = 2 #good_arrow ->0.0
         #send instructions to arduino
         send_instructions()
-        #send only the most recent instructions to LCD
-        # with data_lock:
-        #     if instructions["good_angle"] == 1.0:
-        #         latest_data["angle"] = instructions["angle"]
-        #     else:
-        #         latest_data["angle"] = None
-        #     if instructions["good_distance"] == 1:
-        #         latest_data["dist"] = instructions["distance"]
-        #     else:
-        #         latest_data["dist"] = None
-        #     if instructions["arrow"] == 0:
-        #         latest_data["arrow"] = "L"
-        #     if instructions["arrow"] == 1:
-        #         latest_data["arrow"] = "R"
-        #     if instructions["arrow"] == 2:
-        #         latest_data["arrow"] = "N"
+
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(50) & 0xFF == ord('q'):
             break
     #turn off the camera and destroy all windows
     cap.release()
