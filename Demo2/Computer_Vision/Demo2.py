@@ -352,25 +352,26 @@ def main():
             #debug:
             #print(angle)
 
-            masks = find_mask(frame_undistorted)
-            arrow = check_arrow(masks, frame_undistorted, center)
-            if arrow == 0:
-                #here we would modify instruction array
-                #print("LEFT")
-                instructions["arrow"] = 0 #->arrow is now left
-            elif arrow == 1:
-                #print("RIGHT")
-                instructions["arrow"] = 1 #-> arrow is now right
-            else:
-                #no arrow detected good_arrow ->0.0
-                #print("NO ARROW DETECTED")
-                instructions["arrow"] = 2 #good_arrow ->0.0
             instructions["good_distance"] = 1 #good_distance ->1.0
             instructions["distance"] = distance(corners, ids, frame_undistorted, center) #distance ->distance
         else:
             instructions["good_angle"] = 0
             instructions["good_distance"] = 0
-            instructions["arrow"] = 2
+
+        # check if there is an arrow and change instructions, if there is an arrow and no marker we still want to turn 
+        masks = find_mask(frame_undistorted)
+        arrow = check_arrow(masks, frame_undistorted, center)
+        if arrow == 0:
+            #here we would modify instruction array
+            #print("LEFT")
+            instructions["arrow"] = 0 #->arrow is now left
+        elif arrow == 1:
+            #print("RIGHT")
+            instructions["arrow"] = 1 #-> arrow is now right
+        else:
+            #no arrow detected good_arrow ->0.0
+            #print("NO ARROW DETECTED")
+            instructions["arrow"] = 2 #good_arrow ->0.0
         #send instructions to arduino
         send_instructions()
         #send only the most recent instructions to LCD
