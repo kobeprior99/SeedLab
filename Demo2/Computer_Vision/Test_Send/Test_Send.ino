@@ -22,58 +22,63 @@
 
 // set up flag so that the main loop only starts when instructions are received
 volatile uint8_t offset = 0;
-// instruction[0] = distance, instruction[1] = angle
-const int BUFFER_SIZE = 4; //four bytes for float
-byte buffer[BUFFER_SIZE];
-volatile float angle = 0.0; //array to store the instructions
+const int BUFFER_SIZE = 4;  //four bytes for float
+byte buffer[BUFFER_SIZE]; // a buffer used to store bytes to recombine iinto float
+
+//variables that will be written to on receive
+volatile float angle = 0.0;  //array to store the instructions
 volatile float distance = 0.0;
 volatile int good_angle = 0;
 volatile int good_distance = 0;
 volatile int arrow = 2;
 
-volatile bool newData = false;
-//declared gloabaly to avoid reallocating memory each time receive is called
+volatile bool newData = false; //used for controlling print 
+
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin( 115200 );
+  Serial.begin(115200);
   //address
-  Wire.setClock( 400000 ); // 400 kHz clock speed
+  Wire.setClock(400000);  // 400 kHz clock speed
   Wire.begin(MY_ADDR);
   //when receiving call reeceive function
   Wire.onReceive(receive);
-
 }
-void receive(int numBytes){
-    while ( Wire.available()){
-      Wire.read(); //discard first byte (offset)
-      good_angle = Wire.read();
-      good_distance = Wire.read();
-      arrow = Wire.read();
-      //need to read four bytes and convert into float
-      for (int i = 0; i < BUFFER_SIZE; i++){
-        buffer[i] = Wire.read();
-      }
-      memcpy( &angle, buffer, sizeof(angle) );
-      
-      for (int i = 0; i < BUFFER_SIZE; i++){
-        buffer[i] = Wire.read();
-      }
-      memcpy(&distance, buffer, sizeof(distance));
 
-      //memcpy(instruction_array, buffer, BUFFER_SIZE);
-      newData = true;
+void receive() {
+  while (Wire.available()) {
+    Wire.read();  //discard first byte (offset)
+    good_angle = Wire.read(); // 1 byte for good angle: 0 valid 1 invalid
+    good_distance = Wire.read(); // 1 byte for good distance: 0 valid 1 invalid
+    arrow = Wire.read(); // 1 byte for arrow 0 left, 1 right, 2 no arrow
+    //need to read four bytes and convert into float
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+      buffer[i] = Wire.read();
     }
+    memcpy(&angle, buffer, sizeof(angle));//create float from 4 bytes and copy it into angle var
+
+    for (int i = 0; i < BUFFER_SIZE; i++) {
+      buffer[i] = Wire.read();
+    }
+    memcpy(&distance, buffer, sizeof(distance)); // create float from 4 bytes and copy it into angle var
+    newData = true;//to control print
+  }
 }
 
 void loop() {
-  if (newData){
-  newData = false;
-  Serial.print(good_angle); Serial.print(", ");
-  Serial.print(good_distance); Serial.print(", ");
-  Serial.print(arrow); Serial.print(", ");
-  Serial.print(angle); Serial.print(", ");
-  Serial.println(distance);
-
-  delay(1000);
-}
+  //debug to see data come through, can lower delay to 10 to reflect the refresh rate of the control system and it continues to work.
+  if (newData) {
+    newData = false;
+    // example 0, 0, 2, 4, 12.5 means angle and distance are invalid and there is no arrow
+    // example 1, 1, 0, -0.67, 12 means angle is valid and -.67 deg, distance is valid and 12 inches, and there is a left arrow detected
+    Serial.print(good_angle);
+    Serial.print(", ");
+    Serial.print(good_distance);
+    Serial.print(", ");
+    Serial.print(arrow);
+    Serial.print(", ");
+    Serial.print(angle);
+    Serial.print(", ");
+    Serial.println(distance);
+    delay(1000);//small delay so we don't print too much and needlessly crowd serial monitor
+  }
 }
