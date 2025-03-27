@@ -182,7 +182,7 @@ def send_instructions():
        i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
     #    print("Instructions sent to Arduino.")
     except IOError:
-        print("Could not write data to the Arduino.")
+        print("failed to send instructions to Arduino.\n")
         return 
     
 def find_mask(frame):
