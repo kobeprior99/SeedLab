@@ -298,7 +298,7 @@ def main():
 
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
-        if cv2.waitKey(10) & 0xFF == ord('q'):
+        if cv2.waitKey(5) & 0xFF == ord('q'):
             break
     #turn off the camera and destroy all windows
     cap.release()
