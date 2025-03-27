@@ -23,7 +23,6 @@
  *             and driving the specified distance.
  *          4. The robot will stop after reaching the desired position.
  */
-// Modified backup Demo 1
 #include <Wire.h>
 boolean start = false;
 
