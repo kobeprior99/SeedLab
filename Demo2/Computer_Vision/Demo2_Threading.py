@@ -112,6 +112,7 @@ def send_instructions():
                 #debug: print(instruction_array)
                 i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
                 #    print("Instructions sent to Arduino.")
+                time.sleep(0.05)#sneding 20 times a second should be fast enough for arduino to process
             except IOError:
                 print("Write fail.\n")
     
