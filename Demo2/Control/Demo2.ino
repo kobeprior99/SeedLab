@@ -1,6 +1,57 @@
-// SEED DEMO #2 : sweep for marker, identify and drive towards marker, stop and read within 1.5 feet, stay or turn 90 deg
-// Localization and Controls
-// Cooper Hammond and Ron Gaines
+/**
+ * @file Demo2.ino
+ * @brief SEED DEMO #2: Robot control system for sweeping, identifying, and driving towards a marker.
+ *        The robot stops and reads within 1.5 feet, then either stays or turns 90 degrees based on instructions.
+ * 
+ * @details
+ * This program implements a finite state machine (FSM) to control a robot's behavior. The robot performs the following tasks:
+ * - Sweeps to locate a marker using angle and distance data from a Raspberry Pi.
+ * - Turns towards the marker.
+ * - Drives towards the marker while maintaining control over its position and velocity.
+ * - Stops at the marker and either stays or turns based on additional instructions.
+ * 
+ * The program uses encoder feedback for motor control and communicates with a Raspberry Pi via I2C to receive instructions.
+ * 
+ * @authors Cooper Hammond and Ron Gaines
+ * @date Created on: March 24, 2025
+ * 
+ * @hardware
+ * - Motor driver with enable, PWM, and direction pins.
+ * - Encoders for motor feedback.
+ * - Raspberry Pi for external communication.
+ * 
+ * @dependencies
+ * - Wire.h: For I2C communication with the Raspberry Pi.
+ * 
+ * @variables
+ * - PI Communication:
+ *   - angle_pi: Angle received from the Raspberry Pi (in degrees).
+ *   - distance_pi: Distance received from the Raspberry Pi (in inches).
+ *   - good_angle, good_distance: Flags indicating valid angle and distance data.
+ *   - arrow: Directional command (0 = left, 1 = right, 2 = no arrow).
+ * - Motor Control:
+ *   - pos_counts: Encoder counts for motor positions.
+ *   - motorVel: Motor velocities.
+ *   - voltage: Motor voltages.
+ * - Control Parameters:
+ *   - kpPhi, kdPhi: Proportional and derivative gains for rotational control.
+ *   - kpRho, kdRho: Proportional and derivative gains for linear control.
+ * - FSM:
+ *   - State: Current state of the robot (SWEEP, TURN, DRIVE, STOP).
+ *   - atMarker: Flag indicating whether the robot is at the marker.
+ * 
+ * @functions
+ * - setup(): Initializes pins, I2C communication, and encoder interrupts.
+ * - loop(): Main control loop implementing the FSM and control logic.
+ * - encoder1_ISR(), encoder2_ISR(): Interrupt service routines for encoder pulse counting.
+ * - receive(): Handles I2C communication to receive data from the Raspberry Pi.
+ * 
+ * @notes
+ * - The robot uses a proportional-derivative (PD) controller for both rotational and linear control.
+ * - The program includes debug messages for state transitions and actions.
+ * - Ensure the Raspberry Pi is booted before starting the robot.
+ */
+
 
 // Turn
 bool doTurn = true;
