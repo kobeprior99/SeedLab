@@ -255,7 +255,7 @@ def main():
     # put all functionality here
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25); #manual camera expsure
-    cap.set(cv2.CAP_PROP_EXPOSURE, -2)  # Adjust this value (negative for some cameras)
+    cap.set(cv2.CAP_PROP_EXPOSURE, -1)  # Adjust this value (negative for some cameras)
 
     # Set brightness manually (scale depends on the camera, usually 0 to 1 or 0 to 255)
     cap.set(cv2.CAP_PROP_BRIGHTNESS, 0.7)  # Adjust as needed
