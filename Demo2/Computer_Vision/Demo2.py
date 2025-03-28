@@ -45,7 +45,6 @@ import cv2.aruco as aruco
 import pickle
 import time
 from time import sleep
-import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 import threading
 from smbus2 import SMBus
 import struct
