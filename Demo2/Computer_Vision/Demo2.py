@@ -60,8 +60,8 @@ CX = cameraMatrix[0,2] # camera center in pixels
 
 #constant bounds for red and green
 # [61, 125.7, 72.93]//from experimentation
-LOWER_GREEN = np.array([50, 115, 60])
-UPPER_GREEN = np.array([70, 140, 80])
+LOWER_GREEN = np.array([40, 100, 50])
+UPPER_GREEN = np.array([70, 150, 100])
 #note that the hue of red wraps around so we need two bounds
 LOWER_RED1 = np.array([0, 150, 100 ])
 UPPER_RED1 = np.array([5, 255 ,255 ])
