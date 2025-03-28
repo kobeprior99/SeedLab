@@ -112,7 +112,7 @@ def send_instructions():
                 #debug: print(instruction_array)
                 i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
                 #    print("Instructions sent to Arduino.")
-                time.sleep(0.05)#sneding 20 times a second should be fast enough for arduino to process
+                time.sleep(0.03)#sending about 30 times a second should be fast enough for arduino to process
             except IOError:
                 print("Write fail.\n")
     
@@ -252,6 +252,7 @@ def main():
     send_thread.start()  # Start the thread to send instructions to Arduino
     # put all functionality here
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
