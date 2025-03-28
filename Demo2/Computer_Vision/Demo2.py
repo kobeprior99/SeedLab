@@ -254,6 +254,11 @@ def main():
     send_thread.start()  # Start the thread to send instructions to Arduino
     # put all functionality here
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25); #manual camera expsure
+    cap.set(cv2.CAP_PROP_EXPOSURE, -4)  # Adjust this value (negative for some cameras)
+
+    # Set brightness manually (scale depends on the camera, usually 0 to 1 or 0 to 255)
+    cap.set(cv2.CAP_PROP_BRIGHTNESS, 0.5)  # Adjust as needed
     cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
     if not cap.isOpened():
         print("Error: Could not open camera.")
