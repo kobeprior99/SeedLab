@@ -4,7 +4,7 @@
 
 * Description       : Interpret the angle of an Aruco marker, 
 * the distance to the marker, and the color of the arrow next to the marker. 
-* When this information is available send it to the LCD screen and arduino.
+* When this information is available send it to the arduino.
 *
 * Supplementary File(s): Computer_Vision/Demo1/cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file 
 * distance.py and chatdist.py used to experiment with distance calculation function
@@ -19,6 +19,7 @@
 * 03/03/2025    Kobe Prior Blane added the main function
 * 03/06/2025    Kobe Prior Blane added the LCD display function
 * 03/24/2025    Kobe Prior Blane added Revised LCD program to send 11 bytes instead of 24 at a time
+* 03/27/2025    Kobe Prior Blane added threading to send instructions to arduino, removed LCD display functionality to focus on I2C communication with Arduino
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
@@ -40,7 +41,6 @@ Example Execution:
 #import necessary libraries
 import cv2
 import numpy as np
-import board
 import cv2.aruco as aruco
 import pickle
 import time
@@ -77,9 +77,10 @@ MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
-
+program_running = True # global variable to terminate threads when set to false
 # global float array for data to send to arduino
 instructions = {"good_angle": 0, "good_distance": 0, "arrow": 2, "angle": 0.0, "distance": 0.0}
+instructions_lock = threading.Lock()
 # arrow = -1 means no arrow detected, 0 means left arrow, 1 means right arrow
 def send_instructions():
     """
@@ -93,22 +94,30 @@ def send_instructions():
     """
     #handle exception if i2c write fails
     global instructions
-    try:
-       # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
-       #just three bytes
-       instruction_array = [instructions["good_angle"], instructions["good_distance"], instructions["arrow"]]
-       #special handling for floats which will require an extra 8 bytes 4 bytes for each float
-       angle_in_bytes = list(struct.pack('f', instructions["angle"]))
-       instruction_array += angle_in_bytes
-       distance_in_bytes = list(struct.pack('f',(instructions["distance"] + 6.0))) #add 6 to distance to
-       instruction_array += distance_in_bytes
-       #print(instruction_array)
-       #total send is 3 + 8 bytes = 11 bytes, much better than the 24 from the previous implementation
-       i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
-    #    print("Instructions sent to Arduino.")
-    except IOError:
-        print("Write fail.\n")
-        return 
+    global program_running
+    fail_count = 0 # initialize fail count for debugging
+    while program_running == True:
+        with instructions_lock:
+            try:
+                # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
+                #just three bytes
+                instruction_array = [
+                    instructions["good_angle"],
+                    instructions["good_distance"],
+                    instructions["arrow"]
+                ] # this will be 3 bytes, 1 byte each for good_angle, good_distance, and arrow
+                
+                #special handling for floats which will require an extra 8 bytes 4 bytes for each float
+                angle_in_bytes = list(struct.pack('f', instructions["angle"]))
+                distance_in_bytes = list(struct.pack('f',(instructions["distance"] + 6.0))) #add 6 to distance to
+                instruction_array += angle_in_bytes + distance_in_bytes
+                #debug: print(instruction_array)
+                i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
+                #    print("Instructions sent to Arduino.")
+                time.sleep(0.03)#sending about 30 times a second should be fast enough for arduino to process
+            except IOError:
+                print(f"Write fail.{fail_count}\n")
+                fail_count += 1
     
 def find_mask(frame):
     """
@@ -242,11 +251,11 @@ def main():
     IOError: If the camera cannot be opened or a frame cannot be captured.
     """
     global instructions
-    #queue to store data to be sent to LCD
-    # LCDthread = threading.Thread(target = lcd_thread, args=())
-    # LCDthread.start()
+    send_thread = threading.Thread(target=send_instructions)
+    send_thread.start()  # Start the thread to send instructions to Arduino
     # put all functionality here
     cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
@@ -255,6 +264,7 @@ def main():
     time.sleep(1)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
+    
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -293,8 +303,6 @@ def main():
             #no arrow detected good_arrow ->0.0
             #print("NO ARROW DETECTED")
             instructions["arrow"] = 2 #good_arrow ->0.0
-        #send instructions to arduino
-        send_instructions()
 
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
@@ -308,3 +316,4 @@ def main():
 #run the code
 if __name__ == "__main__":
     main()
+    program_running = False # set to false to terminate the threads
