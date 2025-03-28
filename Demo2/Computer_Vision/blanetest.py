@@ -167,7 +167,8 @@ def main():
         frame_undistorted = cv2.remap(frame, map1, map2, interpolation=cv2.INTER_LINEAR)
 
         # ArUco marker detection
-        gray = frame_undistorted  # Already grayscale due to CAP_PROP_CONVERT_RGB
+        gray = frame_undistorted  # Already grayscale due to CAP_PROP_CONVERT_RGB\
+        gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
         corners, ids, _ = cv2.aruco.detectMarkers(gray, MY_DICT)
 
         if len(corners) > 0:
@@ -183,7 +184,8 @@ def main():
         # Arrow detection
         masks = find_mask(frame_undistorted)
         instructions["arrow"] = check_arrow(masks, frame_undistorted)
-
+        instructions["angle"] = float(instructions.get("angle", 0.0))
+        instructions["distance"] = float(instructions.get("distance", 0.0))
         send_instructions()
         cv2.imshow('Demo2', frame_undistorted)
 
