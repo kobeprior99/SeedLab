@@ -59,9 +59,9 @@ FX = cameraMatrix[0,0] # focal length in pixels
 CX = cameraMatrix[0,2] # camera center in pixels
 
 #constant bounds for red and green
-# [59.5, 206, 149.18]//from experimentation
-LOWER_GREEN = np.array([40, 190, 140])
-UPPER_GREEN = np.array([60, 220, 160])
+# [61, 125.7, 72.93]//from experimentation
+LOWER_GREEN = np.array([50, 115, 60])
+UPPER_GREEN = np.array([70, 140, 80])
 #note that the hue of red wraps around so we need two bounds
 LOWER_RED1 = np.array([0, 150, 100 ])
 UPPER_RED1 = np.array([5, 255 ,255 ])
