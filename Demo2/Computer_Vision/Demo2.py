@@ -258,7 +258,6 @@ def main():
     cap.set(cv2.CAP_PROP_EXPOSURE, -1)  # Adjust this value (negative for some cameras)
 
     # Set brightness manually (scale depends on the camera, usually 0 to 1 or 0 to 255)
-    cap.set(cv2.CAP_PROP_BRIGHTNESS, 0.7)  # Adjust as needed
     cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
     if not cap.isOpened():
         print("Error: Could not open camera.")
