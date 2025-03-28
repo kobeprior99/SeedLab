@@ -94,6 +94,7 @@ def send_instructions():
     #handle exception if i2c write fails
     global instructions
     global program_running
+    fail_count = 0 # initialize fail count for debugging
     while program_running == True:
         with instructions_lock:
             try:
@@ -114,7 +115,8 @@ def send_instructions():
                 #    print("Instructions sent to Arduino.")
                 time.sleep(0.03)#sending about 30 times a second should be fast enough for arduino to process
             except IOError:
-                print("Write fail.\n")
+                print(f"Write fail.{fail_count}\n")
+                fail_count += 1
     
 def find_mask(frame):
     """
