@@ -96,6 +96,7 @@ const float r = d / 2;     // wheel radius (feet)
 // FSM
 enum State
 {
+  SETUP,
   TURN,
   DRIVE,
   STOP
@@ -193,6 +194,10 @@ void loop()
   // FSM for robot actions
   switch (state)
   {
+  case SETUP:
+    desiredPhi = currentPhi + instruction_array[1] * (PI / 180);
+    break;
+
   case TURN:        // turn to the phi we want
     desiredVel = 0; // we want to be stationary
     desiredRho = 0;
@@ -204,12 +209,12 @@ void loop()
       analogWrite(pwmPin[1], 0);
       delay(1000);
       desiredPhi = currentPhi; // we've reached the desiredPhi within some margin so set desired phi to current phi
+      desiredRho = currentRho + instruction_array[3];//set desiredRho for next state
       state = DRIVE;
     }
     break;
 
   case DRIVE:                          // drive to the rho we want
-    desiredRho = instruction_array[3]; // is distance in feet to travel
     kdPhi = 4.83;                       // reduce derivative term for angular controller so small adjustments aren't faught to hard
 
     // check that rho and phi are within reasonable error
