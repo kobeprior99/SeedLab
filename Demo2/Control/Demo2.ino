@@ -52,8 +52,9 @@
  * - Ensure the Raspberry Pi is booted before starting the robot.
  */
 
-// Turn
+// Control Booleans
 bool doTurn = true;
+bool atMarker = false;
 
 // PI communication
 boolean start = false;
@@ -131,23 +132,17 @@ float velocityError = 0.0;
 
 // Constants/Physical Parameters
 const float battery_voltage = 7.8;
-const float b = 1;         // wheel base 12inches
+const float b = 1;         // wheel base 12 inches
 const float d = 5.93 / 12; // wheel diameter (inches)
 const float r = d / 2;     // wheel radius (inches)
 
 // FSM
-enum State
-{
-    SWEEP,
-    TURN,
-    DRIVE,
-    STOP
+enum State {
+    SWEEP, TURN, DRIVE, STOP
 };
 State state = SWEEP; // initialize
-bool atMarker = false;
 
-void setup()
-{
+void setup() {
 
     // PI communication
     Wire.begin(MY_ADDR);
@@ -177,61 +172,50 @@ void setup()
     attachInterrupt(digitalPinToInterrupt(encPin1A), encoder1_ISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(encPin2A), encoder2_ISR, CHANGE);
 
-    delay(1 * 1000); // delay for PI bootup
+    delay(1000); // delay for PI bootup
 }
 
 // Functions
 
 // Interrupt service routines (ISR) for counting encoder pulses
-void encoder1_ISR()
-{
-    if (digitalRead(encPin1A) == digitalRead(encPin1B))
-    {
+void encoder1_ISR() {
+    if (digitalRead(encPin1A) == digitalRead(encPin1B)){
         pos_counts[0] -= 2; // Clockwise rotation
     }
-    else
-    {
+    else{
         pos_counts[0] += 2; // Counter-clockwise rotation
     }
 }
 
-void encoder2_ISR()
-{
-    if (digitalRead(encPin2A) == digitalRead(encPin2B))
-    {
+void encoder2_ISR() {
+    if (digitalRead(encPin2A) == digitalRead(encPin2B)){
         pos_counts[1] += 2; // Counter-clockwise rotation
     }
-    else
-    {
+    else{
         pos_counts[1] -= 2; // Clockwise rotation
     }
 }
 
-void receive(int numBytes)
-{
-    while (Wire.available())
-    {
+void receive(int numBytes) {
+    while (Wire.available()) {
         Wire.read(); // discard first byte (offset)
         good_angle = Wire.read();
         good_distance = Wire.read();
         arrow = Wire.read();
         // need to read four bytes and convert into float
-        for (int i = 0; i < BUFFER_SIZE; i++)
-        {
+        for (int i = 0; i < BUFFER_SIZE; i++) {
             buffer[i] = Wire.read();
         }
         memcpy(&angle_pi, buffer, sizeof(angle_pi));
 
-        for (int i = 0; i < BUFFER_SIZE; i++)
-        {
+        for (int i = 0; i < BUFFER_SIZE; i++) {
             buffer[i] = Wire.read();
         }
         memcpy(&distance_pi, buffer, sizeof(distance_pi));
     }
 }
 
-void loop()
-{
+void loop() {
 
     // Find Current Time in miliseconds
     current_time_ms = millis();
@@ -240,12 +224,10 @@ void loop()
     last_time_ms = current_time_ms;
 
     // Turn Encoder Counts to Radians then find velocity
-    for (int i = 0; i < 2; i++)
-    {
+    for (int i = 0; i < 2; i++) {
         actual_pos[i] = 2 * PI * (float)(pos_counts[i]) / 3200;
-        if (delta_t > 0)
-        {
-            motorVel[i] = (actual_pos[i] - prev_actual_pos[i]) / (delta_t); // (delta x)/(delta t) -> pos/s
+        if (delta_t > 0) {
+            motorVel[i] = (actual_pos[i] - prev_actual_pos[i]) / (delta_t); // (delta x) / (delta t) -> pos/s
         }
     }
 
@@ -254,101 +236,88 @@ void loop()
     currentRho = (r / 2) * (actual_pos[1] + actual_pos[0]);
 
     // FSM for robot actions SWEEP, TURN, DRIVE, STOP
-    switch (state)
-    {
+    switch (state) {
 
-    case SWEEP: // angle sweep
-        if (good_angle != 1)
-        {
-            desiredPhi += 0.5 * PI / 180;
-            Serial.println("Scanning for bitches...");
-        }
-        else if (good_angle == 1)
-        {
-            Serial.println("Found um");
-            analogWrite(pwmPin[0], 0);
-            analogWrite(pwmPin[1], 0);
-            delay(500);
-            desiredPhi = currentPhi + angle_pi * (PI / 180);
-            state = TURN;
-        }
-        break;
-
-    case TURN:          // turn to the phi we want
-        desiredVel = 0; // we want to be stationary
-        desiredRho = currentRho;
-        Serial.println("Whip that thang around cuzo");
-
-        // Check if we are within desired bounds
-        if (fabs(currentPhi - desiredPhi) <= .015)
-        {
-            analogWrite(pwmPin[0], 0);
-            analogWrite(pwmPin[1], 0);
-            delay(1000);
-            desiredPhi = currentPhi;
-            desiredRho = currentRho + (distance_pi / 12) + 0.2;
-            if (atMarker == true)
-            {
-                atMarker = false;
-                state = STOP;
+        case SWEEP: // angle sweep
+            if (good_angle != 1) {
+                desiredPhi += 0.5 * PI / 180;
+                Serial.println("Scanning for bitches...");
             }
-            else
-            {
-                state = DRIVE;
-            }
-        }
-        break;
-
-    case DRIVE:       // drive to the rho we want
-        kdPhi = 14.0; // 4.83
-        Serial.println("They see me rolling");
-        if ((currentRho - (desiredRho - 1.75)) <= 1.0 && (currentRho - (desiredRho - 1.75)) >= 0)
-        {
-            atMarker = true;
-            state = STOP;
-        }
-        break;
-
-    case STOP: // stop and stay where you are
-        analogWrite(pwmPin[0], 0);
-        analogWrite(pwmPin[1], 0);
-        if (atMarker == true && doTurn == true)
-        {
-            if (arrow == 0)
-            { // left
-                Serial.println("To the left, to the left, to the left");
-                delay(2000);
-                desiredPhi = currentPhi + (PI / 2);
-                state = TURN;
-            }
-            else if (arrow == 1)
-            { // right
-                Serial.println("To the right, to the right, to the right");
-                delay(2000);
-                desiredPhi = currentPhi - (PI / 2);
-                state = TURN;
-            }
-            else
-            { // no turn comand from pi
-                Serial.println("Now Freeze!");
+            else if (good_angle == 1) {
+                Serial.println("Found um");
                 analogWrite(pwmPin[0], 0);
                 analogWrite(pwmPin[1], 0);
-                break;
+                delay(500);
+                desiredPhi = currentPhi + angle_pi * (PI / 180);
+                state = TURN;
             }
-        }
-        else
-        {
-            Serial.println("Unlike my wife, I have finished.");
+            break;
+
+        case TURN:          // turn to the phi we want
+            desiredVel = 0; // we want to be stationary around axle center axis
+            desiredRho = currentRho;
+            Serial.println("Whip that thang around cuzo");
+
+            // Check if we are within desired bounds
+            if (fabs(currentPhi - desiredPhi) <= .015) {
+                analogWrite(pwmPin[0], 0);
+                analogWrite(pwmPin[1], 0);
+                delay(1000);
+                desiredPhi = currentPhi;
+                desiredRho = currentRho + (distance_pi / 12) + 0.2;
+                if (atMarker == true) {
+                    atMarker = false;
+                    state = STOP;
+                }
+                else {
+                    state = DRIVE;
+                }
+            }
+            break;
+
+        case DRIVE:       // drive to the rho we want
+            kdPhi = 14.0; // 4.83
+            Serial.println("They see me rolling");
+            if ((currentRho - (desiredRho - 1.75)) <= 1.0 && (currentRho - (desiredRho - 1.75)) >= 0) {
+                atMarker = true;
+                state = STOP;
+            }
+            break;
+
+        case STOP: // stop and stay where you are
             analogWrite(pwmPin[0], 0);
             analogWrite(pwmPin[1], 0);
+            if (atMarker == true && doTurn == true) {
+                if (arrow == 0) { // left
+                    Serial.println("To the left, to the left, to the left");
+                    delay(2000);
+                    desiredPhi = currentPhi + (PI / 2);
+                    state = TURN;
+                }
+                else if (arrow == 1) { // right
+                    Serial.println("To the right, to the right, to the right");
+                    delay(2000);
+                    desiredPhi = currentPhi - (PI / 2);
+                    state = TURN;
+                }
+                else { // no turn comand from pi
+                    Serial.println("Now Freeze!");
+                    analogWrite(pwmPin[0], 0);
+                    analogWrite(pwmPin[1], 0);
+                    break;
+                }
+            }
+            else {
+                Serial.println("Unlike my wife, I have finished.");
+                analogWrite(pwmPin[0], 0);
+                analogWrite(pwmPin[1], 0);
+            }
+
+            break;
         }
 
-        break;
-    }
-
     // Controler Logic
-    if (state == TURN || state == DRIVE || state == SWEEP)
-    {
+    if (state == TURN || state == DRIVE || state == SWEEP) {
         // Rotational Controller (Phi)
         phiError = desiredPhi - currentPhi;
         dPhi = (phiError - prevPhiError) / delta_t;
@@ -367,13 +336,11 @@ void loop()
         deltaV = angularVelError;
 
         // bound controller instead of PWM
-        if (abs(vBar) >= battery_voltage)
-        {
+        if (abs(vBar) >= battery_voltage) {
             vBar = battery_voltage * (vBar / abs(vBar)); // keep the sign
         }
 
-        if (abs(deltaV) >= battery_voltage)
-        {
+        if (abs(deltaV) >= battery_voltage) {
             deltaV = battery_voltage * (deltaV / abs(deltaV)); // keep the sign
         }
 
@@ -382,16 +349,13 @@ void loop()
         voltage[1] = (vBar + deltaV) / 2;
 
         // Check voltage sign to give motors directions (fwd/bkwd) then send PWM signals
-        for (int i = 0; i < 2; i++)
-        {
+        for (int i = 0; i < 2; i++) {
             // if voltage pos direction fwd
-            if (voltage[i] > 0)
-            {
+            if (voltage[i] > 0) {
                 digitalWrite(dirPin[i], HIGH);
             }
             // if voltage neg direction bkwd
-            else
-            {
+            else {
                 digitalWrite(dirPin[i], LOW);
             }
             // get pwm based on battery voltage
@@ -402,19 +366,14 @@ void loop()
         // Update Values
         prevPhiError = phiError;
         prevRhoError = rhoError;
-        for (int i = 0; i < 2; i++)
-        {
+        for (int i = 0; i < 2; i++) {
             prev_counts[i] = pos_counts[i];
             prev_actual_pos[i] = actual_pos[i];
         }
 
-        // Debuging:
-        // Serial.println(state);
-
         last_time_ms = millis();
-        // start_time_ms = millis();
-        while (millis() < last_time_ms + desired_Ts_ms)
-        {
+
+        while (millis() < last_time_ms + desired_Ts_ms) {
             // wait
         }
     }
