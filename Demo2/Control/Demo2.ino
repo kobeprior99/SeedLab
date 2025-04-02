@@ -52,9 +52,13 @@
  * - Ensure the Raspberry Pi is booted before starting the robot.
  */
 
+//DEMO 2
+//Cooper Hammond and Ron Gaines
+
 // Control Booleans
 bool doTurn = true;
 bool atMarker = false;
+bool correctiveAngleTurn = false;
 
 // PI communication
 boolean start = false;
@@ -107,8 +111,8 @@ float vBar = 0;
 float deltaV = 0;
 
 // Rotational control values
-float currentPhi = 0;
-float desiredPhi; // use to set turn
+float currentPhi = 0.0;
+float desiredPhi = 0.0; // use to set turn
 float phiError = 0;
 float prevPhiError = 0.0;
 float dPhi = 0.0;
@@ -240,7 +244,7 @@ void loop() {
 
         case SWEEP: // angle sweep
             if (good_angle != 1) {
-                desiredPhi += 0.5 * PI / 180;
+                desiredPhi += 0.5 * PI / 180.0;
                 Serial.println("Scanning for bitches...");
             }
             else if (good_angle == 1) {
@@ -248,7 +252,8 @@ void loop() {
                 analogWrite(pwmPin[0], 0);
                 analogWrite(pwmPin[1], 0);
                 delay(500);
-                desiredPhi = currentPhi + angle_pi * (PI / 180);
+                desiredPhi = currentPhi + float(angle_pi * (PI / 180.0));
+                //desiredRho = currentRho;
                 state = TURN;
             }
             break;
@@ -264,10 +269,16 @@ void loop() {
                 analogWrite(pwmPin[1], 0);
                 delay(1000);
                 desiredPhi = currentPhi;
-                desiredRho = currentRho + (distance_pi / 12) + 0.2;
+                desiredRho = currentRho + float(distance_pi / 12.0) + 0.2;
                 if (atMarker == true) {
                     atMarker = false;
                     state = STOP;
+                }
+                else if (correctiveAngleTurn == false){
+                  delay(500);
+                  desiredPhi = currentPhi + float(angle_pi * (PI / 180.0));
+                  correctiveAngleTurn = true;
+                  state = TURN;
                 }
                 else {
                     state = DRIVE;
@@ -276,7 +287,7 @@ void loop() {
             break;
 
         case DRIVE:       // drive to the rho we want
-            kdPhi = 14.0; // 4.83
+            kdPhi = 4.83; // 14.0
             Serial.println("They see me rolling");
             if ((currentRho - (desiredRho - 1.75)) <= 1.0 && (currentRho - (desiredRho - 1.75)) >= 0) {
                 atMarker = true;
@@ -287,17 +298,18 @@ void loop() {
         case STOP: // stop and stay where you are
             analogWrite(pwmPin[0], 0);
             analogWrite(pwmPin[1], 0);
+            kdPhi = 45;
             if (atMarker == true && doTurn == true) {
                 if (arrow == 0) { // left
                     Serial.println("To the left, to the left, to the left");
                     delay(2000);
-                    desiredPhi = currentPhi + (PI / 2);
+                    desiredPhi = currentPhi + (PI / 2.0);
                     state = TURN;
                 }
                 else if (arrow == 1) { // right
                     Serial.println("To the right, to the right, to the right");
                     delay(2000);
-                    desiredPhi = currentPhi - (PI / 2);
+                    desiredPhi = currentPhi - (PI / 2.0);
                     state = TURN;
                 }
                 else { // no turn comand from pi
@@ -370,9 +382,7 @@ void loop() {
             prev_counts[i] = pos_counts[i];
             prev_actual_pos[i] = actual_pos[i];
         }
-
-        last_time_ms = millis();
-
+        
         while (millis() < last_time_ms + desired_Ts_ms) {
             // wait
         }
