@@ -84,14 +84,14 @@ ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
 program_running = True # global variable to terminate threads when set to false
 # global float array for data to send to arduino
-instructions = {"good_angle": 0, "good_distance": 0, "arrow": 2, "angle": 0.0, "distance": 0.0}
+instructions = {"marker_found": 0, "arrow": 2, "angle": 0.0, "distance": 0.0}
 instructions_lock = threading.Lock()
 # arrow = -1 means no arrow detected, 0 means left arrow, 1 means right arrow
 def send_instructions():
     """
     Sends instructions to an Arduino via I2C communication.
 
-    This function sends 11 bytes: good angle, good distance, arrow, angle, distance
+    This function sends 10 bytes: good marker, arrow, angle, distance
     Angle and distance are floats so are packaged as 4 bytes each.
 
     Raises:
@@ -104,11 +104,9 @@ def send_instructions():
     while program_running == True:
         with instructions_lock:
             try:
-                # instruction_array [good_angle, angle, good_distance, distance, good_arrow, arrow]
-                #just three bytes
+                #just 2 bytes, note if good_marker is true then good_distance is also true
                 instruction_array = [
-                    instructions["good_angle"],
-                    instructions["good_distance"],
+                    instructions["marker_found"],
                     instructions["arrow"]
                 ] # this will be 3 bytes, 1 byte each for good_angle, good_distance, and arrow
                 
@@ -287,16 +285,13 @@ def main():
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
             center = find_center(corners, frame_undistorted)
-            instructions["good_angle"] = 1 #good_angle ->1
-            instructions["angle"] = findPhi(center, frame_undistorted) #angle ->angle
+            instructions["marker_found"] = 1 #marker on screen
+            instructions["angle"] = findPhi(center, frame_undistorted) #angle -> angle
             #debug:
             #print(angle)
-
-            instructions["good_distance"] = 1 #good_distance ->1.0
             instructions["distance"] = distance(corners, ids, frame_undistorted, center) #distance ->distance
         else:
-            instructions["good_angle"] = 0
-            instructions["good_distance"] = 0
+            instructions["marker_found"] = 0 # no marker on screen
 
         # check if there is an arrow and change instructions, if there is an arrow and no marker we still want to turn 
         masks = find_mask(frame_undistorted)
