@@ -22,6 +22,8 @@ files and descriptions:
 ## Directory: Control
 ### Files
 - **FSM.JPG** shows ideation for FSM
+- **Revised_FSM** shows a revised FSM with less states that was used in the program
 ## Directory: Demo2
 ### Files
-- **Demo2.ino** Implements a finite state machine to turn until arrow identified then approach within a foot then turn the direction of the arrow
+- **Demo2.ino** Robot control system for sweeping, identifying, and driving towards a marker.
+ *        The robot stops and reads within 1.5 feet, then either stays or turns 90 degrees based on instructions.

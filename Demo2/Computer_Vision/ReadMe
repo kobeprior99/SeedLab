@@ -11,6 +11,6 @@
 - **Demo2**: Project code that processes data about the ArUco marker (distance, angle, and arrow) and packages it to be sent to the Arduino and LCD screen.
 - **distance.py**: Implements the similar triangles approach to compute the distance to a marker.
 - **leftarrow.png**: Beacon image to be printed.
-- **projectBoard.txt**: Description of individual and joint tasks.
+- **projectBoard.txt**: Description of individual, joint tasks, and cross disciplinary tasks.
 - **rightarrow.png**: Beacon image to be printed.
 - **test_float_pack**: Supplementary file for Demo 2 to ensure proper packing of floats for I2C communication.
