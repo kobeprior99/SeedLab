@@ -27,7 +27,7 @@
  * - PI Communication:
  *   - angle_pi: Angle received from the Raspberry Pi (in degrees).
  *   - distance_pi: Distance received from the Raspberry Pi (in inches).
- *   - good_angle, good_distance: Flags indicating valid angle and distance data.
+ *   - marker_found: Flag indicating if angle and distance are good to be interpreted.
  *   - arrow: Directional command (0 = left, 1 = right, 2 = no arrow).
  * - Motor Control:
  *   - pos_counts: Encoder counts for motor positions.
@@ -61,8 +61,6 @@
  * Turn on the robot, and the angle sweep will begin. The robot will then autonomously approach the target.
  */
 
-//DEMO 2
-//Cooper Hammond and Ron Gaines
 
 // Control Booleans
 bool doTurn = true;
@@ -74,15 +72,14 @@ boolean start = false;
 #include <Wire.h>
 #define MY_ADDR 8
 volatile uint8_t offset = 0;
-const int BUFFER_SIZE = 4;
+const int BUFFER_SIZE = 4; // 4 bytes for float
 volatile float instruction_array[6]; // array to store the instructions
 
 // PI recive Global Variables
 byte buffer[BUFFER_SIZE];
 volatile float angle_pi = 0.0;    // sent in degrees
 volatile float distance_pi = 0.0; // sent in inches
-volatile int good_angle = 0;      // 0=invalid , 1=valid
-volatile int good_distance = 0;   // 0=invalid angle, 1=valid angle
+volatile int marker_found = 0;      // 0=no , 1 = yes
 volatile int arrow = 2;           // 0=left, 1=right, 2=no arrow
 
 // Pin Definitions
@@ -185,7 +182,7 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(encPin1A), encoder1_ISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(encPin2A), encoder2_ISR, CHANGE);
 
-    delay(1000); // delay for PI bootup
+    delay(1000); // delay for PI bootup -> maybe don't need
 }
 
 // Functions
@@ -212,8 +209,7 @@ void encoder2_ISR() {
 void receive(int numBytes) {
     while (Wire.available()) {
         Wire.read(); // discard first byte (offset)
-        good_angle = Wire.read();
-        good_distance = Wire.read();
+        marker_found = Wire.read();
         arrow = Wire.read();
         // need to read four bytes and convert into float
         for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -252,11 +248,11 @@ void loop() {
     switch (state) {
 
         case SWEEP: // angle sweep
-            if (good_angle != 1) {
+            if (marker_found != 1) {
                 desiredPhi += 0.5 * PI / 180.0;
                 Serial.println("Scanning for bitches...");
             }
-            else if (good_angle == 1) {
+            else if (marker_found == 1) {
                 Serial.println("Found um");
                 analogWrite(pwmPin[0], 0);
                 analogWrite(pwmPin[1], 0);
