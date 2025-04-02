@@ -1,3 +1,10 @@
 Blane Tasks: develop distance detection code
-Kobe Tasks: develop arrow detection code
+Kobe Tasks: develop arrow detection code, implement send function to pack bytes and send via i2c to arduino
 Joint Tasks: Co-program demo2 combining results from demo1 and individual tasks above
+
+Revision tasks:
+Blane: thread send instructions to send at a slightly slower rate without degrading program performance
+Kobe: implement manual exposure and adjust green and red masks accordingly
+
+Cross disciplinary:
+Computer Vision both memebers: help control team implement receive function: file `Test_Send.ino`

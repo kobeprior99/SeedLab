@@ -2,40 +2,44 @@
 *******************************************************************
 * File Name         : Demo2.py
 
-* Description       : Interpret the angle of an Aruco marker, 
-* the distance to the marker, and the color of the arrow next to the marker. 
-* When this information is available send it to the arduino.
+* Description       : Detect the angle and distance of an ArUco marker, 
+* as well as the color of the arrow adjacent to the marker. 
+* Transmit this data to an Arduino when available.
 *
-* Supplementary File(s): Computer_Vision/Demo1/cam_cal.py used to generate intrinsic camera parameters stored in calibration.pkl file 
-* distance.py and chatdist.py used to experiment with distance calculation function
-* arrow.py used to experiment with arrow detection function
-* test_float_pack.py file used to experiment with sending floats to arduino
+* Supplementary File(s): 
+* - Computer_Vision/Demo1/cam_cal.py: Generates intrinsic camera parameters stored in calibration.pkl.
+* - distance.py and chatdist.py: Used for experimenting with distance calculation.
+* - arrow.py: Used for experimenting with arrow detection.
+* - test_float_pack.py: Used for testing float transmission to Arduino.
+*
 * Revision History  :
 * Date		Author 			Comments
 * ------------------------------------------------------------------
 * 
-* 02/22/2025    Kobe Prior and Blane Miller Created File
-* 02/23/2025    Kobe Prior added necessary libraries and some initializations
-* 03/03/2025    Kobe Prior Blane added the main function
-* 03/06/2025    Kobe Prior Blane added the LCD display function
-* 03/24/2025    Kobe Prior Blane added Revised LCD program to send 11 bytes instead of 24 at a time
-* 03/27/2025    Kobe Prior Blane added threading to send instructions to arduino, removed LCD display functionality to focus on I2C communication with Arduino
+* 02/22/2025    Kobe Prior and Blane Miller: Initial file creation.
+* 02/23/2025    Kobe Prior: Added required libraries and initializations.
+* 03/03/2025    Kobe Prior and Blane Miller: Added the main function.
+* 03/06/2025    Kobe Prior and Blane Miller: Added LCD display functionality.
+* 03/24/2025    Kobe Prior and Blane Miller: Updated LCD program to send 11 bytes instead of 24.
+* 03/27/2025    Kobe Prior and Blane Miller: Introduced threading for Arduino communication and removed LCD functionality to focus on I2C communication.
+* 03/28/2025    Kobe Prior and Blane Miller: Added comments and cleaned up code. Modified check_arrow function to not require aruco marker be on screen.    
+* 03/29/2025    Kobe Prior and Blane Miller: Implemented manual exposure and brightness settings for the camera and adjusted hsv masks accordingly.
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
 - Pi Camera
-- I2C LCD Display
--I2C Arduino
--connect pin 3 on Pi to pin A4 on Arduino (SDA)
--connect pin 5 on Pi to pin A5 on Arduino (SCL)
--connect pin 6 on Pi to GND on Arduino
--print (ensure 2x2 inches): leftarrow.png, rightarrow.png
+- I2C Arduino
+- Connections:
+    - Connect pin 3 on Pi to pin A4 on Arduino (SDA).
+    - Connect pin 5 on Pi to pin A5 on Arduino (SCL).
+    - Connect pin 6 on Pi to GND on Arduino.
+- Print (ensure 2x2 inches): leftarrow.png, rightarrow.png.
 
 Example Execution: 
-- Ensure calibration.pkl is available in working directory.
-- Run the script using: python Demo2.py after navigating to the correct directory
-- print 2x2 inch aruco markers and leftarrow.png and rightarrow.png
-- Place an left or right 'beacon' 
+- Ensure calibration.pkl is available in the working directory.
+- Run the script using: python Demo2.py after navigating to the correct directory.
+- Print 2x2 inch ArUco markers and leftarrow.png/rightarrow.png.
+- Place a left or right 'beacon' 5 to 6 feet away from the robot, aligned with its axis of rotation, and power on the robot.
 '''
 
 #import necessary libraries
@@ -321,4 +325,4 @@ def main():
 #run the code
 if __name__ == "__main__":
     main()
-    program_running = False # set to false to terminate the threads
+    program_running = False # set to false to terminate the threads, same thing as a daemon thread

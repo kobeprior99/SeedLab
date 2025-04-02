@@ -1,0 +1,25 @@
+# Control Directory - Demo2
+
+## Overview
+Directory containing the files necessary to 
+## Files and Descriptions
+
+### **FSM.JPG**
+- This file contains the initial ideation for the FSM design, showcasing the states and transitions based on computer vision parameters.
+
+### **Revised_FSM**
+- This file presents a revised version of the FSM with fewer states, which was ultimately implemented in the program for improved efficiency and simplicity.
+
+## Related Files in Demo2 Directory
+
+### **Demo2.ino**
+- This file contains the robot control system code. The robot performs the following tasks:
+    - Sweeps the area to identify a marker.
+    - Drives towards the marker.
+    - Stops within 1.5 feet of the marker.
+    - Based on instructions, either stays in place or turns 90 degrees.
+- Example excecution listed in the file
+
+## Additional Notes
+- The FSM design is a critical component of the robot's control system, enabling it to make decisions based on real-time computer vision inputs.
+- Refer to `FSM.JPG` and `Revised_FSM` for a visual representation of the FSM design process.
