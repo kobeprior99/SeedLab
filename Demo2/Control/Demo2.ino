@@ -50,6 +50,15 @@
  * - The robot uses a proportional-derivative (PD) controller for both rotational and linear control.
  * - The program includes debug messages for state transitions and actions.
  * - Ensure the Raspberry Pi is booted before starting the robot.
+ * 
+ * Example Execution:
+ * Place the robot's axis of rotation inline with an ArUco marker between 4 and 6 feet away. 
+ * Ensure I2C connections are made as follows:
+ * - Pi Pin 3 > Arduino A4
+ * - Pi Pin 5 > Arduino A5
+ * - Pi Pin 6 > Arduino GND
+ * Turn on the Raspberry Pi and run the computer vision code. 
+ * Turn on the robot, and the angle sweep will begin. The robot will then autonomously approach the target.
  */
 
 // Control Booleans
