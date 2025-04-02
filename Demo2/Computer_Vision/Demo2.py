@@ -24,6 +24,7 @@
 * 03/27/2025    Kobe Prior and Blane Miller: Introduced threading for Arduino communication and removed LCD functionality to focus on I2C communication.
 * 03/28/2025    Kobe Prior and Blane Miller: Added comments and cleaned up code. Modified check_arrow function to not require aruco marker be on screen.    
 * 03/29/2025    Kobe Prior and Blane Miller: Implemented manual exposure and brightness settings for the camera and adjusted hsv masks accordingly.
+* 03/30/2025    Kobe Prior and Blane Miller: removed redudant good bools, and replaced with marker_found, reduced number of bytes needed for communication
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
