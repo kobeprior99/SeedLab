@@ -18,8 +18,7 @@ volatile float instruction_array[6]; // array to store the instructions
 byte buffer[BUFFER_SIZE];
 volatile float angle_pi = 0.0;    // sent in degrees
 volatile float distance_pi = 0.0; // sent in inches
-volatile int good_angle = 0;      // 0=invalid , 1=valid
-volatile int good_distance = 0;   // 0=invalid angle, 1=valid angle
+volatile int marker_found = 0;      // 0=no , 1 = yes
 volatile int arrow = 2;           // 0=left, 1=right, 2=no arrow
 
 // Pin Definitions
@@ -149,8 +148,7 @@ void encoder2_ISR() {
 void receive(int numBytes) {
     while (Wire.available()) {
         Wire.read(); // discard first byte (offset)
-        good_angle = Wire.read();
-        good_distance = Wire.read();
+        marker_found = Wire.read();
         arrow = Wire.read();
         // need to read four bytes and convert into float
         for (int i = 0; i < BUFFER_SIZE; i++) {
@@ -189,11 +187,11 @@ void loop() {
     switch (state) {
 
         case SWEEP: // angle sweep
-            if (good_angle != 1) {
+            if (marker_found != 1) {
                 desiredPhi += 0.5 * PI / 180.0;
                 //Serial.println("Scanning for bitches...");
             }
-            else if (good_angle == 1) {
+            else if (marker_found == 1) {
                 //Serial.println("Found um");
                 analogWrite(pwmPin[0], 0);
                 analogWrite(pwmPin[1], 0);
