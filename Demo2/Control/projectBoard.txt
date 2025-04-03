@@ -1,5 +1,12 @@
 Cooper Tasks:
+Ideate FSM, added corrective state, integrate Pi instructions with Test_Send sample code
 
 Ron Tasks:
+Ideate FSM, revise controller Serial monitor debugging, adjusted timing, provide documentation
 
 Joint Tasks:
+Bring together ideas for FSM and co-program Demo2 code
+
+Cross Disciplinary Tasks:
+accomodate reasonable sweep speed for camera to pick up on aruco marker better
+access variables sent from pi to be used as flags to change states in fsm
