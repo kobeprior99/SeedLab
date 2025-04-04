@@ -1,7 +1,7 @@
 # Control Directory - Demo2
 
 ## Overview
-Directory containing the files necessary to 
+Directory containing the files necessary to Complete the tasks outline in Demo2: drive straight towards a marker and stop or drive to the marker and turn based on the arrow nearby.
 ## Files and Descriptions
 
 ### **FSM.JPG**
@@ -10,8 +10,7 @@ Directory containing the files necessary to
 ### **Revised_FSM**
 - This file presents a revised version of the FSM with fewer states, which was ultimately implemented in the program for improved efficiency and simplicity.
 
-## Related Files in Demo2 Directory
-
+## Demo2 Directory
 ### **Demo2.ino**
 - This file contains the robot control system code. The robot performs the following tasks:
     - Sweeps the area to identify a marker.
