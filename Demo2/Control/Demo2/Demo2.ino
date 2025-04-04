@@ -182,7 +182,7 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(encPin1A), encoder1_ISR, CHANGE);
     attachInterrupt(digitalPinToInterrupt(encPin2A), encoder2_ISR, CHANGE);
 
-    delay(1000); // delay for PI bootup -> maybe don't need
+    delay(500); // delay for PI bootup -> maybe don't need
 }
 
 // Functions
