@@ -25,6 +25,7 @@
 * 03/28/2025    Kobe Prior and Blane Miller: Added comments and cleaned up code. Modified check_arrow function to not require aruco marker be on screen.    
 * 03/29/2025    Kobe Prior and Blane Miller: Implemented manual exposure and brightness settings for the camera and adjusted hsv masks accordingly.
 * 03/30/2025    Kobe Prior and Blane Miller: removed redudant good bools, and replaced with marker_found, reduced number of bytes needed for communication
+* 04/06/2025    Kobe Prior and Blane Miller: Experimented with adaptive thresholding to improve aruco detection.
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
