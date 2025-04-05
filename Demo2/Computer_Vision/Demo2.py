@@ -282,6 +282,11 @@ def main():
         
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
+        # Apply adaptive thresholding to the grayscale image
+        # TODO Blane: Understand the parameters of adaptiveThresholding so we can easily adjust them/fine
+        # experiment with adaptiveThresholding to see if this could help aruco detection
+        #  gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        #Debug imshow("gray", gray)
         corners, ids, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
