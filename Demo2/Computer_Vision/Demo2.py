@@ -292,7 +292,7 @@ def main():
         # experiment with adaptiveThresholding to see if this could help aruco detection
         gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
         # Debug 
-        cv2.imshow("gray", gray)
+        #cv2.imshow("gray", gray)
 
         corners, ids, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
@@ -322,7 +322,7 @@ def main():
             instructions["arrow"] = 2 #good_arrow ->0.0
 
         #display frame with all overlays
-        #cv2.imshow('Demo2', frame_undistorted)
+        cv2.imshow('Demo2', frame_undistorted)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     #turn off the camera and destroy all windows
