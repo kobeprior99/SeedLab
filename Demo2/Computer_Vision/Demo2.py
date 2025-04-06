@@ -66,12 +66,12 @@ CX = cameraMatrix[0,2] # camera center in pixels
 
 #set detector parameters for aruco detector
 parameters = aruco.DetectorParameters()
-parameters.adaptiveThreshWinSizeMin = 3
-parameters.adaptiveThreshWinSizeMax = 23
-parameters.adaptiveThreshWinSizeStep = 10
-parameters.adaptiveThreshConstant = 7  # try increasing or decreasing
-parameters.minMarkerPerimeterRate = 0.03
-parameters.polygonalApproxAccuracyRate = 0.03
+parameters.adaptiveThreshWinSizeMin = 3#smallest size of the window in pixels used to calculate the local threshold
+parameters.adaptiveThreshWinSizeMax = 23#largest neighborhood size
+parameters.adaptiveThreshWinSizeStep = 10#step size 10, essentially each time the aruco detector is called it tried 3 neighborhood windows 3, 13, and 23
+parameters.adaptiveThreshConstant = 6  # higher constant makes it harder for pixels to be considered white
+parameters.minMarkerPerimeterRate = 0.03 #defines minimum marker size 3% of the image
+parameters.polygonalApproxAccuracyRate = 0.03 #definses the accuracy of the polygonal approximation of the marker
 
 #constant bounds for red and green
 # [61, 125.7, 72.93]//from experimentation
