@@ -64,6 +64,15 @@ with open('calibration.pkl', 'rb') as f:
 FX = cameraMatrix[0,0] # focal length in pixels
 CX = cameraMatrix[0,2] # camera center in pixels
 
+#set detector parameters for aruco detector
+parameters = aruco.DetectorParameters_create()
+parameters.adaptiveThreshWinSizeMin = 3
+parameters.adaptiveThreshWinSizeMax = 23
+parameters.adaptiveThreshWinSizeStep = 10
+parameters.adaptiveThreshConstant = 7  # try increasing or decreasing
+parameters.minMarkerPerimeterRate = 0.03
+parameters.polygonalApproxAccuracyRate = 0.03
+
 #constant bounds for red and green
 # [61, 125.7, 72.93]//from experimentation
 LOWER_GREEN = np.array([40, 100, 30])
@@ -294,7 +303,7 @@ def main():
         # Debug 
         cv2.imshow("gray", gray)
 
-        corners, ids, _ = aruco.detectMarkers(gray, myDict)
+        corners, ids, _ = aruco.detectMarkers(gray, myDict, parameters = parameters)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
             center = find_center(corners, frame_undistorted)
