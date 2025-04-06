@@ -128,7 +128,7 @@ def send_instructions():
                 #debug: print(instruction_array)
                 i2c_arduino.write_i2c_block_data(ARD_ADDR, 0, instruction_array)
                 #    print("Instructions sent to Arduino.")
-                time.sleep(0.03)#sending about 30 times a second should be fast enough for arduino to process
+                time.sleep(0.02)#sending about 30 times a second should be fast enough for arduino to process
             except IOError:
                 print(f"Write fail.{fail_count}\n")
                 fail_count += 1
