@@ -65,7 +65,7 @@ FX = cameraMatrix[0,0] # focal length in pixels
 CX = cameraMatrix[0,2] # camera center in pixels
 
 #set detector parameters for aruco detector
-parameters = aruco.DetectorParameters_create()
+parameters = aruco.DetectorParameters()
 parameters.adaptiveThreshWinSizeMin = 3
 parameters.adaptiveThreshWinSizeMax = 23
 parameters.adaptiveThreshWinSizeStep = 10
