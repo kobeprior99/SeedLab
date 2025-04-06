@@ -290,7 +290,7 @@ def main():
         gray = cv2.GaussianBlur(gray, (5, 5), 0); # Gaussian blur to reduce noise
         # Apply adaptive thresholding to the grayscale guassian blurred image
         # experiment with adaptiveThresholding to see if this could help aruco detection
-        gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 5, 2)
         # Debug 
         #cv2.imshow("gray", gray)
 
