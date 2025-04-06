@@ -270,7 +270,7 @@ def main():
         return
     
     #camera warm up
-    time.sleep(1)
+    time.sleep(.5)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     
@@ -287,11 +287,13 @@ def main():
 
         #some ideas: 
 
-        # gray = cv2.GaussianBlur(gray, (5, 5), 0); # Gaussian blur to reduce noise
+        gray = cv2.GaussianBlur(gray, (5, 5), 0); # Gaussian blur to reduce noise
         # Apply adaptive thresholding to the grayscale guassian blurred image
         # experiment with adaptiveThresholding to see if this could help aruco detection
-        # gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
-        # Debug imshow("gray", gray)
+        gray = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        # Debug 
+        cv2.imshow("gray", gray)
+
         corners, ids, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
@@ -320,7 +322,7 @@ def main():
             instructions["arrow"] = 2 #good_arrow ->0.0
 
         #display frame with all overlays
-        cv2.imshow('Demo2', frame_undistorted)
+        #cv2.imshow('Demo2', frame_undistorted)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
     #turn off the camera and destroy all windows
