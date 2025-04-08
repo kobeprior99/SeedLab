@@ -1,6 +1,5 @@
-Blane: decrease fov for arrow detection to only look right and left of the aruco marker
+Blane: adjust arrow function to only send contours we are more confident our arrows
 
 Kobe: Experiment with aruco detection to make it more consistent: tried adaptive thresholding and it is too much image processing.
-
 
 Joint Tasks: Implement subtasks, and work to only read closest marker
