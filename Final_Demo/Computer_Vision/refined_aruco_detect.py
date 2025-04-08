@@ -55,11 +55,10 @@ CX = cameraMatrix[0,2] # camera center in pixels
 
 
 #constant bounds for red and green
-# [61, 125.7, 72.93]//from experimentation
 LOWER_GREEN = np.array([40, 100, 30])
 UPPER_GREEN = np.array([70, 150, 80])
+
 #note that the hue of red wraps around so we need two bounds
-#[52.5, 218.5, 105.5]  from experimentation
 LOWER_RED1 = np.array([0, 150, 50 ])
 UPPER_RED1 = np.array([5, 255 ,140 ])
 LOWER_RED2 = np.array([175, 150, 50 ])
@@ -74,11 +73,15 @@ MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 #I2c to communicate with the arduino
 ARD_ADDR = 8 #set arduino address
 i2c_arduino = SMBus(1)#initialize i2c bus to bus 1
+
 program_running = True # global variable to terminate threads when set to false
+
 # global float array for data to send to arduino
 instructions = {"marker_found": 0, "arrow": 2, "angle": 0.0, "distance": 0.0}
-instructions_lock = threading.Lock()
 # arrow = -1 means no arrow detected, 0 means left arrow, 1 means right arrow
+# marker_found = 0 means no marker detected, 1 means marker detected
+
+instructions_lock = threading.Lock() #prevent race condiitons when accessing instructions
 def send_instructions():
     """
     Sends instructions to an Arduino via I2C communication.
@@ -173,14 +176,14 @@ def check_arrow(masks, frame):
 #modified from previous code it is now find_centers since it scales to multiple markers when necessary
 def find_centers(corners, frame):
     """
-    Calculate the center coordinates of an ArUco marker and draw a dot at the center.
+    Calculate the center coordinates of all ArUco markers on screen and draw a dot at the center.
 
     Args:
-        corners (list): A list of corner points of the detected ArUco marker.
-        frame (ndarray): The image frame where the marker is detected.
+        corners (list): A list of corner points of the detected ArUco markers.
+        frame (ndarray): The image frame where the markers are detected.
 
     Returns:
-        tuple: The (x, y) coordinates of the marker's center.
+        list: A list of tuples, where each tuple contains the (x, y) coordinates of a marker's center.
     """
     centers = [] #array to hold the centers of all markers
     for outline in corners:
@@ -195,29 +198,25 @@ def find_centers(corners, frame):
 
     return centers
 
-def distance(corners, ids, frame, center):
-        """
-        Calculate the distance from the camera to the detected ArUco marker and display it on the frame.
-        Args:
-            corners (list): List of detected marker corners.
-            ids (numpy.ndarray): Array of detected marker IDs.
-            frame (numpy.ndarray): The image frame where the markers are detected.
-            center (tuple): The center coordinates (x, y) where the distance text will be displayed.
-        Returns:
-            float: The distance from the camera to the detected marker in inches.
-        """
-        
-        _, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, MARKER_WIDTH_IRL, cameraMatrix, dist)
-        if ids is not None:
-            for i in range(len(ids)):
-                # Extract translation vector (tvec) to get distance
-                distance_found = tvecs[i][0][2]  # Z-distance from camera to marker
+def distance(corner, frame, center):
+    """
+    Calculate the distance of an ArUco marker from the camera.
 
-                # Display distance on the image
-                cv2.putText(frame, f"{distance_found:.2f} inches", (center[0], center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-                # debug
-                #print(f"Marker ID {ids[i][0]}: {distance_found:.2f} inches")
-                return distance_found
+    Args:
+        corner (list): The corner points of the detected ArUco marker.
+        frame (ndarray): The image frame where the marker is detected.
+        center (tuple): The (x, y) coordinates of the marker's center.
+
+    Returns:
+        float: The calculated distance of the marker from the camera in inches.
+    """
+    
+    _, tvecs, _ = aruco.estimatePoseSingleMarkers([corner], MARKER_WIDTH_IRL, cameraMatrix, dist)
+    # Extract translation vector (tvec) to get distance
+    distance_found = tvecs[0][0][2]  # Z-distance from camera to marker
+    # Display distance on the image
+    cv2.putText(frame, f"{distance_found:.2f} inches", (center[0], center[1] - 20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+    return distance_found
                 
 def findPhi(center, frame):
     """
@@ -230,7 +229,7 @@ def findPhi(center, frame):
     """
     # Compute angle using arctan
     #return positive angle when marker is left of camera axis, negative when right
-    object_pixel = center[0]
+    object_pixel = center[0] # note that this is the x coordinate of the center of the marker
     phi = np.degrees(np.arctan((CX - object_pixel) / FX))
     cv2.putText(frame, f'Angle {phi:.2f}', (center[0], center[1] + 30), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
 
@@ -250,13 +249,13 @@ def main():
     global instructions
     send_thread = threading.Thread(target = send_instructions)
     send_thread.start()  # Start the thread to send instructions to Arduino
-    # put all functionality here
+
+    # Set up the camera
     cap = cv2.VideoCapture(0)
     cap.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25); #manual camera expsure
     cap.set(cv2.CAP_PROP_EXPOSURE, 2)  # Adjust this value (negative for some cameras)
-
-    # Set brightness manually (scale depends on the camera, usually 0 to 1 or 0 to 255)
     cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
+
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
@@ -264,40 +263,51 @@ def main():
     #camera warm up
     time.sleep(2.0)
 
-    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8)) #contrast limited adaptive histogram equalization
+    
     while True:
         ret, frame = cap.read()
         if not ret:
             print("Error: Failed to capture image.")
             break
-        # Convert the image to grayscale then apply adaptive threshold that helps exemplify contours for aruco detection
-        
+        #undistort the frame        
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
+        #convert frame to grayscale
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
-        gray = cv2.equalizeHist(gray)  # Enhance contrast of the grayscale frame
-        gray = clahe.apply(gray)  # Apply CLAHE to the grayscale frame
+        #apply histogram equalization to the grayscale frame
+        gray = cv2.equalizeHist(gray)
+        #apply CLAHE to the grayscale frame
+        gray = clahe.apply(gray)
 
-        corners, ids, _ = aruco.detectMarkers(gray, MY_DICT)
+        corners, _, _ = aruco.detectMarkers(gray, MY_DICT)
         if len(corners) > 0:
-            # if there is a marker detected, find the center, angle, distance, and arrow
+            # if there are markers detected, find the centers, angles, distances, and arrows
+            #report only the closest marker
+
+
             #create empty arrays to hold the distances and angles
             distances = []
             angles = []
 
             centers = find_centers(corners, frame_undistorted)
-            for center in centers:
+
+            #loop through all the markers and calculate the distance and angle
+            for i, center in enumerate(centers):
                 #calculate the distances and angles for each marker
-                distances.append(distance(corners, ids, frame_undistorted, center))
+                distances.append(distance(corners[i], frame_undistorted, center))
                 angles.append(findPhi(center, frame_undistorted))
+
             #get the closest marker
             min_distance_index = distances.index(min(distances))
             instructions["marker_found"] = 1 #acceptable marker on screen
             instructions["angle"] = angles[min_distance_index] #report the angle of the closest marker
             #debug:
             #print(instructions["angle"])
+
             instructions["distance"] = distances[min_distance_index] #report the small distance
             #debug:
             #print(instructions["distance"])
+
         else:
             #if there is no marker, set the angle and distance to 0
             instructions["marker_found"] = 0 # no marker on screen
@@ -328,6 +338,5 @@ def main():
 
 #run the code
 if __name__ == "__main__":
-
     main()
     program_running = False # set to false to terminate the threads, same thing as a daemon thread
