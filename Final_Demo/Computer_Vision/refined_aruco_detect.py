@@ -169,8 +169,8 @@ def check_arrow(masks, frame):
             cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
             return 1
     return -1
-
-def find_center(corners, frame):
+#modified from previous code it is now find_centers since it scales to multiple markers when necessary
+def find_centers(corners, frame):
     """
     Calculate the center coordinates of an ArUco marker and draw a dot at the center.
 
@@ -181,6 +181,7 @@ def find_center(corners, frame):
     Returns:
         tuple: The (x, y) coordinates of the marker's center.
     """
+    centers = [] #array to hold the centers of all markers
     for outline in corners:
         marker_corners = outline.reshape((4,2))
         
@@ -189,8 +190,9 @@ def find_center(corners, frame):
         center_y = int(np.mean(marker_corners[:, 1]))
         #draw dot at the center of aruco marker
         cv2.circle(frame, (center_x,center_y), 3, (255, 255, 0), -1)
+        centers.append((center_x, center_y)) #append the center to the array
 
-    return (center_x, center_y)
+    return centers
 
 def distance(corners, ids, frame, center):
         """
@@ -277,15 +279,26 @@ def main():
         corners, ids, _ = aruco.detectMarkers(gray, MY_DICT)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
-            center = find_center(corners, frame_undistorted)
-            instructions["marker_found"] = 1 #marker on screen
-            instructions["angle"] = findPhi(center, frame_undistorted) #angle -> angle
+            #create empty arrays to hold the distances and angles
+            distances = []
+            angles = []
+
+            centers = find_centers(corners, frame_undistorted)
+            for center in centers:
+                #calculate the distances and angles for each marker
+                distances.append(distance(corners, ids, frame_undistorted, center))
+                angles.append(findPhi(center, frame_undistorted))
+            #get the closest marker
+            min_distance_index = distances.index(min(distances))
+            instructions["marker_found"] = 1 #acceptable marker on screen
+            instructions["angle"] = angles[min_distance_index] #report the angle of the closest marker
             #debug:
-            #print(angle)
-            instructions["distance"] = distance(corners, ids, frame_undistorted, center) #distance ->distance
-            if instructions["distance"] > 62: # if distance is less than 5 feet
-                instructions["marker_found"] = 0 # marker not the one we want
+            #print(instructions["angle"])
+            instructions["distance"] = distances[min_distance_index] #report the small distance
+            #debug:
+            #print(instructions["distance"])
         else:
+            #if there is no marker, set the angle and distance to 0
             instructions["marker_found"] = 0 # no marker on screen
 
         # check if there is an arrow and change instructions, if there is an arrow and no marker we still want to turn 
