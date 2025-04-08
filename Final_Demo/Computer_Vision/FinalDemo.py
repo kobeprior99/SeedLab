@@ -262,6 +262,10 @@ def main():
     cap.set(cv2.CAP_PROP_EXPOSURE, 2)  # Adjust this value (negative for some cameras)
     cap.set(cv2.CAP_PROP_FPS, 30) # set frames per second for the camera
 
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH) # get the width of the frame
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # get the height of the frame
+    print(width)
+    print(height)
     if not cap.isOpened():
         print("Error: Could not open camera.")
         return
