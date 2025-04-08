@@ -245,7 +245,7 @@ def main():
     IOError: If the camera cannot be opened or a frame cannot be captured.
     """
     global instructions
-    send_thread = threading.Thread(target=send_instructions)
+    send_thread = threading.Thread(target = send_instructions)
     send_thread.start()  # Start the thread to send instructions to Arduino
     # put all functionality here
     cap = cv2.VideoCapture(0)
@@ -259,9 +259,8 @@ def main():
         return
     
     #camera warm up
-    time.sleep(.5)
+    #time.sleep(.5)
 
-    myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
     clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     while True:
         ret, frame = cap.read()
@@ -274,8 +273,8 @@ def main():
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
         gray = cv2.equalizeHist(gray)  # Enhance contrast of the grayscale frame
         gray = clahe.apply(gray)  # Apply CLAHE to the grayscale frame
-        
-        corners, ids, _ = aruco.detectMarkers(gray, myDict)
+
+        corners, ids, _ = aruco.detectMarkers(gray, MY_DICT)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
             center = find_center(corners, frame_undistorted)
