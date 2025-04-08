@@ -13,6 +13,7 @@
 * ------------------------------------------------------------------
 * 
 * 4/7/2025 Kobe created a fork of Final_Demo/FinalDemo.py to use make Aruco detection more robust without doing adaptive thresholding.
+* 4/7/2025 Kobe computed centers as an array of tuples to handle multiple markers. Then found closest marker and reported it
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
