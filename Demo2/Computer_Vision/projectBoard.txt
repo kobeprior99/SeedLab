@@ -8,3 +8,7 @@ Kobe: implement manual exposure and adjust green and red masks accordingly
 
 Cross disciplinary:
 Computer Vision both memebers: help control team implement receive function: file `Test_Send.ino`
+
+Post Demo Revision:
+Blane: experiment with adaptive thresholding for aruco detection to make it more resilient to lighting changes
+Kobe: 
