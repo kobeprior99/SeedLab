@@ -216,7 +216,7 @@ void loop() {
                     //atMarker = false;
                     state = STOP;
                 }
-                else if (correctiveAngleTurn == false){ //additional corrective angle turn to improve reliabilty
+                else if (correctiveAngleTurn == false && marker_found == 1){ //additional corrective angle turn to improve reliabilty
                   delay(300);
                   desiredPhi = currentPhi + float(angle_pi * (PI / 180.0));
                   correctiveAngleTurn = true;
