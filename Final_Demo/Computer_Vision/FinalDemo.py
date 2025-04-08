@@ -159,23 +159,24 @@ def check_arrow(masks, frame, aruco_center):
     for contour in green_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
+            
             #ensure that the contor detected is to the left of the aruco marker
             #if the x coordinate of the left arrow is less than the x coordinate of the aruco marker
-            #also check that the y coordinate of the left arrow is within 300 pixels of the aruco marker
-            if x < aruco_center[0] and (y + (h/2))< aruco_center[1]+300 and (y + (h/2)) > aruco_center[1]-300:
+            #also check that the y coordinate of the left arrow is within 100 pixels of the aruco marker
+            if x < aruco_center[0] and (y + (h/2))< aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
                 return 0
     #right red arrow
     for contour in red_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
-            cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
             #ensure that the contor detected is to the right of the aruco marker
             #if the x coordinate of the right arrow is greater than the x coordinate of the aruco marker
-            #also check that the y coordinate of the right arrow is within 300 pixels of the aruco marker
-            if x > aruco_center[0] and (y + (h/2)) < aruco_center[1] + 300 and (y + (h/2)) > aruco_center[1] - 300:
+            #also check that the y coordinate of the right arrow is within 100 pixels of the aruco marker
+            if x > aruco_center[0] and (y + (h/2)) < aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
+                cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
                 return 1
     return -1
 
