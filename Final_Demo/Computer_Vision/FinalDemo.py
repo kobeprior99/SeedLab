@@ -68,10 +68,10 @@ LOWER_GREEN = np.array([40, 100, 30])
 UPPER_GREEN = np.array([70, 150, 80])
 
 #note that the hue of red wraps around so we need two bounds
-LOWER_RED1 = np.array([0, 150, 50 ])
-UPPER_RED1 = np.array([5, 255 ,140 ])
-LOWER_RED2 = np.array([175, 150, 50 ])
-UPPER_RED2 = np.array([180, 255, 140 ])
+LOWER_RED1 = np.array([0, 160, 50 ])
+UPPER_RED1 = np.array([3, 230 ,140 ])
+LOWER_RED2 = np.array([177, 160, 50 ])
+UPPER_RED2 = np.array([179, 230, 140 ])
 
 #constant marker width in inches
 MARKER_WIDTH_IRL = 2.09375 #2 and 3/32inches
