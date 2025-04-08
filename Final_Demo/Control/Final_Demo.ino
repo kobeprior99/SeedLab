@@ -2,7 +2,6 @@
 //Cooper Hammond and Ron Gaines
 
 // Control Booleans
-bool doTurn = true;
 bool atMarker = false;
 bool correctiveAngleTurn = false;
 
@@ -218,7 +217,7 @@ void loop() {
                     state = STOP;
                 }
                 else if (correctiveAngleTurn == false){ //additional corrective angle turn to improve reliabilty
-                  delay(500);
+                  delay(300);
                   desiredPhi = currentPhi + float(angle_pi * (PI / 180.0));
                   correctiveAngleTurn = true;
                   state = TURN;
@@ -245,16 +244,18 @@ void loop() {
             if (atMarker == true) {
                 if (arrow == 0) { // left
                     //Serial.println("To the left, to the left, to the left");
-                    delay(1500);
+                    delay(1000);
                     desiredPhi = currentPhi + (PI / 2.0);
                     atMarker = false;
+                    correctiveAngleTurn = false;
                     state = TURN;
                 }
                 else if (arrow == 1) { // right
                     //Serial.println("To the right, to the right, to the right");
-                    delay(1500);
+                    delay(1000);
                     desiredPhi = currentPhi - (PI / 2.0);
                     atMarker = false;
+                    correctiveAngleTurn = false;
                     state = TURN;
                 }
                 else { // no turn comand from pi
