@@ -74,7 +74,7 @@ LOWER_RED2 = np.array([175, 150, 50 ])
 UPPER_RED2 = np.array([180, 255, 140 ])
 
 #constant marker width in inches
-MARKER_WIDTH_IRL = 2.09375 #2 and 3/32 inches
+MARKER_WIDTH_IRL = 2.09375 #2 and 3/32inches
 #aruco dictrionary
 MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
@@ -151,37 +151,34 @@ def find_mask(frame):
     # cv2.imshow('green', green_mask)
     return (green_mask, red_mask)
 
-def check_arrow(masks, frame):
-    """
-    Check for the presence of left or right arrows in the frame.
-
-    Args:
-        masks (tuple): A tuple containing the green mask and red mask.
-        frame (ndarray): The image frame in which to detect arrows.
-
-    Returns:
-        int: 0 if a left arrow is detected, 1 if a right arrow is detected, -1 if no arrow is detected.
-    """
+def check_arrow(masks, frame, aruco_center):
     green_mask, red_mask = masks
     green_contours, _ = cv2.findContours(green_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     red_contours, _ = cv2.findContours(red_mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
     # left green arrow
     for contour in green_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
-            return 0
-        
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
+            #ensure that the contor detected is to the left of the aruco marker
+            #if the x coordinate of the left arrow is less than the x coordinate of the aruco marker
+            #also check that the y coordinate of the left arrow is within 300 pixels of the aruco marker
+            if x < aruco_center[0] and (y + (h/2))< aruco_center[1]+300 and (y + (h/2)) > aruco_center[1]-300:
+                return 0
     #right red arrow
     for contour in red_contours:
         if cv2.contourArea(contour) > 500:
             x, y, w, h = cv2.boundingRect(contour)
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
-            return 1
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (0, 0, 255), 2)
+            #ensure that the contor detected is to the right of the aruco marker
+            #if the x coordinate of the right arrow is greater than the x coordinate of the aruco marker
+            #also check that the y coordinate of the right arrow is within 300 pixels of the aruco marker
+            if x > aruco_center[0] and (y + (h/2)) < aruco_center[1] + 300 and (y + (h/2)) > aruco_center[1] - 300:
+                return 1
     return -1
+
 #modified from previous code it is now find_centers since it scales to multiple markers when necessary
 def find_centers(corners, frame):
     """
@@ -297,7 +294,9 @@ def main():
             #create empty arrays to hold the distances and angles
             distances = []
             angles = []
-
+            arrows = []
+            #find masks for the arrows
+            masks = find_mask(frame_undistorted)
             centers = find_centers(corners, frame_undistorted)
 
             #loop through all the markers and calculate the distance and angle
@@ -305,36 +304,26 @@ def main():
                 #calculate the distances and angles for each marker
                 distances.append(distance(corners[i], frame_undistorted, center))
                 angles.append(findPhi(center, frame_undistorted))
-
+                arrows.append(check_arrow(masks, frame_undistorted, center))
             #get the closest marker
             min_distance_index = distances.index(min(distances))
             instructions["marker_found"] = 1 #acceptable marker on screen
             instructions["angle"] = angles[min_distance_index] #report the angle of the closest marker
-            #debug:
-            #print(instructions["angle"])
 
             instructions["distance"] = distances[min_distance_index] #report the small distance
-            #debug:
-            #print(instructions["distance"])
+
+            #Arrow detection contingent on aruco being on screen
+            if arrows[min_distance_index] == 0:
+                instructions["arrow"] = 0# left arrow
+            elif arrows[min_distance_index] == 1:
+                instructions["arrow"] = 1# right arrow
+            else:
+                instructions["arrow"] = 2 #no arrow
 
         else:
-            #if there is no marker, set the angle and distance to 0
+            #if there is no marker detected:
             instructions["marker_found"] = 0 # no marker on screen
-
         # check if there is an arrow and change instructions, if there is an arrow and no marker we still want to turn 
-        masks = find_mask(frame_undistorted)
-        arrow = check_arrow(masks, frame_undistorted)
-        if arrow == 0:
-            #here we would modify instruction array
-            #print("LEFT")
-            instructions["arrow"] = 0 #->arrow is now left
-        elif arrow == 1:
-            #print("RIGHT")
-            instructions["arrow"] = 1 #-> arrow is now right
-        else:
-            #no arrow detected good_arrow ->0.0
-            #print("NO ARROW DETECTED")
-            instructions["arrow"] = 2 #good_arrow ->0.0
 
         #display frame with all overlays
         cv2.imshow('Demo2', frame_undistorted)
