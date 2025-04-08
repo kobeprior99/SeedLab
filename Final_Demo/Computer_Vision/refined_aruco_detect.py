@@ -1,10 +1,8 @@
 '''
 *******************************************************************
-* File Name         : Final_Demo.py
+* File Name         : refined_aruco_detect.py
 
-* Description       : Detect the angle and distance of an ArUco marker, 
-* as well as the color of the arrow adjacent to the marker. 
-* Transmit this data to an Arduino when available.
+* Description       : A fork of Final_Demo/FinalDemo.py
 *
 * Supplementary File(s): 
 * - Computer_Vision/Demo1/cam_cal.py: Generates intrinsic camera parameters stored in calibration.pkl.
@@ -14,8 +12,7 @@
 * Date		Author 			Comments
 * ------------------------------------------------------------------
 * 
-* 4/6/2025 Kobe and Blane Modified the code from Demo2 to only report markers within 5 feet
-* 4/7/2025 Kobe and Blane Tested code TODO: for Blane: limit fov to left and right of marker. for Kobe: look into only detecting the closest.
+* 4/7/2025 Kobe created a fork of Final_Demo/FinalDemo.py to use make Aruco detection more robust without doing adaptive thresholding.
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
@@ -33,6 +30,7 @@ Example Execution:
 - Print 2x2 inch ArUco markers and leftarrow.png/rightarrow.png.
 - Place a left or right 'beacon' 5 to 6 feet away from the robot, aligned with its axis of rotation, and power on the robot.
 '''
+
 
 #import necessary libraries
 import cv2
@@ -53,16 +51,6 @@ with open('calibration.pkl', 'rb') as f:
 # gather useful constants from camera matrix
 FX = cameraMatrix[0,0] # focal length in pixels
 CX = cameraMatrix[0,2] # camera center in pixels
-
-#set detector parameters for aruco detector
-parameters = aruco.DetectorParameters()
-parameters.adaptiveThreshWinSizeMin = 3#smallest size of the window in pixels used to calculate the local threshold
-parameters.adaptiveThreshWinSizeMax = 23#largest neighborhood size
-parameters.adaptiveThreshWinSizeStep = 10#step size 10, essentially each time the aruco detector is called it tried 3 neighborhood windows 3, 13, and 23
-parameters.adaptiveThreshConstant = 6  # higher constant makes it harder for pixels to be considered white
-parameters.minMarkerPerimeterRate = 0.03 #defines minimum marker size 3% of the image
-parameters.polygonalApproxAccuracyRate = 0.03 #definses the accuracy of the polygonal approximation of the marker
-
 
 
 #constant bounds for red and green
@@ -274,7 +262,7 @@ def main():
     time.sleep(.5)
 
     myDict = aruco.getPredefinedDictionary(aruco.DICT_6X6_50)
-    
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -284,7 +272,10 @@ def main():
         
         frame_undistorted = cv2.undistort(frame, cameraMatrix, dist)
         gray = cv2.cvtColor(frame_undistorted, cv2.COLOR_BGR2GRAY)
-        corners, ids, _ = aruco.detectMarkers(gray, myDict, parameters = parameters)
+        gray = cv2.equalizeHist(gray)  # Enhance contrast of the grayscale frame
+        gray = clahe.apply(gray)  # Apply CLAHE to the grayscale frame
+        
+        corners, ids, _ = aruco.detectMarkers(gray, myDict)
         if len(corners) > 0:
             # if there is a marker detected, find the center, angle, distance, and arrow
             center = find_center(corners, frame_undistorted)
@@ -324,5 +315,6 @@ def main():
 
 #run the code
 if __name__ == "__main__":
+
     main()
     program_running = False # set to false to terminate the threads, same thing as a daemon thread

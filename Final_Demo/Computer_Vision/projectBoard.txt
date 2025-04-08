@@ -1,1 +1,6 @@
-Joint Tasks: Modify Demo2 code to only send marker data if distance is within 5 feet.
+Blane: decrease fov for arrow detection to only look right and left of the aruco marker
+
+Kobe: Experiment with aruco detection to make it more consistent: tried adaptive thresholding and it is too much image processing.
+
+
+Joint Tasks: Implement subtasks, and work to only read closest marker
