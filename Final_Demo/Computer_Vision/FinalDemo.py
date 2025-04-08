@@ -19,7 +19,9 @@
 * ------------------------------------------------------------------
 * 
 * 4/6/2025 Kobe and Blane Modified the code from Demo2 to only report markers within 5 feet
-* 4/7/2025 Kobe and Blane Tested code TODO: for Blane: limit fov to left and right of marker. for Kobe: look into only detecting the closest.
+* 4/7/2025 Kobe and Blane Tested code TODO: for Blane: limit fov/(region of interest) to left and right of marker. for Kobe: look into only detecting the closest marker.
+* 4/7/2025 Kobe implemented detect closest marker and only report that marker.
+* 4/8/2025 Blane Modified arrow detection to use the new ArUco marker detection and adjust fov.
 ******************************************************************
 Hardware Setup: 
 - Raspberry Pi
@@ -72,7 +74,7 @@ LOWER_RED2 = np.array([175, 150, 50 ])
 UPPER_RED2 = np.array([180, 255, 140 ])
 
 #constant marker width in inches
-MARKER_WIDTH_IRL = 2 #inches
+MARKER_WIDTH_IRL = 2.09375 #2 and 3/32 inches
 #aruco dictrionary
 MY_DICT = aruco.getPredefinedDictionary(aruco.DICT_6X6_50) # setup aruco dict
 
