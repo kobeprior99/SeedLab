@@ -31,12 +31,11 @@ Hardware Setup:
     - Connect pin 3 on Pi to pin A4 on Arduino (SDA).
     - Connect pin 5 on Pi to pin A5 on Arduino (SCL).
     - Connect pin 6 on Pi to GND on Arduino.
-- Print (ensure 2x2 inches): leftarrow.png, rightarrow.png.
+- Print leftarrow.pdf and rightarrow.pdf from the working directory
 
 Example Execution: 
 - Ensure calibration.pkl is available in the working directory.
 - Run the script using: python Demo2.py after navigating to the correct directory.
-- Print 2x2 inch ArUco markers and leftarrow.png/rightarrow.png.
 - Place a left or right 'beacon' 5 to 6 feet away from the robot, aligned with its axis of rotation,
 - The next marker should be in the direction indicated by the arrow and offset about 1 foot so that when the robot tunrs it can identify the next marker. 
 - repeat this and terminate with an aruco with no arrow and power on the robot.
