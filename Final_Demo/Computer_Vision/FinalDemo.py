@@ -162,7 +162,7 @@ def check_arrow(masks, frame, aruco_center):
             #ensure that the contor detected is to the left of the aruco marker
             #if the x coordinate of the left arrow is less than the x coordinate of the aruco marker
             #also check that the y coordinate of the left arrow is within 100 pixels of the aruco marker
-            if x < aruco_center[0] and (y + (h/2))< aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
+            if x < aruco_center[0] and (aruco_center[0] - 100) < x < (aruco_center[0] + 100) and (y + (h/2))< aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 cv2.putText(frame, 'LEFT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
                 return 0
@@ -173,7 +173,7 @@ def check_arrow(masks, frame, aruco_center):
             #ensure that the contor detected is to the right of the aruco marker
             #if the x coordinate of the right arrow is greater than the x coordinate of the aruco marker
             #also check that the y coordinate of the right arrow is within 100 pixels of the aruco marker
-            if x > aruco_center[0] and (y + (h/2)) < aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
+            if x > aruco_center[0] and (aruco_center[0] - 100) < x < (aruco_center[0] + 100) and (y + (h/2)) < aruco_center[1] + 100 and (y + (h/2)) > aruco_center[1] - 100:
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
                 cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
                 return 1
