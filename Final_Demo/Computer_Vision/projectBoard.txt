@@ -1,5 +1,14 @@
-Blane: adjust arrow function to only send contours we are more confident our arrows
+Blane:
+- Adjusted arrow function to only send contours we are more confident about.
+    - Used if-statements to define a region of interest around the marker, ensuring that, for example, red detected in a specific region actually means to turn right.
 
-Kobe: Experiment with aruco detection to make it more consistent: tried adaptive thresholding and it is too much image processing.
+Kobe:
+- Scaled Aruco detection to store multiple markers' data in lists for processing.
+    - Identified the closest marker and sent its data.
+- Used Contrast Limited Adaptive Histogram Equalization (CLAHE) to handle lighting variations.
 
-Joint Tasks: Implement subtasks, and work to only read closest marker
+Joint Tasks:
+- Integrated individual subsystems into a single program.
+
+Intersubsystem Tasks:
+- Verified that the program functions correctly with the controls subsystem.

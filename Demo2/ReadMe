@@ -6,7 +6,7 @@ find the angle, distance, and arrow and relay this data to the controls system
 - **arrow.py**: Development of angle detection to be utilized in Demo 2.
 - **calibration.pkl**: Copy of the calibration file from Demo 1 for camera calibration.
 - **chatdist.py**: ChatGPT-aided program that uses tvecs to compute the distance to a marker rather than using the similar triangle approach.
-- **Demo2**: Project code that processes data about the ArUco marker (distance, angle, and arrow) and packages it to be sent to the Arduino and LCD screen.
+- **Demo2**: Project code that processes data about the ArUco marker (distance, angle, and arrow) and packages it to be sent to the Arduino.
 - **distance.py**: Implements the similar triangles approach to compute the distance to a marker.
 - **leftarrow.png**: Beacon image to be printed.
 - **projectBoard.txt**: Description of individual and joint tasks.

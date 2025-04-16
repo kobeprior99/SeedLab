@@ -1,0 +1,5 @@
+Joint Tasks:
+- Modify `Demo2.ino` code to enable continuous movement towards the next marker until a marker without an arrow is reached.
+
+Cross-Disciplinary Tasks:
+- Collaborate with the computer vision team for testing.
