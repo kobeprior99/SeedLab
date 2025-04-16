@@ -1,0 +1,7 @@
+This directory contains files related to the control subsystem.
+## Final_Demo Directory
+- **`Final_Demo.ino`**  
+    The main project file for the Final_Demo folder. It implements a finite state machine (FSM) with proportional-derivative (PD) control to autonomously navigate a course of beacons. The file processes input from the Raspberry Pi via I2C.
+
+- **`projectBoard.txt`**  
+    A text file listing tasks for the control subsystem.
