@@ -147,7 +147,7 @@ def find_mask(frame):
     red_mask = cv2.GaussianBlur(red_mask, (5,5), 0)
     #debug to refine masks
     #cv2.imshow('red', red_mask)
-    cv2.imshow('green', green_mask)
+    #cv2.imshow('green', green_mask)
     return (green_mask, red_mask)
 
 def check_arrow(masks, frame, aruco_center):
