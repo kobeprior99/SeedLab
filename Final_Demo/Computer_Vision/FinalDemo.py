@@ -178,7 +178,7 @@ def check_arrow(masks, frame, aruco_center):
                 cv2.putText(frame, 'RIGHT', (x, y-5), cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 0), 2)
                 return 1
     return -1
-
+#empty commit
 #modified from previous code it is now find_centers since it scales to multiple markers when necessary
 def find_centers(corners, frame):
     """
